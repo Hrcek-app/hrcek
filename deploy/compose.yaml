@@ -1,0 +1,17 @@
+# Hrček on one host. Copy next to deploy.sh with an .env beside it
+# (see env.example). deploy.sh sets HRCEK_TAG in .env.
+services:
+  app:
+    image: ${HRCEK_IMAGE:-ghcr.io/samastur/hrcek}:${HRCEK_TAG:?set HRCEK_TAG in .env}
+    restart: unless-stopped
+    # Stops promptly even while the entrypoint's shell is still PID 1.
+    init: true
+    env_file: .env
+    ports:
+      - "127.0.0.1:${HRCEK_PORT:-8000}:8000"
+    volumes:
+      - ./data:/data
+    # Rootless Docker: run as the container's root, which is your own
+    # user on the host, so everything in ./data belongs to you.
+    # Rootful Docker: leave this out and `chown 10001:10001 data`.
+    # user: "0:0"

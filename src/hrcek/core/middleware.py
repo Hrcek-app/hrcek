@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
+from django.db import DatabaseError, connection
 from django.http import HttpRequest, HttpResponse
 from sentry_sdk import set_tag
 
@@ -44,3 +45,29 @@ class RequestIDMiddleware:
             return response
         finally:
             reset_request_id(token)
+
+
+class HealthCheckMiddleware:
+    """Answer /healthz before anything that could refuse a local probe.
+
+    It sits first in the stack: the container's own health check calls
+    it over plain HTTP with a Host of 127.0.0.1, which the SSL redirect
+    and ALLOWED_HOSTS would otherwise turn away. It says nothing beyond
+    whether the database answers.
+    """
+
+    PATH = "/healthz"
+
+    def __init__(self, get_response: Callable[[HttpRequest], HttpResponse]) -> None:
+        self.get_response = get_response
+
+    def __call__(self, request: HttpRequest) -> HttpResponse:
+        if request.path != self.PATH:
+            return self.get_response(request)
+        # Fixed tokens for a machine, deliberately not translated.
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT 1")
+        except DatabaseError:
+            return HttpResponse("unavailable", status=503, content_type="text/plain")
+        return HttpResponse("ok", content_type="text/plain")

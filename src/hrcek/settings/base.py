@@ -50,6 +50,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "hrcek.core.middleware.HealthCheckMiddleware",
     "hrcek.core.middleware.RequestIDMiddleware",
     "django.middleware.security.SecurityMiddleware",
     # Session must precede authentication and locale; CSRF must precede
@@ -157,6 +158,8 @@ MAILERS: dict[str, dict[str, Any]] = {
 }
 
 STATIC_URL = "static/"
+# Filled by collectstatic when the image is built.
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Where rendered image copies are cached. The database holds the real
 # thing; everything under here can be deleted and will be written again
@@ -224,6 +227,6 @@ SENTRY_TRACES_SAMPLE_RATE = env_float("SENTRY_TRACES_SAMPLE_RATE", 1.0)
 configure_sentry(
     SENTRY_DSN,
     environment=SENTRY_ENVIRONMENT,
-    release=f"hrcek@{HRCEK_VERSION}",
+    release=f"hrcek@{HRCEK_RELEASE}",
     traces_sample_rate=SENTRY_TRACES_SAMPLE_RATE,
 )
