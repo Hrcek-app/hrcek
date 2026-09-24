@@ -1,7 +1,17 @@
 from io import StringIO
+from pathlib import Path
 
 import pytest
+from django.apps import apps
 from django.core.management import call_command
+
+from tests.support import run_manage
+
+PROJECT_APPS = sorted(
+    config.label
+    for config in apps.get_app_configs()
+    if config.name.startswith("hrcek.") and (Path(config.path) / "migrations").is_dir()
+)
 
 
 # makemigrations checks migration history against the database, so this
@@ -19,3 +29,12 @@ def test_no_missing_migrations():
             "  uv run python manage.py makemigrations\n\n"
             f"{out.getvalue()}"
         ) from None
+
+
+# A migration without a reverse makes every rollback past it
+# impossible, and nobody finds out until the day they need one.
+@pytest.mark.parametrize("app", PROJECT_APPS)
+def test_every_migration_can_be_reversed(tmp_path, app):
+    run_manage("migrate", "--no-input", data_dir=tmp_path)
+    run_manage("migrate", app, "zero", "--no-input", data_dir=tmp_path)
+    run_manage("migrate", "--no-input", data_dir=tmp_path)

@@ -229,3 +229,8 @@ build/
 
 # Cached image renditions; rebuilt from the database on demand
 media/
+
+# Written by the ops app and collectstatic; never committed.
+releases.json
+backups/
+staticfiles/

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hrcek 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-19 18:53+0000\n"
+"POT-Creation-Date: 2026-09-24 21:57+0000\n"
 "Language-Team: Slovenian\n"
 "Language: sl\n"
 "MIME-Version: 1.0\n"
@@ -1497,6 +1497,157 @@ msgstr "Polje preimenovano."
 #: src/hrcek/entries/views.py
 msgid "Field deleted."
 msgstr "Polje izbrisano."
+
+#: src/hrcek/ops/apps.py
+msgid "Operations"
+msgstr "Delovanje"
+
+#: src/hrcek/ops/errors.py
+msgid ""
+"The database has migrations applied that this release does not know. A newer "
+"release ran here; roll back using that release, or restore a snapshot."
+msgstr ""
+"Baza ima uveljavljene migracije, ki jih ta izdaja ne pozna. Tu je tekla "
+"novejša izdaja; povrnite se z njo ali obnovite posnetek."
+
+#: src/hrcek/ops/errors.py
+msgid ""
+"That release has never run against this database, so there is nothing to "
+"roll back to."
+msgstr ""
+"Ta izdaja se nad to bazo še ni izvajala, zato ni ničesar, na kar bi se lahko "
+"povrnili."
+
+#: src/hrcek/ops/errors.py
+msgid "That release is already the current one."
+msgstr "Ta izdaja je že trenutna."
+
+#: src/hrcek/ops/errors.py
+msgid ""
+"The snapshot could not be written or read, or failed its integrity check."
+msgstr ""
+"Posnetka ni bilo mogoče zapisati ali prebrati, ali pa ni prestal preverjanja "
+"celovitosti."
+
+#: src/hrcek/ops/errors.py
+msgid "That snapshot does not exist."
+msgstr "Ta posnetek ne obstaja."
+
+#: src/hrcek/ops/errors.py
+msgid "The release history file cannot be read."
+msgstr "Datoteke z zgodovino izdaj ni mogoče prebrati."
+
+#: src/hrcek/ops/errors.py
+msgid ""
+"That file is not named like a snapshot, so the release it holds is unknown."
+msgstr ""
+"Ime datoteke ni v obliki posnetka, zato ni znano, katero izdajo vsebuje."
+
+#: src/hrcek/ops/errors.py
+msgid "No release has been recorded yet."
+msgstr "Nobena izdaja še ni zabeležena."
+
+#: src/hrcek/ops/errors.py
+msgid "That release is newer than this one. Deploy it instead."
+msgstr "Ta izdaja je novejša od te. Namesto tega jo namestite."
+
+#: src/hrcek/ops/errors.py
+msgid "That time is not in the form 20260924T100000Z."
+msgstr "Čas ni v obliki 20260924T100000Z."
+
+#: src/hrcek/ops/errors.py
+msgid ""
+"Migrating down failed, so the database was put back as it was before the "
+"rollback began."
+msgstr ""
+"Povrnitev migracij ni uspela, zato je bila baza vrnjena v stanje pred "
+"začetkom povrnitve."
+
+#: src/hrcek/ops/errors.py
+msgid "The release history file cannot be written."
+msgstr "Datoteke z zgodovino izdaj ni mogoče zapisati."
+
+#: src/hrcek/ops/management/commands/backup.py
+#: src/hrcek/ops/management/commands/rollback_to.py
+#, python-format
+msgid "Wrote snapshot %(name)s."
+msgstr "Zapisan posnetek %(name)s."
+
+#: src/hrcek/ops/management/commands/backup.py
+#, python-format
+msgid "Removed old snapshot %(name)s."
+msgstr "Odstranjen star posnetek %(name)s."
+
+#: src/hrcek/ops/management/commands/backup.py
+msgid "The database is empty; there is nothing to snapshot."
+msgstr "Baza je prazna; ničesar ni treba posneti."
+
+#: src/hrcek/ops/management/commands/backup.py
+#, python-format
+msgid "Release %(release)s is already recorded; no snapshot needed."
+msgstr "Izdaja %(release)s je že zabeležena; posnetek ni potreben."
+
+#: src/hrcek/ops/management/commands/backup.py
+#, python-format
+msgid "This release already has its snapshot, %(name)s; not taking another."
+msgstr "Ta izdaja že ima svoj posnetek, %(name)s; drugega ne bo."
+
+#: src/hrcek/ops/management/commands/check_schema.py
+msgid "Every applied migration is known to this release."
+msgstr "Ta izdaja pozna vse uveljavljene migracije."
+
+#: src/hrcek/ops/management/commands/record_release.py
+#, python-format
+msgid "Release %(release)s is already recorded."
+msgstr "Izdaja %(release)s je že zabeležena."
+
+#: src/hrcek/ops/management/commands/record_release.py
+#, python-format
+msgid "Recorded release %(release)s."
+msgstr "Zabeležena izdaja %(release)s."
+
+#: src/hrcek/ops/management/commands/releases.py
+msgid "deploy"
+msgstr "namestitev"
+
+#: src/hrcek/ops/management/commands/releases.py
+msgid "rollback"
+msgstr "povrnitev"
+
+#: src/hrcek/ops/management/commands/releases.py
+msgid "restore"
+msgstr "obnovitev"
+
+#: src/hrcek/ops/management/commands/releases.py
+msgid "Releases, oldest first:"
+msgstr "Izdaje, od najstarejše:"
+
+#: src/hrcek/ops/management/commands/releases.py
+msgid "none recorded"
+msgstr "nobena ni zabeležena"
+
+#: src/hrcek/ops/management/commands/releases.py
+msgid "Snapshots, oldest first:"
+msgstr "Posnetki, od najstarejšega:"
+
+#: src/hrcek/ops/management/commands/releases.py
+msgid "none"
+msgstr "nobenega"
+
+#: src/hrcek/ops/management/commands/restore.py
+#, python-format
+msgid "No snapshot was taken since %(time)s; nothing to restore."
+msgstr "Od %(time)s ni bil narejen noben posnetek; ničesar ni za obnoviti."
+
+#: src/hrcek/ops/management/commands/restore.py
+#, python-format
+msgid "Restored %(name)s; the database now holds release %(release)s."
+msgstr "Obnovljen %(name)s; baza zdaj vsebuje izdajo %(release)s."
+
+#: src/hrcek/ops/management/commands/rollback_to.py
+#, python-format
+msgid "The database is now as release %(release)s expects it."
+msgstr "Baza je zdaj takšna, kot jo pričakuje izdaja %(release)s."
 
 #: src/hrcek/settings/base.py
 msgid "English"

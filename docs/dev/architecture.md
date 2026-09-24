@@ -11,6 +11,8 @@
 | `src/hrcek/core/` | Cross-cutting app: errors, logging, telemetry |
 | `src/hrcek/accounts/` | Identity: users, sign-in, invitations, email, account pages |
 | `src/hrcek/entries/` | What Hrček stores: entries, tags and fields |
+| `src/hrcek/collections/` | Named sets of entries, private or shared |
+| `src/hrcek/ops/` | Release bookkeeping: snapshots, history, rollback. See [deployment](deployment.md) |
 | `locale/` | Translation catalogues; `.po` and `.mo` are committed |
 | `tests/` | Mirrors `src/hrcek/` |
 

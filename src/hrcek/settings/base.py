@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "hrcek.accounts",
     "hrcek.entries",
     "hrcek.collections",
+    "hrcek.ops",
 ]
 
 MIDDLEWARE = [
@@ -102,6 +103,15 @@ DATABASES = {
         },
     },
 }
+
+# Release bookkeeping for deploys and rollbacks. The history file and
+# snapshots sit beside the database so one directory holds all state.
+# See docs/dev/deployment.md.
+HRCEK_RELEASE = env_str("HRCEK_RELEASE", "dev")
+_DATA_DIR = Path(DATABASES["default"]["NAME"]).parent
+HRCEK_RELEASES_FILE = _DATA_DIR / "releases.json"
+HRCEK_BACKUP_PATH = Path(env_str("HRCEK_BACKUP_PATH", str(_DATA_DIR / "backups")))
+HRCEK_BACKUP_KEEP = env_int("HRCEK_BACKUP_KEEP", 10)
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

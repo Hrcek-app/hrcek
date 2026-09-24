@@ -39,6 +39,9 @@ must never contain anything private.
 
 ## Registered codes
 
+`HRC-OPS` codes are reported by management commands on the host, never
+over HTTP, so they have no status.
+
 | Code | Status | Meaning |
 |---|---|---|
 | `HRC-CORE-0001` | 500 | An unexpected error occurred. The traceback is in the logs and in Sentry; the client is told nothing more. |
@@ -66,6 +69,18 @@ must never contain anything private.
 | `HRC-IMAGE-0004` | 422 | The address is not http or https, has no host, or a redirect tried to leave those schemes. `details.scheme` carries what was asked for. |
 | `HRC-IMAGE-0005` | 422 | The address resolves somewhere Hrček refuses to go: loopback, a private or link-local network, cloud metadata, or carrier-grade NAT. `details.address` is the resolved address. |
 | `HRC-IMAGE-0006` | 422 | The fetch failed: the host did not resolve, the connection broke, the answer was not 200, or there were too many redirects. `details` carries `status`, `host` or `redirects`. |
+| `HRC-OPS-0001` | — | The database has migrations this release does not know: a newer release ran here. The container refuses to start. Roll back using the newer release, or restore a snapshot. `details.migrations` lists them. |
+| `HRC-OPS-0002` | — | A rollback named a release that never ran against this database, so its migration state is unknown. |
+| `HRC-OPS-0003` | — | A rollback named the release that is already current. |
+| `HRC-OPS-0004` | — | A snapshot could not be written or read (disk full, folder not writable) or failed `PRAGMA integrity_check`. A half-written file is removed. |
+| `HRC-OPS-0005` | — | The snapshot named for a restore does not exist. |
+| `HRC-OPS-0006` | — | `releases.json` is not valid JSON or not a list of release entries. |
+| `HRC-OPS-0007` | — | The file named for a restore is not named like a snapshot, so the release it holds is unknown. |
+| `HRC-OPS-0008` | — | `releases --current` found no release recorded. |
+| `HRC-OPS-0009` | — | A rollback named a release whose migrations this code does not know: it is newer. Deploy it instead. |
+| `HRC-OPS-0010` | — | `restore --earliest-since` was given a time not in the form `20260924T100000Z`. |
+| `HRC-OPS-0011` | — | Migrating down failed partway. The `pre-rollback` snapshot (`details.snapshot`) was put back, so the database is exactly as before the rollback began. |
+| `HRC-OPS-0012` | — | `releases.json` could not be written: its folder is missing or not writable. No temporary file is left behind. |
 
 ## Response shape
 

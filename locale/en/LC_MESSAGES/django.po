@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hrcek 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-19 18:53+0000\n"
+"POT-Creation-Date: 2026-09-24 21:57+0000\n"
 "Language-Team: English\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
@@ -1417,6 +1417,148 @@ msgstr ""
 
 #: src/hrcek/entries/views.py
 msgid "Field deleted."
+msgstr ""
+
+#: src/hrcek/ops/apps.py
+msgid "Operations"
+msgstr ""
+
+#: src/hrcek/ops/errors.py
+msgid ""
+"The database has migrations applied that this release does not know. A newer "
+"release ran here; roll back using that release, or restore a snapshot."
+msgstr ""
+
+#: src/hrcek/ops/errors.py
+msgid ""
+"That release has never run against this database, so there is nothing to "
+"roll back to."
+msgstr ""
+
+#: src/hrcek/ops/errors.py
+msgid "That release is already the current one."
+msgstr ""
+
+#: src/hrcek/ops/errors.py
+msgid ""
+"The snapshot could not be written or read, or failed its integrity check."
+msgstr ""
+
+#: src/hrcek/ops/errors.py
+msgid "That snapshot does not exist."
+msgstr ""
+
+#: src/hrcek/ops/errors.py
+msgid "The release history file cannot be read."
+msgstr ""
+
+#: src/hrcek/ops/errors.py
+msgid ""
+"That file is not named like a snapshot, so the release it holds is unknown."
+msgstr ""
+
+#: src/hrcek/ops/errors.py
+msgid "No release has been recorded yet."
+msgstr ""
+
+#: src/hrcek/ops/errors.py
+msgid "That release is newer than this one. Deploy it instead."
+msgstr ""
+
+#: src/hrcek/ops/errors.py
+msgid "That time is not in the form 20260924T100000Z."
+msgstr ""
+
+#: src/hrcek/ops/errors.py
+msgid ""
+"Migrating down failed, so the database was put back as it was before the "
+"rollback began."
+msgstr ""
+
+#: src/hrcek/ops/errors.py
+msgid "The release history file cannot be written."
+msgstr ""
+
+#: src/hrcek/ops/management/commands/backup.py
+#: src/hrcek/ops/management/commands/rollback_to.py
+#, python-format
+msgid "Wrote snapshot %(name)s."
+msgstr ""
+
+#: src/hrcek/ops/management/commands/backup.py
+#, python-format
+msgid "Removed old snapshot %(name)s."
+msgstr ""
+
+#: src/hrcek/ops/management/commands/backup.py
+msgid "The database is empty; there is nothing to snapshot."
+msgstr ""
+
+#: src/hrcek/ops/management/commands/backup.py
+#, python-format
+msgid "Release %(release)s is already recorded; no snapshot needed."
+msgstr ""
+
+#: src/hrcek/ops/management/commands/backup.py
+#, python-format
+msgid "This release already has its snapshot, %(name)s; not taking another."
+msgstr ""
+
+#: src/hrcek/ops/management/commands/check_schema.py
+msgid "Every applied migration is known to this release."
+msgstr ""
+
+#: src/hrcek/ops/management/commands/record_release.py
+#, python-format
+msgid "Release %(release)s is already recorded."
+msgstr ""
+
+#: src/hrcek/ops/management/commands/record_release.py
+#, python-format
+msgid "Recorded release %(release)s."
+msgstr ""
+
+#: src/hrcek/ops/management/commands/releases.py
+msgid "deploy"
+msgstr ""
+
+#: src/hrcek/ops/management/commands/releases.py
+msgid "rollback"
+msgstr ""
+
+#: src/hrcek/ops/management/commands/releases.py
+msgid "restore"
+msgstr ""
+
+#: src/hrcek/ops/management/commands/releases.py
+msgid "Releases, oldest first:"
+msgstr ""
+
+#: src/hrcek/ops/management/commands/releases.py
+msgid "none recorded"
+msgstr ""
+
+#: src/hrcek/ops/management/commands/releases.py
+msgid "Snapshots, oldest first:"
+msgstr ""
+
+#: src/hrcek/ops/management/commands/releases.py
+msgid "none"
+msgstr ""
+
+#: src/hrcek/ops/management/commands/restore.py
+#, python-format
+msgid "No snapshot was taken since %(time)s; nothing to restore."
+msgstr ""
+
+#: src/hrcek/ops/management/commands/restore.py
+#, python-format
+msgid "Restored %(name)s; the database now holds release %(release)s."
+msgstr ""
+
+#: src/hrcek/ops/management/commands/rollback_to.py
+#, python-format
+msgid "The database is now as release %(release)s expects it."
 msgstr ""
 
 #: src/hrcek/settings/base.py
