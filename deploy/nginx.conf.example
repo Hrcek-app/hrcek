@@ -1,0 +1,45 @@
+# Hrček behind nginx. Replace hrcek.example.com and, if you changed it,
+# the port. Start with only the port-80 server, run
+#   sudo certbot --nginx -d hrcek.example.com
+# and certbot fills in the certificate lines.
+
+# Sign-in, signup and password reset are guessable; Hrček counts
+# nothing itself. See docs/dev/deployment.md.
+limit_req_zone $binary_remote_addr zone=hrcek_login:10m rate=5r/m;
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name hrcek.example.com;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_name hrcek.example.com;
+
+    ssl_certificate     /etc/letsencrypt/live/hrcek.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/hrcek.example.com/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+
+    # Pictures may be up to 10 MB (MAX_BYTES in entries/imaging.py).
+    client_max_body_size 20m;
+
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Request-ID $request_id;
+
+    location /api/auth/login {
+        limit_req zone=hrcek_login burst=5 nodelay;
+        proxy_pass http://127.0.0.1:8000;
+    }
+    location /accounts/ {
+        limit_req zone=hrcek_login burst=10 nodelay;
+        proxy_pass http://127.0.0.1:8000;
+    }
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+    }
+}

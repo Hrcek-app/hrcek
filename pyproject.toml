@@ -8,8 +8,10 @@ license = { file = "LICENSE" }
 dependencies = [
     "django~=6.1.0",
     "django-ninja~=1.7.0",
+    "gunicorn~=26.2",
     "pillow>=12.3.0",
     "sentry-sdk[django]~=2.68",
+    "whitenoise~=6.12",
 ]
 
 [dependency-groups]

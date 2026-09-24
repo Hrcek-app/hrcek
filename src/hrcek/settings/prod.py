@@ -16,6 +16,27 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 X_FRAME_OPTIONS = "DENY"
 
+# Behind a TLS-terminating proxy the request reaches us as plain HTTP,
+# and SECURE_SSL_REDIRECT would redirect it forever. Believe the
+# proxy's X-Forwarded-Proto only when a proxy is declared, exactly as
+# the rate limiter treats X-Forwarded-For (see base.py).
+if NINJA_NUM_PROXIES > 0:  # noqa: F405
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# The container serves its own static files, so it works behind any
+# proxy without a shared volume.
+MIDDLEWARE = [*MIDDLEWARE]  # noqa: F405
+MIDDLEWARE.insert(
+    MIDDLEWARE.index("django.middleware.security.SecurityMiddleware") + 1,
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+)
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    },
+}
+
 MAILERS = {
     "default": {
         "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
