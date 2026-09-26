@@ -1,27 +1,19 @@
 # Deployment
 
-Hrček is built for family-scale use: one container, one SQLite file, a
+Hrček is built for family-scale use: one process, one SQLite file, a
 reverse proxy in front. There is no queue, no cache server and no
 orchestration, and there should not be.
 
-## The image
+There are two ways to run it, and they share almost everything:
 
-`ghcr.io/samastur/hrcek`, public, for `linux/amd64` and `linux/arm64`.
+- **[With Docker](#with-docker)** — a ready-made image and a deploy
+  script that handles upgrades and rollbacks.
+- **[Without Docker](#without-docker)** — a checkout, `uv` and a
+  service manager such as systemd.
 
-| Tag | Points at |
-|---|---|
-| `vX.Y.Z` | A release. Pin to one of these. |
-| `latest` | The newest release. |
-| `main` | The newest green commit on `main`. Not a release. |
-| `sha-<short>` | One commit on `main`. |
-
-The container serves plain HTTP on port 8000 and keeps everything it
-must not lose in `/data`. It runs as uid 10001 unless told otherwise.
-
-```bash
-docker run -d --name hrcek -p 127.0.0.1:8000:8000 -v "$PWD/data:/data" \
-    --env-file .env ghcr.io/samastur/hrcek:v1.0.0
-```
+Both keep the same data folder, take the same snapshots and roll back
+the same way, because that work is done by Hrček's own management
+commands, not by Docker.
 
 ## Configuration
 
@@ -37,15 +29,25 @@ Everything comes from the environment; `deploy/env.example` lists it.
 | `HRCEK_FROM_EMAIL` | no | Sender address. |
 | `HRCEK_PROXY_COUNT` | behind a proxy | How many proxies to believe. `1` behind nginx. |
 | `HRCEK_BACKUP_KEEP` | no | Snapshots kept, default 10. |
-| `HRCEK_BACKUP_PATH` | no | Snapshot folder, default `/data/backups`. |
+| `HRCEK_BACKUP_PATH` | no | Snapshot folder, default `backups/` beside the database. |
 | `SENTRY_DSN`, `SENTRY_ENVIRONMENT` | no | Error reporting. |
 
-`HRCEK_RELEASE` is set by the image to its tag; do not override it.
-The image also sets `DJANGO_SETTINGS_MODULE=hrcek.settings.prod`, which
-refuses to start without the required variables and turns `/api/docs`
-off.
+The image sets four more itself. Without Docker, you set them:
+
+| Variable | Value |
+|---|---|
+| `DJANGO_SETTINGS_MODULE` | `hrcek.settings.prod` |
+| `HRCEK_DB_PATH` | Where the database lives, e.g. `/srv/hrcek-data/db.sqlite3` |
+| `HRCEK_MEDIA_PATH` | The image cache, e.g. `/srv/hrcek-data/media` |
+| `HRCEK_RELEASE` | The release being run, e.g. `v1.4.0` |
+
+Production settings refuse to start without the required variables and
+turn `/api/docs` off.
 
 ## The data folder
+
+Everything that must not be lost sits in one folder: `/data` in the
+container, or wherever `HRCEK_DB_PATH` points without it.
 
 ```
 data/
@@ -55,56 +57,60 @@ data/
   media/                rendered image cache; safe to delete
 ```
 
-**Back up `data/backups/`**, not `db.sqlite3`: every file in it is a
-complete, consistent database. Take a fresh one whenever you like:
-
-```bash
-docker compose exec app python manage.py backup
-```
+**Back up `backups/`**, not `db.sqlite3`: every file in it is a
+complete, consistent database. Take a fresh one whenever you like with
+`manage.py backup` (each route below shows how to run it).
 
 Copying `db.sqlite3` with `cp` while the app runs can capture a torn
-write. Never put `data/` on a network filesystem (NFS, SMB): SQLite's
-WAL mode needs local locking.
+write. Never put the folder on a network filesystem (NFS, SMB):
+SQLite's WAL mode needs local locking.
 
-## What happens at start
+## Releases, snapshots and rollback
 
-With no command, the container:
+Every start of a release goes through the same steps, whichever route
+you use:
 
-1. Refuses to start if the database has migrations it does not know —
-   a newer release ran here (`HRC-OPS-0001`).
-2. Snapshots the database, if this release differs from the last one
-   recorded and the database is not empty, then prunes old snapshots.
-3. Migrates.
-4. Records the release in `releases.json`.
-5. Starts gunicorn: one process, four threads. One process on
+1. `manage.py check_schema` refuses the database if it has migrations
+   this release does not know — a newer release ran here
+   (`HRC-OPS-0001`).
+2. `manage.py backup --reason pre-release --if-new-release --prune`
+   snapshots the database if this release differs from the last one
+   recorded, then prunes old snapshots.
+3. `manage.py migrate` migrates.
+4. `manage.py record_release` records the release in `releases.json`.
+5. The app starts: gunicorn, one process, four threads. One process on
    purpose — the token-exchange throttle counts in process memory.
 
-`docker compose run --rm app manage.py <command>` runs a management
-command with none of those steps. The ops commands are `backup`,
-`check_schema`, `record_release`, `release_plan`, `rollback_to`,
-`restore` and `releases`.
+Going back to an earlier release runs `manage.py rollback_to <release>`
+with the **newer** code first: only the newer code knows how to reverse
+its own migrations. It snapshots the database, migrates down to what
+the older release recorded, and records the rollback. If migrating
+down fails partway, it puts the snapshot back (`HRC-OPS-0011`) — a
+reversal may already have dropped data. Only then does the older code
+start.
 
-`/healthz` answers `ok` when the database does. The image's health
-check uses it; it bypasses the HTTPS redirect and host check so that a
-probe from inside the container works.
+`manage.py restore <snapshot>` copies a snapshot over the database, with
+the app stopped. The snapshot's name says which release's data it
+holds: `<time>-<release>-<reason>.sqlite3`. `manage.py releases` lists
+the history and the snapshots.
 
-## Running it with compose
+`/healthz` answers `ok` when the database does. It bypasses the HTTPS
+redirect and host check, so a probe from the same machine works.
 
-`deploy/` holds a reference setup: `compose.yaml`, `env.example`,
-`deploy.sh` and `nginx.conf.example`. Copy the first three to a folder
-on the host (for example `/srv/hrcek`), rename `env.example` to `.env`
-and fill it in.
+### Migrations must be reversible
 
-- **Rootless Docker:** uncomment `user: "0:0"` in `compose.yaml`. The
-  container's root is your own user, so `data/` belongs to you.
-- **Rootful Docker:** leave it out and `chown 10001:10001 data`.
+A rollback is only as good as the reverse of every migration it
+crosses. `tests/test_migrations.py` migrates each app to zero and back
+on a fresh database, so a `RunPython` without `reverse_code` fails the
+suite. Write the reverse when you write the migration.
 
 ## The reverse proxy
 
 `deploy/nginx.conf.example` is a complete site: TLS from certbot,
-forwarding headers, and rate limits on sign-in. Set
-`HRCEK_PROXY_COUNT=1` when a proxy is in front, or HTTPS redirects loop
-and every visitor shares one rate-limit allowance.
+forwarding headers, and rate limits on sign-in. It suits both routes;
+both listen on `127.0.0.1:8000`. Set `HRCEK_PROXY_COUNT=1` when a proxy
+is in front, or HTTPS redirects loop and every visitor shares one
+rate-limit allowance.
 
 **Hrček does no rate limiting of its own for sign-in, and it must be
 provided in front of it.** Sign-in, signup and password reset are all
@@ -115,7 +121,44 @@ family-scale service is unlikely to face. The proxy does it for
 nothing. Caddy has `rate_limit`; with neither, `fail2ban` watching the
 access log does the same job.
 
-## Deploying, rolling back, restoring
+## With Docker
+
+### The image
+
+`ghcr.io/samastur/hrcek`, public, for `linux/amd64` and `linux/arm64`.
+
+| Tag | Points at |
+|---|---|
+| `vX.Y.Z` | A release. Pin to one of these. |
+| `latest` | The newest release. |
+| `main` | The newest green commit on `main`. Not a release. |
+| `sha-<short>` | One commit on `main`. |
+
+The container serves plain HTTP on port 8000, keeps its state in
+`/data`, and runs the start steps above on every start. It runs as uid
+10001 unless told otherwise.
+
+```bash
+docker run -d --name hrcek -p 127.0.0.1:8000:8000 -v "$PWD/data:/data" \
+    --env-file .env ghcr.io/samastur/hrcek:v1.0.0
+```
+
+`docker compose run --rm app manage.py <command>` runs a management
+command with none of the start steps; inside a running container, use
+`docker compose exec app python manage.py <command>`.
+
+### Running it with compose
+
+`deploy/` holds a reference setup: `compose.yaml`, `env.example`,
+`deploy.sh` and `nginx.conf.example`. Copy the first three to a folder
+on the host (for example `/srv/hrcek`), rename `env.example` to `.env`
+and fill it in.
+
+- **Rootless Docker:** uncomment `user: "0:0"` in `compose.yaml`. The
+  container's root is your own user, so `data/` belongs to you.
+- **Rootful Docker:** leave it out and `chown 10001:10001 data`.
+
+### Deploying, rolling back, restoring
 
 `deploy.sh` drives compose. It keeps the tag in `.env` as `HRCEK_TAG`.
 
@@ -135,35 +178,113 @@ snapshot once, on its first start, so the restore always goes back to
 the database from before.
 
 **Rollback.** Naming a release that already ran here, at fewer
-migrations than now, is a rollback. The script stops the app, and the
-*current* image — the only one that knows how to reverse its own
-migrations — snapshots the database, migrates down to what the older
-release recorded, and records the rollback. Then the older release
-starts. If migrating down fails partway, the snapshot is put back
-(`HRC-OPS-0011`) — a reversal may already have dropped data — and the
-current release is restarted. If the older release fails to become
-healthy, nothing is undone automatically, since it may have served
-writes; `status` lists the `pre-rollback` snapshot to restore.
+migrations than now, is a rollback. The script stops the app, runs
+`rollback_to` in the current image, then starts the older release. If
+migrating down fails, the current release is restarted. If the older
+release fails to become healthy, nothing is undone automatically,
+since it may have served writes; `status` lists the `pre-rollback`
+snapshot to restore.
 
 A release you rolled back *from* is newer than the code now running,
 so naming it again deploys it forward.
 
 **Restore.** Stops the app, copies the snapshot over the database, and
-starts the release whose data the snapshot holds (it is in the name:
-`<time>-<release>-<reason>.sqlite3`). Anything written after the
-snapshot is lost. If the name is mistyped, nothing is copied and the
-app is started again as it was.
+starts the release whose data the snapshot holds. Anything written
+after the snapshot is lost. If the name is mistyped, nothing is copied
+and the app is started again as it was.
 
 Only one of these runs at a time; a second is refused. The script's
 own messages are in English: they are for whoever runs the host, and
 shell has no catalogue to translate them from.
 
-## Migrations must be reversible
+## Without Docker
 
-A rollback is only as good as the reverse of every migration it
-crosses. `tests/test_migrations.py` migrates each app to zero and back
-on a fresh database, so a `RunPython` without `reverse_code` fails the
-suite. Write the reverse when you write the migration.
+### Installing
+
+Check out a release tag and install it:
+
+```bash
+git clone https://github.com/samastur/hrcek.git /srv/hrcek
+cd /srv/hrcek
+git checkout v1.0.0
+uv sync --locked --no-dev
+```
+
+Put the configuration in an environment file, e.g. `/srv/hrcek.env`,
+mode 600: everything from [Configuration](#configuration), including
+the four variables the image would otherwise set. Keep the data folder
+outside the checkout, so a `git clean` can never reach it.
+
+`DJANGO_SETTINGS_MODULE` must be in the real environment: `manage.py`
+chooses development settings before it reads a `.env` file. For shell
+commands, load the file first:
+
+```bash
+set -a; . /srv/hrcek.env; set +a
+```
+
+Every command below assumes that, and is run from `/srv/hrcek`.
+
+### Starting
+
+The same steps the container runs, then the server. `collectstatic` is
+needed because the app serves its own static files; compiled
+translations are committed, so there is no `compilemessages` step.
+
+```bash
+uv run python manage.py collectstatic --no-input
+uv run python manage.py check_schema
+uv run python manage.py backup --reason pre-release --if-new-release --prune
+uv run python manage.py migrate --no-input
+uv run python manage.py record_release
+uv run gunicorn --config docker/gunicorn.conf.py --bind 127.0.0.1:8000 \
+    hrcek.wsgi:application
+```
+
+`--bind` overrides the container's `0.0.0.0`, so only the proxy can
+reach it. Under systemd, the environment file becomes
+`EnvironmentFile=/srv/hrcek.env`, the first five commands become
+`ExecStartPre=` lines, and gunicorn is `ExecStart=`.
+
+### Upgrading
+
+Set `HRCEK_RELEASE` in the environment file to the new tag as part of
+the upgrade: the snapshot and the history are named after it, and
+without a new name no snapshot is taken.
+
+```bash
+git fetch --tags && git checkout v1.4.0
+uv sync --locked --no-dev
+# set HRCEK_RELEASE=v1.4.0 in /srv/hrcek.env, then restart the service
+```
+
+Restarting runs the start steps, which snapshot, migrate and record the
+release.
+
+### Rolling back
+
+Stop the service. Then, with the **newer** release still checked out
+and its environment loaded:
+
+```bash
+uv run python manage.py rollback_to v1.3.2
+git checkout v1.3.2 && uv sync --locked --no-dev
+# set HRCEK_RELEASE=v1.3.2 in /srv/hrcek.env, then start the service
+```
+
+If `rollback_to` fails, the database has been put back and the newer
+release can simply be started again.
+
+### Restoring
+
+With the service stopped:
+
+```bash
+uv run python manage.py restore <snapshot>
+```
+
+Then check out the release the snapshot's name gives, set
+`HRCEK_RELEASE` to it, and start the service.
 
 ## Email
 
@@ -178,22 +299,13 @@ and password resets point somewhere useless.
 ## The first account
 
 ```bash
+# With Docker
 docker compose exec app python manage.py createsuperuser
+# Without Docker
+uv run python manage.py createsuperuser
 ```
 
 It asks for an email address and a password and nothing else, and marks
 the account confirmed, since nobody could send a confirmation email to
 the very first user. Everyone after that arrives by invitation or
 through the allowlist.
-
-## Without Docker
-
-The image is a convenience, not a requirement. On a bare host:
-
-```bash
-uv sync --locked --no-dev
-DJANGO_SETTINGS_MODULE=hrcek.settings.prod uv run python manage.py migrate
-uv run gunicorn --config docker/gunicorn.conf.py hrcek.wsgi:application
-```
-
-The ops commands work the same way through `uv run python manage.py`.
