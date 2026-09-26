@@ -41,7 +41,9 @@ uv run python manage.py runserver
 Requires [uv](https://docs.astral.sh/uv/) and GNU gettext. See
 [development setup](docs/dev/development-setup.md).
 
-## Run with Docker
+## Running it
+
+With Docker:
 
 ```bash
 mkdir data && cp deploy/env.example .env   # then fill in .env
@@ -50,8 +52,11 @@ docker run -d -p 127.0.0.1:8000:8000 -v "$PWD/data:/data" \
 ```
 
 `data/` must be writable by uid 10001, the user the image runs as. Put
-a TLS-terminating proxy in front. Deploying, rollback and backups are
-in [docs/dev/deployment.md](docs/dev/deployment.md).
+a TLS-terminating proxy in front.
+
+It runs just as well without Docker, from a checkout with `uv` under
+systemd. Both routes — and upgrades, rollback and backups — are in
+[docs/dev/deployment.md](docs/dev/deployment.md).
 
 ## Licence
 
