@@ -2,7 +2,7 @@
 # (see env.example). deploy.sh sets HRCEK_TAG in .env.
 services:
   app:
-    image: ${HRCEK_IMAGE:-ghcr.io/samastur/hrcek}:${HRCEK_TAG:?set HRCEK_TAG in .env}
+    image: ${HRCEK_IMAGE:-ghcr.io/hrcek-app/hrcek}:${HRCEK_TAG:?set HRCEK_TAG in .env}
     restart: unless-stopped
     # Stops promptly even while the entrypoint's shell is still PID 1.
     init: true
