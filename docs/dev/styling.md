@@ -57,7 +57,7 @@ of the source file:
 :root {
   --surface: #faf8f5;   /* page background */
   --ink: #292521;       /* body text */
-  --accent: #8a4c22;    /* links, buttons */
+  --accent: #234e9c;    /* links, buttons */
   ...
 }
 ```

@@ -25,7 +25,7 @@
   --edge: #e4dfd5;         /* borders, separators */
   --ink: #292521;          /* body text */
   --muted: #6e6659;        /* secondary text */
-  --accent: #8a4c22;       /* links, buttons */
+  --accent: #234e9c;       /* links, buttons */
   --accent-ink: #ffffff;   /* text on accent */
   --danger: #b3261c;       /* errors, destructive buttons */
   --danger-ink: #ffffff;   /* text on danger */
@@ -40,8 +40,8 @@
     --edge: #3b352c;
     --ink: #e9e4dc;
     --muted: #a49b8c;
-    --accent: #d9986a;
-    --accent-ink: #2b1607;
+    --accent: #8fb4f0;
+    --accent-ink: #0c1a33;
     --danger: #ef8983;
     --danger-ink: #2b0f0d;
   }
