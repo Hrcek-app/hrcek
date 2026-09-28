@@ -9,12 +9,12 @@
 #                                comes from SSH_ORIGINAL_COMMAND
 #
 # Environment: HRCEK_DIR (default: this script's folder), HRCEK_IMAGE
-# (default ghcr.io/samastur/hrcek), HRCEK_HEALTH_TIMEOUT (default 90).
+# (default ghcr.io/hrcek-app/hrcek), HRCEK_HEALTH_TIMEOUT (default 90).
 # See docs/dev/deployment.md.
 set -euo pipefail
 
 HRCEK_DIR=${HRCEK_DIR:-$(cd "$(dirname "$(readlink -f "$0")")" && pwd)}
-HRCEK_IMAGE=${HRCEK_IMAGE:-ghcr.io/samastur/hrcek}
+HRCEK_IMAGE=${HRCEK_IMAGE:-ghcr.io/hrcek-app/hrcek}
 HRCEK_HEALTH_TIMEOUT=${HRCEK_HEALTH_TIMEOUT:-90}
 export HRCEK_IMAGE
 TAG_PATTERN='^v[0-9]+\.[0-9]+\.[0-9]+$'

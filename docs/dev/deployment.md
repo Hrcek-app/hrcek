@@ -126,7 +126,7 @@ access log does the same job.
 
 ### The image
 
-`ghcr.io/samastur/hrcek`, public, for `linux/amd64` and `linux/arm64`.
+`ghcr.io/hrcek-app/hrcek`, public, for `linux/amd64` and `linux/arm64`.
 
 | Tag | Points at |
 |---|---|
@@ -141,7 +141,7 @@ The container serves plain HTTP on port 8000, keeps its state in
 
 ```bash
 docker run -d --name hrcek -p 127.0.0.1:8000:8000 -v "$PWD/data:/data" \
-    --env-file .env ghcr.io/samastur/hrcek:v1.0.0
+    --env-file .env ghcr.io/hrcek-app/hrcek:v1.0.0
 ```
 
 `docker compose run --rm app manage.py <command>` runs a management
@@ -273,7 +273,7 @@ On GitHub:
 Check out a release tag and install it:
 
 ```bash
-git clone https://github.com/samastur/hrcek.git /srv/hrcek
+git clone https://github.com/Hrcek-app/hrcek.git /srv/hrcek
 cd /srv/hrcek
 git checkout v1.0.0
 uv sync --locked --no-dev

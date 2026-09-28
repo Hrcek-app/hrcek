@@ -48,7 +48,7 @@ With Docker:
 ```bash
 mkdir data && cp deploy/env.example .env   # then fill in .env
 docker run -d -p 127.0.0.1:8000:8000 -v "$PWD/data:/data" \
-    --env-file .env ghcr.io/samastur/hrcek:latest
+    --env-file .env ghcr.io/hrcek-app/hrcek:latest
 ```
 
 `data/` must be writable by uid 10001, the user the image runs as. Put
