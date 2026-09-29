@@ -23,10 +23,13 @@ COPY docker ./docker
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-dev
 
-# Production settings demand these; only collectstatic sees the values.
+# Production settings demand these; only the build steps see the values.
+# The compiled translation catalogues are built into the image, so a
+# container starts with them fresh and never writes to /app/locale.
 RUN HRCEK_SECRET_KEY=collectstatic HRCEK_ALLOWED_HOSTS=localhost \
     HRCEK_SMTP_HOST=localhost DJANGO_SETTINGS_MODULE=hrcek.settings.prod \
-    /app/.venv/bin/python manage.py collectstatic --no-input
+    sh -c '/app/.venv/bin/python manage.py compile_translations && \
+           /app/.venv/bin/python manage.py collectstatic --no-input'
 
 FROM python:3.13-slim
 ARG HRCEK_RELEASE=dev

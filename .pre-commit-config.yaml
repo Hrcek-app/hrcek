@@ -1,8 +1,7 @@
-default_install_hook_types: [pre-commit, pre-push]
-# Compiled catalogues and the compiled stylesheet are machine-generated;
-# whitespace and newline fixers must not touch them, or every rebuild
-# would re-trip the hooks.
-exclude: '\.mo$|^src/hrcek/core/static/css/hrcek\.css$'
+default_install_hook_types: [pre-commit]
+# The compiled stylesheet is machine-generated; whitespace and newline
+# fixers must not touch it, or every rebuild would re-trip the hooks.
+exclude: '^src/hrcek/core/static/css/hrcek\.css$'
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -59,16 +58,23 @@ repos:
         files: ^src/hrcek/.*(api|schemas)\.py$|^docs/api/openapi\.json$
         pass_filenames: false
 
-      - id: translations-extracted
+      # A fixer, like ruff format: if the catalogues lag the source it
+      # updates them and the commit stops, so the result can be
+      # translated and added. Runs per commit, so every branch of a
+      # stack carries its own correct catalogues.
+      - id: translations-updated
         name: translations (catalogues match the source)
-        entry: scripts/check_translations.sh extract
-        language: script
-        stages: [pre-push]
+        entry: uv run python manage.py update_translations
+        language: system
+        files: ^(src/.*\.(py|html|txt)|locale/.*\.po)$
         pass_filenames: false
 
-      - id: translations-compiled
-        name: translations (.mo files match .po files)
-        entry: scripts/check_translations.sh compile
-        language: script
-        stages: [pre-push]
+      # Never fails: a nudge, not a gate. Untranslated strings show in
+      # English; unreviewed ones too, unless a language opts in.
+      - id: translations-status
+        name: translations (how complete each language is)
+        entry: uv run python manage.py translation_status
+        language: system
+        files: ^(src/.*\.(py|html|txt)|locale/.*\.po)$
         pass_filenames: false
+        verbose: true

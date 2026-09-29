@@ -11,10 +11,10 @@ A change is finished when all of these hold:
 
 - A failing test came first, and it now passes.
 - `uv run pytest` passes **with no warnings**.
-- `prek run --all-files` and
-  `prek run --all-files --hook-stage pre-push` pass.
-- Every new user-facing string is translatable, extracted, translated
-  into Slovenian, and compiled.
+- `prek run --all-files` passes.
+- Every new user-facing string is translatable, extracted, and
+  translated into Slovenian — or knowingly left for later, which
+  `translation_status` will keep pointing out.
 - Every new error has a registered code and a row in
   [error-codes.md](error-codes.md).
 - The affected pages in `docs/manual/` and `docs/dev/` are updated in

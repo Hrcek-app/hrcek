@@ -138,6 +138,11 @@ LANGUAGES = [
     ("sl", _("Slovenian")),
 ]
 LOCALE_PATHS = [BASE_DIR / "locale"]
+# Languages whose unreviewed ("fuzzy") translations are shown anyway.
+# Every other language shows the English original until a translation
+# is reviewed. Meant for a language nobody here can review, where a
+# machine translation beats English. See docs/dev/i18n.md.
+TRANSLATIONS_SHOWING_UNREVIEWED: list[str] = []
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True

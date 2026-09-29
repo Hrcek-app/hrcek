@@ -28,8 +28,8 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
 
-      # makemessages and compilemessages shell out to the GNU gettext
-      # tools, which the runner image does not include.
+      # makemessages (behind the translations hook) shells out to the
+      # GNU gettext tools, which the runner image does not include.
       - name: Install gettext
         run: sudo apt-get update && sudo apt-get install -y gettext
 
@@ -50,10 +50,10 @@ jobs:
       - name: Run commit-stage hooks
         run: prek run --all-files --show-diff-on-failure
 
-      # The translation guards only run before a push locally, so CI is
-      # where they are checked on every change.
-      - name: Run push-stage hooks
-        run: prek run --all-files --hook-stage pre-push
+      # Incomplete translations annotate the run and the job summary,
+      # and never fail it.
+      - name: Report translation status
+        run: uv run python manage.py translation_status --github
 
       - name: Run the test suite
         run: uv run pytest

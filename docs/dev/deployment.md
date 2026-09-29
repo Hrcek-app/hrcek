@@ -297,8 +297,16 @@ Every command below assumes that, and is run from `/srv/hrcek`.
 ### Starting
 
 The same steps the container runs, then the server. `collectstatic` is
-needed because the app serves its own static files; compiled
-translations are committed, so there is no `compilemessages` step.
+needed because the app serves its own static files.
+
+The compiled translation catalogues (`.mo`) are not in the checkout.
+The app builds them as it starts, and again after an upgrade changes a
+`.po` file, so `/srv/hrcek/locale` must be writable by the user the
+app runs as. If it cannot write there, the app still starts, logs a
+warning, and shows its pages in English until somebody runs
+`uv run python manage.py compile_translations` with the right
+permissions. Building them needs nothing beyond the Python
+dependencies; GNU gettext is not required on the server.
 
 ```bash
 uv run python manage.py collectstatic --no-input

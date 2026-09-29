@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import pytest
 from django.conf import settings
 from django.test import override_settings
@@ -22,19 +20,6 @@ def test_error_message_is_translated_into_slovenian():
     assert english == "The requested resource does not exist."
     assert slovenian != english
     assert slovenian.strip() != ""
-
-
-def test_every_catalogue_is_compiled():
-    locale_root = Path(settings.LOCALE_PATHS[0])
-    missing = [
-        str(po)
-        for po in locale_root.glob("*/LC_MESSAGES/django.po")
-        if not po.with_suffix(".mo").exists()
-    ]
-    assert missing == [], (
-        f"Uncompiled catalogues: {missing}. Run:\n"
-        "  uv run python manage.py compilemessages"
-    )
 
 
 def test_health_endpoint_answers_in_the_requested_language(client):

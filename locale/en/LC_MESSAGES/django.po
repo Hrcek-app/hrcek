@@ -1078,6 +1078,17 @@ msgstr ""
 msgid "The requested resource does not exist."
 msgstr ""
 
+#: src/hrcek/core/management/commands/compile_translations.py
+msgid "The compiled catalogues are up to date."
+msgstr ""
+
+#: src/hrcek/core/management/commands/compile_translations.py
+#, python-format
+msgid "Compiled %(count)d catalogue."
+msgid_plural "Compiled %(count)d catalogues."
+msgstr[0] ""
+msgstr[1] ""
+
 #: src/hrcek/core/management/commands/export_openapi.py
 #, python-format
 msgid ""
@@ -1092,6 +1103,55 @@ msgstr ""
 #: src/hrcek/core/management/commands/export_openapi.py
 #, python-format
 msgid "Wrote %(path)s"
+msgstr ""
+
+#: src/hrcek/core/management/commands/translation_status.py
+#, python-format
+msgid ""
+"%(language)s — total: %(total)d, untranslated: %(untranslated)d, to review: "
+"%(fuzzy)d"
+msgstr ""
+
+#: src/hrcek/core/management/commands/translation_status.py
+#, python-format
+msgid ""
+"%(language)s has %(untranslated)d untranslated strings and %(fuzzy)d to "
+"review."
+msgstr ""
+
+#: src/hrcek/core/management/commands/translation_status.py
+#: src/hrcek/core/templates/base.html
+msgid "Language"
+msgstr ""
+
+#: src/hrcek/core/management/commands/translation_status.py
+msgid "Strings"
+msgstr ""
+
+#: src/hrcek/core/management/commands/translation_status.py
+msgid "Untranslated"
+msgstr ""
+
+#: src/hrcek/core/management/commands/translation_status.py
+msgid "To review"
+msgstr ""
+
+#: src/hrcek/core/management/commands/update_translations.py
+msgid "The translation catalogues are up to date."
+msgstr ""
+
+#: src/hrcek/core/management/commands/update_translations.py
+#, python-format
+msgid ""
+"The translation catalogues are out of date: %(files)s. Run: uv run python "
+"manage.py update_translations"
+msgstr ""
+
+#: src/hrcek/core/management/commands/update_translations.py
+#, python-format
+msgid ""
+"Updated %(files)s. Translate the new entries, then add the files to your "
+"commit."
 msgstr ""
 
 #: src/hrcek/core/openapi.py
@@ -1124,10 +1184,6 @@ msgstr ""
 
 #: src/hrcek/core/templates/base.html
 msgid "Dark theme"
-msgstr ""
-
-#: src/hrcek/core/templates/base.html
-msgid "Language"
 msgstr ""
 
 #: src/hrcek/entries/errors.py

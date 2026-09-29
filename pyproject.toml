@@ -10,6 +10,7 @@ dependencies = [
     "django-ninja~=1.7.0",
     "gunicorn~=26.2",
     "pillow>=12.3.0",
+    "polib>=1.2.0",
     "sentry-sdk[django]~=2.68",
     "whitenoise~=6.12",
 ]

@@ -13,7 +13,7 @@
 | `src/hrcek/entries/` | What Hrček stores: entries, tags and fields |
 | `src/hrcek/collections/` | Named sets of entries, private or shared |
 | `src/hrcek/ops/` | Release bookkeeping: snapshots, history, rollback. See [deployment](deployment.md) |
-| `locale/` | Translation catalogues; `.po` and `.mo` are committed |
+| `locale/` | Translation catalogues; `.po` is committed, `.mo` is built from it. See [i18n](i18n.md) |
 | `tests/` | Mirrors `src/hrcek/` |
 
 Django apps are direct children of `hrcek`, so `INSTALLED_APPS` reads
