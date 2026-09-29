@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 
 import pytest
@@ -63,3 +64,61 @@ def test_the_home_link_carries_the_head_only_logo(client):
     assert logo["src"] == "/static/img/apple-touch-icon.png"
     assert logo["alt"] == ""
     assert stack[-1] == "a"
+
+
+def _source_css():
+    return (Path(settings.BASE_DIR) / "src/hrcek/core/static_src/hrcek.css").read_text(
+        encoding="utf-8"
+    )
+
+
+def _compiled_css():
+    return (Path(settings.BASE_DIR) / "src/hrcek/core/static/css/hrcek.css").read_text(
+        encoding="utf-8"
+    )
+
+
+def test_every_page_offers_the_theme_toggle(client):
+    """Hidden until the script wires it up: without JavaScript it
+    would be a button that does nothing, and the page still follows
+    the system theme."""
+    structure = _structure(client.get(reverse("landing")))
+    toggles = [a for a in structure.buttons if "theme-toggle" in (a.get("class") or "")]
+    assert len(toggles) == 1
+    toggle = toggles[0]
+    assert toggle["type"] == "button"
+    assert toggle["aria-pressed"] == "false"
+    assert "hidden" in toggle
+
+
+def test_a_pinned_theme_is_applied_before_the_stylesheet_loads(client):
+    """The pin is read by an inline, blocking script in the head, so a
+    page never paints in the system theme and then flips."""
+    html = client.get(reverse("landing")).text
+    head = html[: html.index("</head>")]
+    script = head.index("<script>")
+    assert head.index('<meta name="color-scheme"') < script
+    assert script < head.index('rel="stylesheet"')
+    assert 'localStorage.getItem("hrcek-theme")' in head
+    assert 'src="/static/js/theme.js" defer' in head
+
+
+def test_both_dark_blocks_define_the_same_colors():
+    """Dark comes from the system or from a pin; the two blocks must
+    not drift apart, or a pinned dark page differs from a system one."""
+    source = _source_css()
+    system = re.search(r':root:not\(\[data-theme="light"\]\)\s*\{(.*?)\}', source, re.S)
+    pinned = re.search(r':root\[data-theme="dark"\]\s*\{(.*?)\}', source, re.S)
+    assert system and pinned
+
+    def colors(block):
+        return dict(re.findall(r"(--[\w-]+):\s*([^;]+);", block))
+
+    assert colors(system.group(1)) == colors(pinned.group(1))
+    assert len(colors(system.group(1))) >= 9
+
+
+def test_the_compiled_stylesheet_honours_a_pinned_theme():
+    compiled = _compiled_css()
+    assert ":root[data-theme=dark]" in compiled
+    assert ":root:not([data-theme=light])" in compiled

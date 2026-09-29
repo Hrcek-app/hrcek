@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hrcek 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-24 21:57+0000\n"
+"POT-Creation-Date: 2026-09-29 06:28+0000\n"
 "Language-Team: Slovenian\n"
 "Language: sl\n"
 "MIME-Version: 1.0\n"
@@ -1165,6 +1165,10 @@ msgstr "Zbirke"
 #: src/hrcek/core/templates/base.html
 msgid "Sign out"
 msgstr "Odjava"
+
+#: src/hrcek/core/templates/base.html
+msgid "Dark theme"
+msgstr "Temna tema"
 
 #: src/hrcek/core/templates/base.html
 msgid "Language"

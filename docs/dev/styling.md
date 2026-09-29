@@ -70,18 +70,57 @@ the token block and recompiling — nothing else.
 
 ## Light and dark themes
 
-Pages follow the system theme. The mechanism is the token block again:
-the `@media (prefers-color-scheme: dark)` block redefines the same
-custom properties, so every rule and utility that consumes a token
-adapts by itself. Templates carry no `dark:` variants, and adding a new
-color means adding it to both blocks.
+Pages follow the system theme unless somebody pins one with the toggle
+in the header. The mechanism is the token block again: two dark blocks
+redefine the same custom properties, so every rule and utility that
+consumes a token adapts by itself. Templates carry no `dark:` variants.
 
-Two details support this: `base.html` declares
-`<meta name="color-scheme" content="light dark">` so the browser picks
-the right canvas color before the stylesheet loads, and `:root` sets
+| Block | Applies when |
+|---|---|
+| `:root` | Always; holds the light colors |
+| `@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) }` | The system is dark and light is not pinned |
+| `:root[data-theme="dark"]` | Dark is pinned, whatever the system says |
+
+The two dark blocks must stay identical, so adding a color means adding
+it to all three blocks. A test fails if the dark two drift apart.
+
+### The toggle
+
+The toggle follows Lea Verou's
+[recommendation](https://lea.verou.me/blog/2026/dark-mode-toggles/):
+one button with two states, never a three-way light/dark/system choice.
+
+- Pressing it always flips what is on screen.
+- The flip is stored only when it differs from the system theme; a flip
+  that lands on the system theme removes the pin instead. That is what
+  keeps "follow my device" reachable without a third state.
+- A pin is never removed behind the user's back. If the system later
+  changes to match it, it stays until the button is pressed again.
+
+The pin lives in `localStorage` under `hrcek-theme`, as `light` or
+`dark`, and nowhere else: it belongs to the browser, not the account.
+Two pieces of script apply it:
+
+- An inline, blocking script in the `<head>` of `base.html` reads the
+  pin and sets `data-theme` on `<html>` before the first paint. Moving
+  it into a file or deferring it brings back a flash of the wrong
+  theme.
+- `src/hrcek/core/static/js/theme.js`, deferred, wires up the button,
+  keeps `aria-pressed` in step with the theme shown, and follows
+  changes to the system theme and to the pin in other tabs.
+
+Both also rewrite `<meta name="color-scheme">` to the pinned theme, so
+the browser's own canvas and controls match. `:root` sets
 `color-scheme: light dark` plus `accent-color` so native widgets
-(checkboxes, selects, scrollbars) match. A test asserts the meta tag and
-the stylesheet link are present.
+(checkboxes, selects, scrollbars) follow too; the pinned blocks narrow
+`color-scheme` to the one theme. Tests assert the meta tag, the order
+of the head, and that the compiled stylesheet carries the pinned
+selectors.
+
+The button is rendered `hidden` and revealed by the script, so a
+browser without JavaScript never shows a control that does nothing.
+It is announced as "Dark theme" with `aria-pressed`, and shows the sun
+in light and the moon in dark.
 
 ## Markup Django generates
 
@@ -99,6 +138,7 @@ defines the small vocabulary templates use for structure:
 | `messages` | Django's flash messages |
 | `tag` | A tag pill |
 | `danger` | A destructive button (deletes) |
+| `theme-toggle` | The icon button in the header that switches themes |
 
 Checkbox rows get their own treatment. Django renders the label
 before the input, and the global `label { display: block }` would drop
