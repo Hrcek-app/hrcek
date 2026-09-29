@@ -27,8 +27,13 @@ looks after it to start the service.
 ## Appearance
 
 Hrček follows your device's appearance setting: it is light when your
-system is light and dark when your system is dark. There is nothing to
-configure in Hrček itself.
+system is light and dark when your system is dark.
+
+If you would rather have the other one, press the sun or moon at the
+top right of any page. Press it again to go back to following your
+device. The choice is remembered by this browser only, so another
+device, or another browser on the same one, keeps following its own
+setting.
 
 ## Getting an account
 

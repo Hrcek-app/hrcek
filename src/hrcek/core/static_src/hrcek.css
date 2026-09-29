@@ -11,9 +11,9 @@
 
 /* ------------------------------------------------------------------ */
 /* Design tokens. Restyling Hrček starts (and usually ends) here.     */
-/* Each color exists in a light and a dark variant; the dark block    */
-/* below overrides the same custom properties, so pages follow the    */
-/* system theme without any per-element dark styling.                 */
+/* Each color exists in a light and a dark variant; the dark blocks   */
+/* below override the same custom properties, so pages follow the     */
+/* theme without any per-element dark styling.                        */
 /* ------------------------------------------------------------------ */
 
 :root {
@@ -33,8 +33,12 @@
   accent-color: var(--accent);
 }
 
+/* Dark, twice: once when the system asks for it and nobody has
+   pinned light, once when somebody has pinned dark. The pin is a
+   data-theme attribute on <html>, set before first paint by the
+   script in base.html. Keep the two blocks identical; a test checks. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --surface: #171512;
     --raised: #211e1a;
     --edge: #3b352c;
@@ -45,6 +49,23 @@
     --danger: #ef8983;
     --danger-ink: #2b0f0d;
   }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --surface: #171512;
+  --raised: #211e1a;
+  --edge: #3b352c;
+  --ink: #e9e4dc;
+  --muted: #a49b8c;
+  --accent: #8fb4f0;
+  --accent-ink: #0c1a33;
+  --danger: #ef8983;
+  --danger-ink: #2b0f0d;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
 }
 
 /* Expose the tokens to Tailwind so templates can say bg-surface,
@@ -174,6 +195,31 @@
   }
   button:hover {
     background-color: color-mix(in oklab, var(--color-accent) 88%, var(--color-ink));
+  }
+
+  /* The theme toggle: an icon, not a call to action. It shows the
+     theme in use — the sun in light, the moon in dark. */
+  button.theme-toggle {
+    display: inline-flex;
+    padding: calc(var(--spacing) * 1);
+    color: var(--color-muted);
+    background-color: transparent;
+    border-radius: var(--radius-md);
+  }
+  button.theme-toggle[hidden] {
+    display: none;
+  }
+  button.theme-toggle:hover {
+    color: var(--color-accent);
+    background-color: transparent;
+  }
+  button.theme-toggle:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 1px;
+  }
+  button.theme-toggle[aria-pressed="true"] .sun,
+  button.theme-toggle[aria-pressed="false"] .moon {
+    display: none;
   }
 
   button.danger {
