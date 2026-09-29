@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 from django.conf import settings
 from django.urls import reverse
+from django.utils import timezone
 
 from tests.entries.helpers import _structure
 
@@ -122,3 +123,36 @@ def test_the_compiled_stylesheet_honours_a_pinned_theme():
     compiled = _compiled_css()
     assert ":root[data-theme=dark]" in compiled
     assert ":root:not([data-theme=light])" in compiled
+
+
+def _main_class(response):
+    match = re.search(r'<main class="([^"]*)"', response.text)
+    assert match, "main carries no class"
+    return match.group(1).split()
+
+
+def test_the_page_frame_is_not_capped_at_phone_width(client):
+    html = client.get(reverse("landing")).text
+    frame = re.search(r'<body[^>]*>\s*<div class="([^"]*)"', html)
+    assert frame
+    assert not any(c.startswith("max-w-") for c in frame.group(1).split())
+
+
+def test_reading_pages_keep_a_readable_measure(client):
+    """Forms and prose stay narrow even in a wide window: a sign-in
+    box a whole screen wide is harder to use, not easier."""
+    assert "max-w-2xl" in _main_class(client.get(reverse("landing")))
+
+
+def test_the_entry_list_uses_the_whole_width(client, django_user_model):
+    user = django_user_model.objects.create_user(
+        email="wide@example.com", password="x" * 20, email_verified_at=timezone.now()
+    )
+    client.force_login(user)
+    classes = _main_class(client.get(reverse("entries:list")))
+    assert not any(c.startswith("max-w-") for c in classes)
+
+
+def test_entries_flow_into_columns_when_there_is_room():
+    assert "ul.entries" in _source_css()
+    assert "repeat(auto-fill,minmax(min(100%,22rem),1fr))" in _compiled_css()
