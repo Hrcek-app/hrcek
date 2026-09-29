@@ -177,3 +177,53 @@ def test_the_thumbnail_link_is_not_a_second_tab_stop(client, nina, entry):
     assert '<a href="https://example.com/watch" tabindex="-1" aria-hidden="true">' in (
         body
     )
+
+
+def _picture_group(body):
+    start = body.index('<fieldset class="picture">')
+    return body[start : body.index("</fieldset>", start)]
+
+
+def test_every_picture_control_sits_with_the_picture(client, nina, entry):
+    EntryImage.attach(entry, _png())
+    client.force_login(nina)
+    body = client.get(reverse("entries:edit", args=[entry.pk])).text
+    group = _picture_group(body)
+    image = reverse("entries:image", args=[entry.pk])
+    for piece in (
+        image,
+        'name="remove_image"',
+        'name="image_file"',
+        'name="image_url"',
+    ):
+        assert piece in group, f"{piece} is outside the picture group"
+    assert body.count('name="image_file"') == 1
+
+
+def test_removing_comes_straight_after_the_picture_it_removes(client, nina, entry):
+    EntryImage.attach(entry, _png())
+    client.force_login(nina)
+    group = _picture_group(client.get(reverse("entries:edit", args=[entry.pk])).text)
+    image = group.index(reverse("entries:image", args=[entry.pk]))
+    remove = group.index('name="remove_image"')
+    assert image < remove < group.index('name="image_file"')
+
+
+def test_the_remove_checkbox_label_has_no_colon(client, nina, entry):
+    """A colon says "the control follows"; the box sits before its
+    label, so the colon pointed at nothing."""
+    EntryImage.attach(entry, _png())
+    client.force_login(nina)
+    body = client.get(reverse("entries:edit", args=[entry.pk])).text
+    assert '<label for="id_remove_image">Remove the picture</label>' in body
+
+
+def test_there_is_nothing_to_remove_without_a_picture(client, nina, entry):
+    client.force_login(nina)
+    for url in (
+        reverse("entries:create"),
+        reverse("entries:edit", args=[entry.pk]),
+    ):
+        body = client.get(url).text
+        assert 'name="image_file"' in _picture_group(body)
+        assert 'name="remove_image"' not in body

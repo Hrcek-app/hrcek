@@ -47,16 +47,18 @@ with typos; it also means a tag is not a place to keep something.
 
 ## Pictures
 
-An entry can have one picture. On the form for saving or editing an
-entry you can either choose a file from your device or paste the
-address of a picture on the web — one or the other, not both. Hrček
-keeps its own copy, so the picture stays even if the original page
-takes it down.
+An entry can have one picture. Everything about it is under
+**Picture** on the form for saving or editing an entry: you can either
+choose a file from your device or paste the address of a picture on
+the web — one or the other, not both. Paste the address of the picture
+itself, not of the page it appears on. Hrček keeps its own copy, so
+the picture stays even if the original page takes it down.
 
 The picture appears as a small square beside the entry in your list.
-To swap it, add another; to get rid of it, tick **Remove the picture**
-and save. Changing an entry's title or notes never disturbs its
-picture.
+When you edit an entry that has one, the form shows it under
+**Picture**. To swap it, add another below it; to get rid of it, tick
+**Remove the picture**, right under the picture, and save. Changing an
+entry's title or notes never disturbs its picture.
 
 Pictures are private, like everything else here: they are shown to you
 and to nobody else, and the address of one is no use to anyone who is

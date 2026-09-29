@@ -1,0 +1,12 @@
+{% comment %}
+  One form field, marked up the way form.as_p does it, so the form
+  styles apply to a form laid out in groups too.
+{% endcomment %}
+{{ field.errors }}
+<p>
+  {{ field.label_tag }}
+  {{ field }}
+  {% if field.help_text %}
+    <span class="helptext" id="{{ field.auto_id }}_helptext">{{ field.help_text|safe }}</span>
+  {% endif %}
+</p>

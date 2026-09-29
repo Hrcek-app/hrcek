@@ -5,18 +5,40 @@
 {% block content %}
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {% if entry.image %}
-      <p>
+    {{ form.non_field_errors }}
+    {% for field in form.entry_fields %}
+      {% include "entries/_field.html" %}
+    {% endfor %}
+
+    <fieldset>
+      <legend>{% trans "Fields" %}</legend>
+      {% for field in form.custom_fields %}
+        {% include "entries/_field.html" %}
+      {% endfor %}
+      {% url 'entries:fields' as fields_url %}
+      <p class="text-sm text-muted">{% blocktrans %}Want to record something else about your entries? Add a field in <a href="{{ fields_url }}">your fields</a>.{% endblocktrans %}</p>
+    </fieldset>
+
+    {% comment %}
+      Everything about the picture in one place: the picture itself,
+      the box that removes it right beneath, then where a new one
+      comes from.
+    {% endcomment %}
+    <fieldset class="picture">
+      <legend>{% trans "Picture" %}</legend>
+      {% if entry.image %}
         <img src="{% url 'entries:image' entry.pk %}"
              alt="" width="{{ entry.image.width }}" height="{{ entry.image.height }}"
-             class="max-w-full h-auto rounded-md border border-edge">
-      </p>
-    {% endif %}
-    {{ form.as_p }}
+             class="current-picture">
+        {% include "entries/_field.html" with field=form.remove_image %}
+        <p class="text-sm text-muted">{% trans "Or replace it with another:" %}</p>
+      {% endif %}
+      {% include "entries/_field.html" with field=form.image_file %}
+      {% include "entries/_field.html" with field=form.image_url %}
+    </fieldset>
+
     <button type="submit">{% trans "Save" %}</button>
   </form>
-  {% url 'entries:fields' as fields_url %}
-  <p class="text-sm text-muted">{% blocktrans %}Want to record something else about your entries? Add a field in <a href="{{ fields_url }}">your fields</a>.{% endblocktrans %}</p>
   {% if entry %}
     <p><a href="{% url 'entries:delete' entry.pk %}">{% trans "Delete this entry" %}</a></p>
   {% endif %}
