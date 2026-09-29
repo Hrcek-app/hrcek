@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hrcek 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-29 06:52+0000\n"
+"POT-Creation-Date: 2026-09-29 07:04+0000\n"
 "Language-Team: English\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
@@ -373,6 +373,7 @@ msgid "Change my email address"
 msgstr ""
 
 #: src/hrcek/accounts/templates/accounts/account.html
+#: src/hrcek/entries/templates/entries/form.html
 msgid "Fields"
 msgstr ""
 
@@ -1170,19 +1171,15 @@ msgid "Separated by commas."
 msgstr ""
 
 #: src/hrcek/entries/forms.py
-msgid "Picture"
+msgid "From this device"
 msgstr ""
 
 #: src/hrcek/entries/forms.py
-msgid "A picture from this device."
+msgid "Or from the web"
 msgstr ""
 
 #: src/hrcek/entries/forms.py
-msgid "Picture address"
-msgstr ""
-
-#: src/hrcek/entries/forms.py
-msgid "Or the address of a picture on the web."
+msgid "The address of the picture itself, not of the page it is on."
 msgstr ""
 
 #: src/hrcek/entries/forms.py
@@ -1389,6 +1386,14 @@ msgstr ""
 msgid ""
 "Want to record something else about your entries? Add a field in <a "
 "href=\"%(fields_url)s\">your fields</a>."
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/form.html
+msgid "Picture"
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/form.html
+msgid "Or replace it with another:"
 msgstr ""
 
 #: src/hrcek/entries/templates/entries/form.html

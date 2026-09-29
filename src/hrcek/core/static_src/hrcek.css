@@ -190,6 +190,36 @@
     margin: 0;
   }
 
+  /* A group of related inputs on a longer form, opened by a hairline
+     and a heading, like a section of the page. */
+  form fieldset {
+    margin-block: calc(var(--spacing) * 8);
+    padding-block-start: calc(var(--spacing) * 4);
+    border-block-start: 1px solid var(--color-edge);
+  }
+  form legend {
+    float: left;
+    inline-size: 100%;
+    font-size: var(--text-lg);
+    font-weight: 600;
+    margin-block-end: calc(var(--spacing) * 2);
+  }
+  form legend + * {
+    clear: both;
+  }
+
+  /* The picture an entry already has, shown where it can be removed
+     or replaced. */
+  form img.current-picture {
+    display: block;
+    inline-size: auto;
+    max-inline-size: min(100%, 16rem);
+    block-size: auto;
+    margin-block-start: calc(var(--spacing) * 4);
+    border: 1px solid var(--color-edge);
+    border-radius: var(--radius-md);
+  }
+
   form .helptext {
     display: block;
     font-size: var(--text-sm);

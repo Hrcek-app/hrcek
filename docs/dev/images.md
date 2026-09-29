@@ -175,7 +175,13 @@ A shared collection page shows pictures the same way.
 ## On the form
 
 The entry form takes either a file or an address, never both, and
-offers a checkbox to remove the picture. The bytes are validated in
+offers a checkbox to remove the picture. The form template lays these
+out by hand rather than with `form.as_p`: the current picture, the
+remove box directly beneath it (shown only when there is a picture to
+remove), then the file and address inputs, all in one `<fieldset
+class="picture">`. `EntryForm.entry_fields()` and `custom_fields()`
+supply the other groups, and `entries/_field.html` marks each input up
+as `as_p` would, so the form styles still apply. The bytes are validated in
 `EntryForm.clean`, so a refusal comes back as a sentence beside the
 input with the rest of the form still filled in — the error code goes
 to the logs and to API clients, never onto the page.

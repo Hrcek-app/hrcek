@@ -19,19 +19,22 @@ class EntryForm(forms.ModelForm):
         required=False,
         help_text=_("Separated by commas."),
     )
+    # The picture's inputs sit together under a "Picture" heading on the
+    # form, so their labels say only where the picture comes from.
     image_file = forms.ImageField(
-        label=_("Picture"),
+        label=_("From this device"),
         required=False,
-        help_text=_("A picture from this device."),
     )
     image_url = forms.URLField(
-        label=_("Picture address"),
+        label=_("Or from the web"),
         required=False,
         max_length=Entry.URL_MAX_LENGTH,
-        help_text=_("Or the address of a picture on the web."),
+        help_text=_("The address of the picture itself, not of the page it is on."),
     )
     remove_image = forms.BooleanField(
         label=_("Remove the picture"),
+        # The box sits before its label; a colon would point at nothing.
+        label_suffix="",
         required=False,
     )
 
@@ -73,6 +76,14 @@ class EntryForm(forms.ModelForm):
                     label=definition.name, required=False
                 )
             self.initial[key] = existing.get(definition.pk, "")
+
+    def entry_fields(self) -> list[forms.BoundField]:
+        """The entry itself: address, title, notes and tags."""
+        return [self[name] for name in ("url", "title", "notes", "tags")]
+
+    def custom_fields(self) -> list[forms.BoundField]:
+        """One input per field this person has defined."""
+        return [self[f"field_{d.pk}"] for d in self.definitions]
 
     def clean_url(self) -> str:
         return Entry.normalise_url(self.cleaned_data["url"])
