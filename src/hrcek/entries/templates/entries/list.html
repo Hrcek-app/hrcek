@@ -11,69 +11,80 @@
     <li><a href="{% url 'entries:fields' %}">{% trans "Your fields" %}</a></li>
   </ul>
 
-  {% if tags %}
-    <nav aria-label="{% trans "Tags" %}">
-      <ul class="row">
-        {% for each in tags %}
-          <li><a href="?tag={{ each.name|urlencode }}">{{ each.name }}</a></li>
-        {% endfor %}
-        {% if tag %}
-          <li><a href="{% url 'entries:list' %}">{% trans "All entries" %}</a></li>
-        {% endif %}
-      </ul>
-    </nav>
-  {% endif %}
+  {% comment %}
+    The tags come after the entries in the page, so on a phone they
+    follow the list; from lg up they sit in a column beside it.
+  {% endcomment %}
+  <div class="lg:grid lg:grid-cols-[minmax(0,1fr)_14rem] lg:gap-12">
+    <div>
+      {% if page %}
+        <ul class="entries">
+          {% for entry in page %}
+            <li>
+              <article>
+                {% if entry.image %}
+                  <a href="{{ entry.url }}">
+                    <img src="{% url 'entries:image' entry.pk %}"
+                         alt="" width="{{ entry.image.width }}" height="{{ entry.image.height }}"
+                         loading="lazy" decoding="async"
+                         class="mb-3 w-full h-auto rounded-md border border-edge">
+                  </a>
+                {% endif %}
+                <h2><a href="{{ entry.url }}">{{ entry.display_title }}</a></h2>
+                {% if entry.notes %}<p>{{ entry.notes|linebreaks }}</p>{% endif %}
+                {% if entry.field_values.all %}
+                  <dl>
+                    {% for value in entry.field_values.all %}
+                      <dt>{{ value.definition.name }}</dt>
+                      <dd>{{ value.value }}</dd>
+                    {% endfor %}
+                  </dl>
+                {% endif %}
+                {% if entry.tags.all %}
+                  <ul class="row">
+                    {% for each in entry.tags.all %}
+                      <li class="tag">{{ each.name }}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+                <p><a href="{% url 'entries:edit' entry.pk %}">{% trans "Edit" %}</a></p>
+              </article>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>{% trans "Nothing saved yet." %}</p>
+      {% endif %}
 
-  {% if page %}
-    <ul class="entries">
-      {% for entry in page %}
-        <li>
-          <article>
-            {% if entry.image %}
-              <a href="{{ entry.url }}">
-                <img src="{% url 'entries:image' entry.pk %}"
-                     alt="" width="{{ entry.image.width }}" height="{{ entry.image.height }}"
-                     loading="lazy" decoding="async"
-                     class="mb-3 w-full h-auto rounded-md border border-edge">
-              </a>
+      {% if page.has_other_pages %}
+        <nav aria-label="{% trans "Pages" %}">
+          <ul class="row">
+            {% if page.has_previous %}
+              <li><a href="?page={{ page.previous_page_number }}{% if tag %}&tag={{ tag|urlencode }}{% endif %}">{% trans "Newer" %}</a></li>
             {% endif %}
-            <h2><a href="{{ entry.url }}">{{ entry.display_title }}</a></h2>
-            {% if entry.notes %}<p>{{ entry.notes|linebreaks }}</p>{% endif %}
-            {% if entry.field_values.all %}
-              <dl>
-                {% for value in entry.field_values.all %}
-                  <dt>{{ value.definition.name }}</dt>
-                  <dd>{{ value.value }}</dd>
-                {% endfor %}
-              </dl>
+            <li>{% blocktrans with current=page.number total=page.paginator.num_pages %}Page {{ current }} of {{ total }}{% endblocktrans %}</li>
+            {% if page.has_next %}
+              <li><a href="?page={{ page.next_page_number }}{% if tag %}&tag={{ tag|urlencode }}{% endif %}">{% trans "Older" %}</a></li>
             {% endif %}
-            {% if entry.tags.all %}
-              <ul class="row">
-                {% for each in entry.tags.all %}
-                  <li class="tag">{{ each.name }}</li>
-                {% endfor %}
-              </ul>
-            {% endif %}
-            <p><a href="{% url 'entries:edit' entry.pk %}">{% trans "Edit" %}</a></p>
-          </article>
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>{% trans "Nothing saved yet." %}</p>
-  {% endif %}
+          </ul>
+        </nav>
+      {% endif %}
+    </div>
 
-  {% if page.has_other_pages %}
-    <nav aria-label="{% trans "Pages" %}">
-      <ul class="row">
-        {% if page.has_previous %}
-          <li><a href="?page={{ page.previous_page_number }}{% if tag %}&tag={{ tag|urlencode }}{% endif %}">{% trans "Newer" %}</a></li>
-        {% endif %}
-        <li>{% blocktrans with current=page.number total=page.paginator.num_pages %}Page {{ current }} of {{ total }}{% endblocktrans %}</li>
-        {% if page.has_next %}
-          <li><a href="?page={{ page.next_page_number }}{% if tag %}&tag={{ tag|urlencode }}{% endif %}">{% trans "Older" %}</a></li>
-        {% endif %}
-      </ul>
-    </nav>
-  {% endif %}
+    {% if tags %}
+      <aside class="my-8 border-t border-edge pt-6 lg:sticky lg:top-8 lg:self-start">
+        <h2 id="tags-heading" class="mt-0">{% trans "Tags" %}</h2>
+        <nav aria-labelledby="tags-heading">
+          <ul class="row">
+            {% for each in tags %}
+              <li><a href="?tag={{ each.name|urlencode }}">{{ each.name }}</a></li>
+            {% endfor %}
+            {% if tag %}
+              <li><a href="{% url 'entries:list' %}">{% trans "All entries" %}</a></li>
+            {% endif %}
+          </ul>
+        </nav>
+      </aside>
+    {% endif %}
+  </div>
 {% endblock %}

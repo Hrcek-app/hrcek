@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hrcek 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-29 06:28+0000\n"
+"POT-Creation-Date: 2026-09-29 06:38+0000\n"
 "Language-Team: English\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
@@ -1383,10 +1383,6 @@ msgid "Your entries"
 msgstr ""
 
 #: src/hrcek/entries/templates/entries/list.html
-msgid "All entries"
-msgstr ""
-
-#: src/hrcek/entries/templates/entries/list.html
 msgid "Nothing saved yet."
 msgstr ""
 
@@ -1405,6 +1401,10 @@ msgstr ""
 
 #: src/hrcek/entries/templates/entries/list.html
 msgid "Older"
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/list.html
+msgid "All entries"
 msgstr ""
 
 #: src/hrcek/entries/views.py
