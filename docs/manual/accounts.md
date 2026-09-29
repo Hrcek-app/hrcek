@@ -66,6 +66,9 @@ Three things are worth knowing:
 There is a cancel button next to the pending address for as long as one
 is waiting.
 
+**Fields.** A link to your fields, the extras you record about each
+entry. See [fields](entries.md#fields).
+
 **Password.** There is a link to change it. You will be asked for your
 current password, and you stay signed in afterwards.
 

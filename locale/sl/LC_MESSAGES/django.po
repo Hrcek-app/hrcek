@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hrcek 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-29 06:38+0000\n"
+"POT-Creation-Date: 2026-09-29 06:52+0000\n"
 "Language-Team: Slovenian\n"
 "Language: sl\n"
 "MIME-Version: 1.0\n"
@@ -388,6 +388,24 @@ msgstr "Prekliči spremembo"
 #: src/hrcek/accounts/templates/accounts/account.html
 msgid "Change my email address"
 msgstr "Spremeni moj e-poštni naslov"
+
+#: src/hrcek/accounts/templates/accounts/account.html
+msgid "Fields"
+msgstr "Polja"
+
+#: src/hrcek/accounts/templates/accounts/account.html
+msgid ""
+"The extra things you record about each entry, beyond its address, title and "
+"notes."
+msgstr ""
+"Dodatne stvari, ki jih beležite o vsakem vnosu, poleg naslova, naziva in "
+"zapiskov."
+
+#
+#: src/hrcek/accounts/templates/accounts/account.html
+#: src/hrcek/entries/templates/entries/fields.html
+msgid "Your fields"
+msgstr "Vaša polja"
 
 #: src/hrcek/accounts/templates/accounts/account.html
 #: src/hrcek/accounts/templates/accounts/password_change.html
@@ -1404,12 +1422,6 @@ msgstr "Shrani ime"
 msgid "Back to your fields"
 msgstr "Nazaj na vaša polja"
 
-#
-#: src/hrcek/entries/templates/entries/fields.html
-#: src/hrcek/entries/templates/entries/list.html
-msgid "Your fields"
-msgstr "Vaša polja"
-
 #: src/hrcek/entries/templates/entries/fields.html
 msgid ""
 "Fields are the extra things you want to record about an entry, beyond its "
@@ -1450,6 +1462,15 @@ msgstr "Uredi vnos"
 #: src/hrcek/entries/templates/entries/list.html
 msgid "Save something"
 msgstr "Shrani nekaj"
+
+#: src/hrcek/entries/templates/entries/form.html
+#, python-format
+msgid ""
+"Want to record something else about your entries? Add a field in <a "
+"href=\"%(fields_url)s\">your fields</a>."
+msgstr ""
+"Bi radi o svojih vnosih zabeležili še kaj? Dodajte polje med <a "
+"href=\"%(fields_url)s\">svoja polja</a>."
 
 #: src/hrcek/entries/templates/entries/form.html
 msgid "Delete this entry"

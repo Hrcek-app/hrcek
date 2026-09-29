@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hrcek 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-29 06:38+0000\n"
+"POT-Creation-Date: 2026-09-29 06:52+0000\n"
 "Language-Team: English\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
@@ -370,6 +370,21 @@ msgstr ""
 
 #: src/hrcek/accounts/templates/accounts/account.html
 msgid "Change my email address"
+msgstr ""
+
+#: src/hrcek/accounts/templates/accounts/account.html
+msgid "Fields"
+msgstr ""
+
+#: src/hrcek/accounts/templates/accounts/account.html
+msgid ""
+"The extra things you record about each entry, beyond its address, title and "
+"notes."
+msgstr ""
+
+#: src/hrcek/accounts/templates/accounts/account.html
+#: src/hrcek/entries/templates/entries/fields.html
+msgid "Your fields"
 msgstr ""
 
 #: src/hrcek/accounts/templates/accounts/account.html
@@ -1334,11 +1349,6 @@ msgid "Back to your fields"
 msgstr ""
 
 #: src/hrcek/entries/templates/entries/fields.html
-#: src/hrcek/entries/templates/entries/list.html
-msgid "Your fields"
-msgstr ""
-
-#: src/hrcek/entries/templates/entries/fields.html
 msgid ""
 "Fields are the extra things you want to record about an entry, beyond its "
 "address, title and notes."
@@ -1372,6 +1382,13 @@ msgstr ""
 #: src/hrcek/entries/templates/entries/form.html
 #: src/hrcek/entries/templates/entries/list.html
 msgid "Save something"
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/form.html
+#, python-format
+msgid ""
+"Want to record something else about your entries? Add a field in <a "
+"href=\"%(fields_url)s\">your fields</a>."
 msgstr ""
 
 #: src/hrcek/entries/templates/entries/form.html

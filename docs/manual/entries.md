@@ -79,7 +79,10 @@ You start with one:
 - **Priority**, which is one of `high`, `medium` or `low`
 
 It is not special. Rename it, delete it, or leave it be. "Your fields"
-on the entry list is where you do it, and where you add your own.
+is where you do it, and where you add your own. You reach it from
+**Your account**, or from the line under the form for saving or
+editing an entry — the place you are most likely to notice a field is
+missing. Following that link leaves the form, so save first.
 
 A price field is not given to you, deliberately. A number on its own
 does not say which currency it is in, and Hrček has no field that
