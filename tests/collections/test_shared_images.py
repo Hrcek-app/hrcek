@@ -139,3 +139,10 @@ def test_a_private_picture_is_still_cached_privately(client, nina, entry):
 def test_the_owner_still_sees_their_own(client, nina, entry):
     client.force_login(nina)
     assert client.get(_url(entry)).status_code == 200
+
+
+def test_a_shared_page_shows_pictures_as_thumbnails(client, nina, entry):
+    collection = _collect(nina, entry, visibility=Collection.UNLISTED, show_images=True)
+    body = client.get(f"/c/{collection.secret}/").text
+    assert 'class="thumb"' in body
+    assert body.index("<h2>") < body.index('class="thumb"')

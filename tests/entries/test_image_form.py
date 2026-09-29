@@ -11,6 +11,7 @@ from PIL import Image
 from hrcek.accounts.models import User
 from hrcek.entries import fetching
 from hrcek.entries.models import Entry, EntryImage
+from tests.entries.helpers import _structure
 
 pytestmark = pytest.mark.django_db
 
@@ -146,3 +147,33 @@ def test_the_list_shows_the_picture(client, nina, entry):
     client.force_login(nina)
     page = client.get(reverse("entries:list"))
     assert reverse("entries:image", args=[entry.pk]) in page.text
+
+
+def _thumbnails(response):
+    parsed = _structure(response)
+    return [(attrs, stack) for attrs, stack in parsed.images if "article" in stack]
+
+
+def test_the_list_shows_the_picture_as_a_thumbnail_beside_the_text(client, nina, entry):
+    """Small and to the side, so an entry with a picture sits level
+    with one without: the titles line up either way."""
+    EntryImage.attach(entry, _png())
+    client.force_login(nina)
+    response = client.get(reverse("entries:list"))
+    ((img, stack),) = _thumbnails(response)
+    assert img["class"] == "thumb"
+    assert (img["width"], img["height"]) == ("96", "96")
+    assert "div" not in stack[stack.index("article") :], "thumb inside the text"
+    body = response.text
+    assert body.index("<h2>") < body.index('class="thumb"'), "thumb precedes title"
+
+
+def test_the_thumbnail_link_is_not_a_second_tab_stop(client, nina, entry):
+    """The title already links to the page; the picture repeats that
+    link for the mouse, and is kept out of the keyboard's way."""
+    EntryImage.attach(entry, _png())
+    client.force_login(nina)
+    body = " ".join(client.get(reverse("entries:list")).text.split())
+    assert '<a href="https://example.com/watch" tabindex="-1" aria-hidden="true">' in (
+        body
+    )

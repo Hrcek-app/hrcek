@@ -229,3 +229,19 @@ def test_an_entrys_tags_link_to_your_entries_carrying_them(signed_in, nina):
     CollectionEntry.objects.create(collection=collection, entry=entry)
     body = signed_in.get(reverse("collections:detail", args=[collection.pk])).text
     assert f'href="{reverse("entries:list")}?tag=watches"' in body
+
+
+def test_a_collection_entrys_text_is_kept_together(signed_in, nina):
+    """An entry lays out as its text beside an optional picture, so
+    everything but the picture must sit inside the text block, or the
+    title, notes and tags end up side by side."""
+    entry = Entry.objects.create(
+        owner=nina, url="https://example.com/w", notes="Some notes."
+    )
+    Tag.set_for(entry, ["watches"])
+    collection = Collection.objects.create(owner=nina, name="Mine", kind="manual")
+    CollectionEntry.objects.create(collection=collection, entry=entry)
+    body = signed_in.get(reverse("collections:detail", args=[collection.pk])).text
+    article = body[body.index("<article>") : body.index("</article>")]
+    assert article.split(">", 1)[1].lstrip().startswith('<div class="entry-text">')
+    assert article.rstrip().endswith("</div>")
