@@ -1,4 +1,7 @@
+from pathlib import Path
+
 import pytest
+from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone
 
@@ -198,3 +201,23 @@ def test_the_tag_being_shown_is_marked_in_the_aside(client, nina):
     aside = body[body.index("<aside") : body.index("</aside>")]
     assert aside.count('aria-current="true"') == 1
     assert '?tag=Watches" aria-current="true"' in aside
+
+
+def test_notes_are_not_a_paragraph_inside_a_paragraph(client, nina):
+    """linebreaks makes its own paragraphs. Wrapped in another <p>, the
+    browser closes the outer one early and leaves empty paragraphs
+    whose margins throw the spacing off."""
+    Entry.objects.create(owner=nina, url="https://example.com/n", notes="One.\n\nTwo.")
+    client.force_login(nina)
+    body = " ".join(client.get(reverse("entries:list")).text.split())
+    assert "<p><p>" not in body
+    assert '<div class="notes"><p>One.</p> <p>Two.</p></div>' in body
+
+
+def test_the_parts_of_an_entry_are_spaced_evenly():
+    """Title, notes, fields, tags and the edit link each keep the same
+    gap from the one before, whichever of them an entry has."""
+    compiled = (
+        Path(settings.BASE_DIR) / "src/hrcek/core/static/css/hrcek.css"
+    ).read_text(encoding="utf-8")
+    assert "ul.entries .entry-text>*+*{margin-block-start:" in compiled

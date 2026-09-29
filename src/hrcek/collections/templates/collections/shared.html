@@ -18,7 +18,7 @@
             <div class="entry-text">
               <h2><a href="{{ entry.url }}">{{ entry.display_title }}</a></h2>
               {% if collection.show_notes and entry.notes %}
-                <p>{{ entry.notes|linebreaks }}</p>
+                <div class="notes">{{ entry.notes|linebreaks }}</div>
               {% endif %}
               {% if visible_field_ids %}
                 <dl>
