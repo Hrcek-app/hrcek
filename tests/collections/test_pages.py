@@ -220,3 +220,12 @@ def test_every_page_of_this_app_is_free_of_leaked_comments(signed_in, nina):
     for url in pages:
         body = signed_in.get(url).text
         assert "{#" not in body, f"template comment leaked into {url}"
+
+
+def test_an_entrys_tags_link_to_your_entries_carrying_them(signed_in, nina):
+    entry = Entry.objects.create(owner=nina, url="https://example.com/w")
+    Tag.set_for(entry, ["watches"])
+    collection = Collection.objects.create(owner=nina, name="Mine", kind="manual")
+    CollectionEntry.objects.create(collection=collection, entry=entry)
+    body = signed_in.get(reverse("collections:detail", args=[collection.pk])).text
+    assert f'href="{reverse("entries:list")}?tag=watches"' in body

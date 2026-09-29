@@ -61,7 +61,7 @@
             {% if entry.notes %}<p>{{ entry.notes|linebreaks }}</p>{% endif %}
             {% if entry.tags.all %}
               <ul class="row">
-                {% for each in entry.tags.all %}<li class="tag">{{ each.name }}</li>{% endfor %}
+                {% for each in entry.tags.all %}<li><a class="tag" href="{% url 'entries:list' %}?tag={{ each.name|urlencode }}">{{ each.name }}</a></li>{% endfor %}
               </ul>
             {% endif %}
             {% if collection.kind == 'manual' %}

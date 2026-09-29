@@ -43,7 +43,7 @@
                 {% if entry.tags.all %}
                   <ul class="row">
                     {% for each in entry.tags.all %}
-                      <li class="tag">{{ each.name }}</li>
+                      <li><a class="tag" href="{% url 'entries:list' %}?tag={{ each.name|urlencode }}">{{ each.name }}</a></li>
                     {% endfor %}
                   </ul>
                 {% endif %}
@@ -77,7 +77,7 @@
         <nav aria-labelledby="tags-heading">
           <ul class="row">
             {% for each in tags %}
-              <li><a href="?tag={{ each.name|urlencode }}">{{ each.name }}</a></li>
+              <li><a href="?tag={{ each.name|urlencode }}"{% if tag and each.name|lower == tag|lower %} aria-current="true"{% endif %}>{{ each.name }}</a></li>
             {% endfor %}
             {% if tag %}
               <li><a href="{% url 'entries:list' %}">{% trans "All entries" %}</a></li>

@@ -115,6 +115,15 @@ def test_shown_things_appear(client, collection):
     assert "expensive" in body
 
 
+def test_a_shared_pages_tags_are_not_links(client, collection):
+    """A visitor has no entry list to filter; a link to one would
+    only lead to a sign-in page."""
+    _publish(collection, show_tags=True)
+    body = client.get("/u/nina/watches/").text
+    assert "expensive" in body
+    assert "?tag=" not in body
+
+
 def test_only_chosen_custom_fields_appear(client, nina, collection):
     price = FieldDefinition.objects.create(
         owner=nina, name="Cost", kind=FieldDefinition.NUMBER
