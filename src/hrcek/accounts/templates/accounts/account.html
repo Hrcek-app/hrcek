@@ -39,6 +39,10 @@
     <button type="submit">{% trans "Change my email address" %}</button>
   </form>
 
+  <h2>{% trans "Fields" %}</h2>
+  <p>{% trans "The extra things you record about each entry, beyond its address, title and notes." %}</p>
+  <p><a href="{% url 'entries:fields' %}">{% trans "Your fields" %}</a></p>
+
   <h2>{% trans "Password" %}</h2>
   <p><a href="{% url 'accounts:password_change' %}">{% trans "Change your password" %}</a></p>
 

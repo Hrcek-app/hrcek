@@ -15,6 +15,8 @@
     {{ form.as_p }}
     <button type="submit">{% trans "Save" %}</button>
   </form>
+  {% url 'entries:fields' as fields_url %}
+  <p class="text-sm text-muted">{% blocktrans %}Want to record something else about your entries? Add a field in <a href="{{ fields_url }}">your fields</a>.{% endblocktrans %}</p>
   {% if entry %}
     <p><a href="{% url 'entries:delete' entry.pk %}">{% trans "Delete this entry" %}</a></p>
   {% endif %}

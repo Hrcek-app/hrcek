@@ -172,7 +172,27 @@ def test_deleting_removes_the_field_and_its_values(client, nina):
     assert FieldValue.objects.count() == 0
 
 
-def test_the_entry_list_links_to_the_fields_page(client, nina):
+def test_the_entry_list_does_not_link_to_the_fields_page(client, nina):
+    """Fields are set up rarely; the list is for reading entries."""
     client.force_login(nina)
     body = client.get(reverse("entries:list")).content.decode()
-    assert reverse("entries:fields") in body
+    assert reverse("entries:fields") not in body
+
+
+@pytest.mark.parametrize("page", ["create", "edit"])
+def test_the_entry_form_links_to_the_fields_page(client, nina, page):
+    """Where fields are filled in is where somebody finds one missing."""
+    entry = Entry.objects.create(owner=nina, url="https://example.com/x")
+    client.force_login(nina)
+    url = (
+        reverse("entries:create")
+        if page == "create"
+        else reverse("entries:edit", args=[entry.pk])
+    )
+    assert f'href="{reverse("entries:fields")}"' in client.get(url).text
+
+
+def test_the_account_page_links_to_the_fields_page(client, nina):
+    client.force_login(nina)
+    body = client.get(reverse("accounts:account")).text
+    assert f'href="{reverse("entries:fields")}"' in body
