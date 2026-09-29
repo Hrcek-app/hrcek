@@ -68,6 +68,25 @@ never use raw palette utilities like `bg-zinc-100`; if you catch one in
 review, it is a bug. Restyling the whole site therefore means editing
 the token block and recompiling — nothing else.
 
+## Page width
+
+The page frame in `base.html` spans the whole window, with padding
+that grows on wider screens. What sits inside it decides its own width
+through the `width` block, which holds the classes of `<main>`:
+
+- By default it is `max-w-2xl`: forms and prose keep a readable
+  measure, however wide the window.
+- A page of entries empties the block (`{% block width %}{% endblock %}`)
+  and gets the full width. The entry list, a collection, and a shared
+  collection do this. On those pages, paragraphs and forms sitting
+  directly in `<main>` are still capped at the same measure; only the
+  lists stretch.
+
+`ul.entries` is a grid that fits as many columns of at least 22rem as
+the window allows, so one column on a phone and three or four on a
+desktop. Every entry opens with its own hairline, because which entry
+starts a row depends on the window.
+
 ## Light and dark themes
 
 Pages follow the system theme unless somebody pins one with the toggle
