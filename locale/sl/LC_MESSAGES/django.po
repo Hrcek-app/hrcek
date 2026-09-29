@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hrcek 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-29 07:04+0000\n"
+"POT-Creation-Date: 2026-09-29 07:09+0000\n"
 "Language-Team: Slovenian\n"
 "Language: sl\n"
 "MIME-Version: 1.0\n"
@@ -1476,6 +1476,14 @@ msgstr "Slika"
 #: src/hrcek/entries/templates/entries/form.html
 msgid "Or replace it with another:"
 msgstr "Ali pa jo zamenjajte z drugo:"
+
+#: src/hrcek/entries/templates/entries/form.html
+msgid ""
+"It goes from your entries and from every collection it is in. You will be "
+"asked to confirm."
+msgstr ""
+"Izgine iz vaših vnosov in iz vseh zbirk, v katerih je. Pred tem vas bomo "
+"prosili za potrditev."
 
 #: src/hrcek/entries/templates/entries/form.html
 msgid "Delete this entry"

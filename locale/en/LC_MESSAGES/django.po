@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hrcek 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-29 07:04+0000\n"
+"POT-Creation-Date: 2026-09-29 07:09+0000\n"
 "Language-Team: English\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
@@ -1394,6 +1394,12 @@ msgstr ""
 
 #: src/hrcek/entries/templates/entries/form.html
 msgid "Or replace it with another:"
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/form.html
+msgid ""
+"It goes from your entries and from every collection it is in. You will be "
+"asked to confirm."
 msgstr ""
 
 #: src/hrcek/entries/templates/entries/form.html

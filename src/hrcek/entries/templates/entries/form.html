@@ -37,10 +37,20 @@
       {% include "entries/_field.html" with field=form.image_url %}
     </fieldset>
 
-    <button type="submit">{% trans "Save" %}</button>
+    <div class="actions">
+      <button type="submit">{% trans "Save" %}</button>
+      <a href="{% url 'entries:list' %}">{% trans "Back to your entries" %}</a>
+    </div>
   </form>
+
+  {% comment %}
+    Deleting is kept well away from Save, in its own section after the
+    form, so it cannot be hit on the way to saving.
+  {% endcomment %}
   {% if entry %}
-    <p><a href="{% url 'entries:delete' entry.pk %}">{% trans "Delete this entry" %}</a></p>
+    <section class="danger-zone">
+      <p>{% trans "It goes from your entries and from every collection it is in. You will be asked to confirm." %}</p>
+      <p><a href="{% url 'entries:delete' entry.pk %}">{% trans "Delete this entry" %}</a></p>
+    </section>
   {% endif %}
-  <p><a href="{% url 'entries:list' %}">{% trans "Back to your entries" %}</a></p>
 {% endblock %}
