@@ -37,8 +37,9 @@ your list. Capitals do not make a tag different — `Watches` and
 shown.
 
 Every tag you have is listed under **Tags**: beside your entries on a
-wide screen, after them on a narrow one. Click a tag to see only the
-entries carrying it.
+wide screen, after them on a narrow one. Click a tag there, or on any
+entry, to see only the entries carrying it; the tag you are looking at
+is shown in bold, and **All entries** takes you back.
 
 **A tag stops existing once nothing uses it.** Take the last entry off
 `diving` and the tag disappears. This keeps the list from filling up

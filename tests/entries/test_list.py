@@ -137,8 +137,20 @@ def test_an_entrys_own_tags_are_marked_up_as_a_list(client, nina):
     (entry,) = _entries(nina, 1)
     Tag.set_for(entry, ["watches", "diving"])
     client.force_login(nina)
-    body = client.get(reverse("entries:list")).content.decode()
-    assert '<li class="tag">watches</li>' in " ".join(body.split())
+    parsed = _structure(client.get(reverse("entries:list")))
+    in_entry = [a for a in parsed.anchors if "article" in a[1] and "?tag=" in a[0]]
+    assert len(in_entry) == 2
+    for href, ancestors in in_entry:
+        assert ancestors[-3:] == ["ul", "li", "a"], f"{href} is not a list item"
+
+
+def test_an_entrys_tags_link_to_the_entries_carrying_them(client, nina):
+    (entry,) = _entries(nina, 1)
+    Tag.set_for(entry, ["Deep sea"])
+    client.force_login(nina)
+    parsed = _structure(client.get(reverse("entries:list")))
+    in_entry = [href for href, stack in parsed.anchors if "article" in stack]
+    assert f"{reverse('entries:list')}?tag=Deep%20sea" in in_entry
 
 
 def test_the_pager_is_marked_up_as_a_list(client, nina, settings):
@@ -176,3 +188,13 @@ def test_the_tag_filter_is_an_aside_that_follows_the_entries(client, nina):
         assert "aside" in ancestors, f"{href} is not inside the aside"
     body = response.content.decode()
     assert body.index('<ul class="entries"') < body.index("<aside")
+
+
+def test_the_tag_being_shown_is_marked_in_the_aside(client, nina):
+    (entry,) = _entries(nina, 1)
+    Tag.set_for(entry, ["Watches", "diving"])
+    client.force_login(nina)
+    body = client.get(reverse("entries:list"), {"tag": "watches"}).text
+    aside = body[body.index("<aside") : body.index("</aside>")]
+    assert aside.count('aria-current="true"') == 1
+    assert '?tag=Watches" aria-current="true"' in aside

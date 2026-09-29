@@ -101,6 +101,12 @@
   main a:hover {
     text-decoration-color: var(--color-accent);
   }
+  /* The link to where you already are: the tag being shown. */
+  main a[aria-current] {
+    color: var(--color-ink);
+    font-weight: 600;
+    text-decoration: none;
+  }
 
   main h2 {
     font-size: var(--text-lg);
@@ -296,12 +302,23 @@
     color: var(--color-muted);
   }
 
+  /* A tag pill. On your own pages it is a link to the entries carrying
+     it; on a shared page it is plain text in the same shape. */
   .tag {
+    display: inline-block;
     font-size: var(--text-xs);
     color: var(--color-muted);
     border: 1px solid var(--color-edge);
     border-radius: calc(infinity * 1px);
     padding: calc(var(--spacing) * 0.5) calc(var(--spacing) * 2);
+  }
+  main a.tag {
+    color: var(--color-muted);
+    text-decoration: none;
+  }
+  main a.tag:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
   }
 
   .kind {
