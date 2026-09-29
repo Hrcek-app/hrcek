@@ -110,3 +110,16 @@ visually does not disturb tab order.
 Do not name a template class after a Tailwind utility (`inline`,
 `block`, `flex`...): the generated utility would override the component
 rule. `row` exists because `inline` fell into exactly that trap.
+
+## The mascot
+
+Three pictures of the hamster live in `src/hrcek/core/static/img/`:
+
+| File | Where it appears |
+|---|---|
+| `hrcek.png` | The whole hamster, above the title on the landing page |
+| `apple-touch-icon.png` | The head only: the home-screen icon, and the small logo beside the name in every page header |
+| `favicon-32.png` | The head only, small enough for a browser tab |
+
+The header logo carries an empty `alt`: the link already reads
+"Hrček", and a screen reader has no use for hearing it twice.
