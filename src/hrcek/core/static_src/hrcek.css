@@ -297,6 +297,21 @@
     flex: 1;
     min-inline-size: 0;
   }
+  /* The same gap between every part of an entry, whichever parts it
+     has: title, notes, fields, tags, the edit link. The parts' own
+     margins are dropped so they cannot add up or go missing. */
+  ul.entries .entry-text > * {
+    margin-block: 0;
+  }
+  ul.entries .entry-text > * + * {
+    margin-block-start: calc(var(--spacing) * 3);
+  }
+  ul.entries .notes > p {
+    margin-block: 0;
+  }
+  ul.entries .notes > p + p {
+    margin-block-start: calc(var(--spacing) * 2);
+  }
   ul.entries img.thumb {
     flex: none;
     inline-size: 6rem;

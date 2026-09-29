@@ -59,7 +59,7 @@
           <article>
             <div class="entry-text">
               <h2><a href="{{ entry.url }}">{{ entry.display_title }}</a></h2>
-              {% if entry.notes %}<p>{{ entry.notes|linebreaks }}</p>{% endif %}
+              {% if entry.notes %}<div class="notes">{{ entry.notes|linebreaks }}</div>{% endif %}
               {% if entry.tags.all %}
                 <ul class="row">
                   {% for each in entry.tags.all %}<li><a class="tag" href="{% url 'entries:list' %}?tag={{ each.name|urlencode }}">{{ each.name }}</a></li>{% endfor %}

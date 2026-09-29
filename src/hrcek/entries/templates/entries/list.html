@@ -23,7 +23,7 @@
               <article>
                 <div class="entry-text">
                   <h2><a href="{{ entry.url }}">{{ entry.display_title }}</a></h2>
-                  {% if entry.notes %}<p>{{ entry.notes|linebreaks }}</p>{% endif %}
+                  {% if entry.notes %}<div class="notes">{{ entry.notes|linebreaks }}</div>{% endif %}
                   {% if entry.field_values.all %}
                     <dl>
                       {% for value in entry.field_values.all %}

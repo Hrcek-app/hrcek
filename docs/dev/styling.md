@@ -82,6 +82,11 @@ through the `width` block, which holds the classes of `<main>`:
   directly in `<main>` are still capped at the same measure; only the
   lists stretch.
 
+Inside an entry, every part (title, notes, fields, tags, the edit
+link) keeps the same gap from the one before it; the parts' own
+margins are dropped, so no combination of them adds up to a bigger
+gap or collapses to none.
+
 `ul.entries` is a grid that fits as many columns of at least 22rem as
 the window allows, so one column on a phone and three or four on a
 desktop. Every entry opens with its own hairline, because which entry
@@ -157,6 +162,7 @@ defines the small vocabulary templates use for structure:
 | `messages` | Django's flash messages |
 | `entry-text` | Everything in an entry except its picture |
 | `thumb` | An entry's picture, a small square beside `entry-text` |
+| `notes` | An entry's notes, which `linebreaks` turns into paragraphs; never wrap it in a `<p>` |
 | `tag` | A tag pill |
 | `danger` | A destructive button (deletes) |
 | `theme-toggle` | The icon button in the header that switches themes |
