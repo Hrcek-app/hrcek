@@ -155,3 +155,24 @@ def test_the_pager_is_marked_up_as_a_list(client, nina, settings):
 def test_an_empty_list_still_says_so(client, nina):
     client.force_login(nina)
     assert "Nothing saved yet." in client.get(reverse("entries:list")).content.decode()
+
+
+def test_the_tag_filter_is_an_aside_that_follows_the_entries(client, nina):
+    """The tags are not the page's main content. They sit in an aside
+    placed after the entries, so on a phone they follow the list, and
+    a wide screen puts them in a column beside it."""
+    (entry,) = _entries(nina, 1)
+    Tag.set_for(entry, ["watches"])
+    client.force_login(nina)
+    response = client.get(reverse("entries:list"))
+    parsed = _structure(response)
+    filters = [
+        (href, ancestors)
+        for href, ancestors in parsed.anchors
+        if href.startswith("?tag=") and "article" not in ancestors
+    ]
+    assert filters
+    for href, ancestors in filters:
+        assert "aside" in ancestors, f"{href} is not inside the aside"
+    body = response.content.decode()
+    assert body.index('<ul class="entries"') < body.index("<aside")

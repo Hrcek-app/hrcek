@@ -36,7 +36,9 @@ your list. Capitals do not make a tag different — `Watches` and
 `watches` are the same tag, and the first spelling you used is the one
 shown.
 
-Click a tag to see only the entries carrying it.
+Every tag you have is listed under **Tags**: beside your entries on a
+wide screen, after them on a narrow one. Click a tag to see only the
+entries carrying it.
 
 **A tag stops existing once nothing uses it.** Take the last entry off
 `diving` and the tag disappears. This keeps the list from filling up

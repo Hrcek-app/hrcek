@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hrcek 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-29 06:28+0000\n"
+"POT-Creation-Date: 2026-09-29 06:38+0000\n"
 "Language-Team: Slovenian\n"
 "Language: sl\n"
 "MIME-Version: 1.0\n"
@@ -1460,10 +1460,6 @@ msgid "Your entries"
 msgstr "Vaši vnosi"
 
 #: src/hrcek/entries/templates/entries/list.html
-msgid "All entries"
-msgstr "Vsi vnosi"
-
-#: src/hrcek/entries/templates/entries/list.html
 msgid "Nothing saved yet."
 msgstr "Zaenkrat še ni nič shranjenega."
 
@@ -1483,6 +1479,10 @@ msgstr "Stran %(current)s od %(total)s"
 #: src/hrcek/entries/templates/entries/list.html
 msgid "Older"
 msgstr "Starejši"
+
+#: src/hrcek/entries/templates/entries/list.html
+msgid "All entries"
+msgstr "Vsi vnosi"
 
 #: src/hrcek/entries/views.py
 msgid "Deleted."
