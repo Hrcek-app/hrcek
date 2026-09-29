@@ -16,6 +16,7 @@ class _Structure(HTMLParser):
         self.stack: list[str] = []
         self.anchors: list[tuple[str, list[str]]] = []
         self.articles: list[list[str]] = []
+        self.images: list[tuple[dict[str, str], list[str]]] = []
 
     def handle_starttag(self, tag, attrs):
         void = {"br", "img", "meta", "input", "link", "hr"}
@@ -23,6 +24,8 @@ class _Structure(HTMLParser):
             self.stack.append(tag)
         if tag == "a":
             self.anchors.append((dict(attrs).get("href", ""), list(self.stack)))
+        if tag == "img":
+            self.images.append((dict(attrs), list(self.stack)))
         if tag == "article":
             self.articles.append(list(self.stack))
 
