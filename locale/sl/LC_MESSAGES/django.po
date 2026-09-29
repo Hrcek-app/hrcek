@@ -67,7 +67,6 @@ msgstr "Hrček"
 msgid "Administration"
 msgstr "Skrbništvo"
 
-#
 #: src/hrcek/accounts/api.py
 msgid "Give the token a name."
 msgstr "Poimenujte žeton."
@@ -402,7 +401,6 @@ msgstr ""
 "Dodatne stvari, ki jih beležite o vsakem vnosu, poleg naslova, naziva in "
 "zapiskov."
 
-#
 #: src/hrcek/accounts/templates/accounts/account.html
 #: src/hrcek/entries/templates/entries/fields.html
 msgid "Your fields"
@@ -1139,6 +1137,19 @@ msgstr "Poslani podatki niso veljavni."
 msgid "The requested resource does not exist."
 msgstr "Zahtevani vir ne obstaja."
 
+#: src/hrcek/core/management/commands/compile_translations.py
+msgid "The compiled catalogues are up to date."
+msgstr "Zgrajeni katalogi prevodov so posodobljeni."
+
+#: src/hrcek/core/management/commands/compile_translations.py
+#, python-format
+msgid "Compiled %(count)d catalogue."
+msgid_plural "Compiled %(count)d catalogues."
+msgstr[0] "Zgrajen je %(count)d katalog."
+msgstr[1] "Zgrajena sta %(count)d kataloga."
+msgstr[2] "Zgrajeni so %(count)d katalogi."
+msgstr[3] "Zgrajenih je %(count)d katalogov."
+
 #: src/hrcek/core/management/commands/export_openapi.py
 #, python-format
 msgid ""
@@ -1156,6 +1167,61 @@ msgstr "Shema OpenAPI je posodobljena."
 #, python-format
 msgid "Wrote %(path)s"
 msgstr "Zapisano v %(path)s"
+
+#: src/hrcek/core/management/commands/translation_status.py
+#, python-format
+msgid ""
+"%(language)s — total: %(total)d, untranslated: %(untranslated)d, to review: "
+"%(fuzzy)d"
+msgstr ""
+"%(language)s — skupaj: %(total)d, neprevedenih: %(untranslated)d, za "
+"pregled: %(fuzzy)d"
+
+#: src/hrcek/core/management/commands/translation_status.py
+#, python-format
+msgid ""
+"%(language)s has %(untranslated)d untranslated strings and %(fuzzy)d to "
+"review."
+msgstr ""
+"%(language)s — neprevedenih nizov: %(untranslated)d, za pregled: %(fuzzy)d."
+
+#: src/hrcek/core/management/commands/translation_status.py
+#: src/hrcek/core/templates/base.html
+msgid "Language"
+msgstr "Jezik"
+
+#: src/hrcek/core/management/commands/translation_status.py
+msgid "Strings"
+msgstr "Nizi"
+
+#: src/hrcek/core/management/commands/translation_status.py
+msgid "Untranslated"
+msgstr "Neprevedeni"
+
+#: src/hrcek/core/management/commands/translation_status.py
+msgid "To review"
+msgstr "Za pregled"
+
+#: src/hrcek/core/management/commands/update_translations.py
+msgid "The translation catalogues are up to date."
+msgstr "Katalogi prevodov so posodobljeni."
+
+#: src/hrcek/core/management/commands/update_translations.py
+#, python-format
+msgid ""
+"The translation catalogues are out of date: %(files)s. Run: uv run python "
+"manage.py update_translations"
+msgstr ""
+"Katalogi prevodov niso posodobljeni: %(files)s. Zaženite: uv run python "
+"manage.py update_translations"
+
+#: src/hrcek/core/management/commands/update_translations.py
+#, python-format
+msgid ""
+"Updated %(files)s. Translate the new entries, then add the files to your "
+"commit."
+msgstr ""
+"Posodobljeno: %(files)s. Prevedite nove nize, nato datoteke dodajte v commit."
 
 #: src/hrcek/core/openapi.py
 msgid "it has not been exported yet"
@@ -1189,15 +1255,10 @@ msgstr "Odjava"
 msgid "Dark theme"
 msgstr "Temna tema"
 
-#: src/hrcek/core/templates/base.html
-msgid "Language"
-msgstr "Jezik"
-
 #: src/hrcek/entries/errors.py
 msgid "Too many entries in one request."
 msgstr "Preveč vnosov v enem zahtevku."
 
-#
 #: src/hrcek/entries/errors.py
 msgid "There is no field with that name."
 msgstr "Polja s tem imenom ni."
@@ -1366,7 +1427,6 @@ msgstr "vrednosti polj"
 msgid "That address is too long."
 msgstr "Ta naslov je predolg."
 
-#
 #: src/hrcek/entries/services.py
 msgid "This field takes a number."
 msgstr "To polje sprejme število."
@@ -1380,7 +1440,6 @@ msgstr "To polje mora biti eno od: %(options)s."
 msgid "Delete this entry?"
 msgstr "Izbrišem ta vnos?"
 
-#
 #: src/hrcek/entries/templates/entries/field_confirm_delete.html
 msgid "Delete this field?"
 msgstr "Izbrišem to polje?"
@@ -1409,12 +1468,10 @@ msgstr "Noben vnos nima vrednosti za to polje."
 msgid "Rename this field"
 msgstr "Preimenovanje polja"
 
-#
 #: src/hrcek/entries/templates/entries/field_form.html
 msgid "Save the name"
 msgstr "Shrani ime"
 
-#
 #: src/hrcek/entries/templates/entries/field_form.html
 msgid "Back to your fields"
 msgstr "Nazaj na vaša polja"
@@ -1427,17 +1484,14 @@ msgstr ""
 "Polja so dodatne stvari, ki jih želite zabeležiti o vnosu, poleg naslova, "
 "naziva in zapiskov."
 
-#
 #: src/hrcek/entries/templates/entries/fields.html
 msgid "Rename"
 msgstr "Preimenuj"
 
-#
 #: src/hrcek/entries/templates/entries/fields.html
 msgid "You have no fields."
 msgstr "Nimate polj."
 
-#
 #: src/hrcek/entries/templates/entries/fields.html
 msgid "Add a field"
 msgstr "Dodajanje polja"
@@ -1526,7 +1580,6 @@ msgstr "Vsi vnosi"
 msgid "Deleted."
 msgstr "Izbrisano."
 
-#
 #: src/hrcek/entries/views.py
 msgid "Field added."
 msgstr "Polje dodano."
@@ -1535,7 +1588,6 @@ msgstr "Polje dodano."
 msgid "Field renamed."
 msgstr "Polje preimenovano."
 
-#
 #: src/hrcek/entries/views.py
 msgid "Field deleted."
 msgstr "Polje izbrisano."

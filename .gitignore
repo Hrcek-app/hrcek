@@ -52,8 +52,9 @@ coverage.xml
 cover/
 
 # Translations
-# *.mo is intentionally NOT ignored: compiled translations are committed
-# so a fresh checkout runs without a build step (see docs/dev/i18n.md).
+# Compiled catalogues are built from the .po files, by the image build
+# and by the app as it starts (see docs/dev/i18n.md).
+*.mo
 *.pot
 
 # Django stuff:

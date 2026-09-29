@@ -3,7 +3,9 @@
 ## Prerequisites
 
 - [uv](https://docs.astral.sh/uv/) — manages Python and dependencies
-- GNU gettext — `makemessages` and `compilemessages` shell out to it
+- GNU gettext — `makemessages` (behind `update_translations`) shells
+  out to it. Only needed when strings change; the app compiles its
+  catalogues without it
   - macOS: `brew install gettext`
   - Debian/Ubuntu: `sudo apt-get install gettext`
 - [prek](https://github.com/j178/prek) — runs the git hooks

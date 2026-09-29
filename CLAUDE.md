@@ -20,7 +20,8 @@ environment; `pytest` runs the tests; `prek` runs the pre-commit hooks.
 | Lint and format | `uv run ruff format . && uv run ruff check --fix .` |
 | Type check | `uv run ty check` |
 | All hooks | `prek run --all-files` |
-| Push-stage hooks | `prek run --all-files --hook-stage pre-push` |
+| Update translation catalogues | `uv run python manage.py update_translations` |
+| Translation completeness | `uv run python manage.py translation_status` |
 
 Never invoke `python`, `pip` or `pytest` directly — always through `uv`.
 
@@ -71,7 +72,7 @@ manage.py              Django entry point
 src/hrcek/settings/    base, dev, test, prod, plus env helpers
 src/hrcek/api.py       root NinjaAPI and exception handlers
 src/hrcek/core/        cross-cutting app: errors, logging, telemetry
-locale/                translations; .po and compiled .mo are committed
+locale/                translations; .po is committed, .mo is built
 tests/                 mirrors src/hrcek
 docs/manual/           user manual
 docs/dev/              developer documentation
@@ -84,11 +85,11 @@ docs/dev/              developer documentation
 After changing any translatable string:
 
 ```bash
-uv run python manage.py makemessages --all --no-obsolete --add-location=file \
-    --ignore=.venv --ignore=docs --ignore=tests
+uv run python manage.py update_translations
 # translate the new entries in locale/sl/LC_MESSAGES/django.po
-uv run python manage.py compilemessages --ignore=.venv
 ```
 
-Commit both the `.po` and the `.mo`. A pre-push hook fails if either is
-stale.
+Commit the `.po`. The `.mo` is never committed; the app builds it. A
+commit hook runs `update_translations` and stops the commit if the
+catalogues lagged the source. A translation you are not sure of gets
+the `#, fuzzy` flag: it then shows in English until reviewed.

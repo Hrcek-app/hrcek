@@ -16,3 +16,5 @@ docs
 tests
 deploy
 REVIEW_GUIDE.md
+# Compiled catalogues are built inside the image, never copied in.
+**/*.mo
