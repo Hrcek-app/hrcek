@@ -84,7 +84,9 @@ It is not special. Rename it, delete it, or leave it be. "Your fields"
 is where you do it, and where you add your own. You reach it from
 **Your account**, or from the line under the form for saving or
 editing an entry — the place you are most likely to notice a field is
-missing. Following that link leaves the form, so save first.
+missing. That link opens in a new tab, so the form you were filling in
+stays as it was. A field you add there shows up on the form the next
+time you open it.
 
 A price field is not given to you, deliberately. A number on its own
 does not say which currency it is in, and Hrček has no field that
@@ -121,6 +123,13 @@ undone. The page tells you how many entries that is before you confirm.
 
 Every entry has an "Edit" link. On the edit page, **Save** keeps your
 changes and **Back to your entries** beside it leaves without saving.
+
+Hrček does not let changes slip away unnoticed. If you have typed
+something into the form for saving or editing an entry and try to leave
+without saving — by a link, by reloading, or by closing the tab — your
+browser asks whether you really want to leave. The same goes for a form
+Hrček has sent back to you with a problem to fix: what you typed there
+is not saved yet either.
 
 **Delete this entry** is set apart at the very bottom of the page, in
 red, so it is not hit on the way to saving. Deleting asks first, and

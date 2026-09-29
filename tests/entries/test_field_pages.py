@@ -196,3 +196,11 @@ def test_the_account_page_links_to_the_fields_page(client, nina):
     client.force_login(nina)
     body = client.get(reverse("accounts:account")).text
     assert f'href="{reverse("entries:fields")}"' in body
+
+
+def test_the_fields_link_on_the_entry_form_opens_a_new_tab(client, nina):
+    """Following it must not leave a half-filled form behind."""
+    client.force_login(nina)
+    body = client.get(reverse("entries:create")).text
+    link = f'<a href="{reverse("entries:fields")}" target="_blank" rel="noopener">'
+    assert link in body
