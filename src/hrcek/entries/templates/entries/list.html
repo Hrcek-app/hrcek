@@ -22,32 +22,32 @@
           {% for entry in page %}
             <li>
               <article>
+                <div class="entry-text">
+                  <h2><a href="{{ entry.url }}">{{ entry.display_title }}</a></h2>
+                  {% if entry.notes %}<p>{{ entry.notes|linebreaks }}</p>{% endif %}
+                  {% if entry.field_values.all %}
+                    <dl>
+                      {% for value in entry.field_values.all %}
+                        <dt>{{ value.definition.name }}</dt>
+                        <dd>{{ value.value }}</dd>
+                      {% endfor %}
+                    </dl>
+                  {% endif %}
+                  {% if entry.tags.all %}
+                    <ul class="row">
+                      {% for each in entry.tags.all %}
+                        <li><a class="tag" href="{% url 'entries:list' %}?tag={{ each.name|urlencode }}">{{ each.name }}</a></li>
+                      {% endfor %}
+                    </ul>
+                  {% endif %}
+                  <p><a href="{% url 'entries:edit' entry.pk %}">{% trans "Edit" %}</a></p>
+                </div>
                 {% if entry.image %}
-                  <a href="{{ entry.url }}">
-                    <img src="{% url 'entries:image' entry.pk %}"
-                         alt="" width="{{ entry.image.width }}" height="{{ entry.image.height }}"
-                         loading="lazy" decoding="async"
-                         class="mb-3 w-full h-auto rounded-md border border-edge">
+                  <a href="{{ entry.url }}" tabindex="-1" aria-hidden="true">
+                    <img class="thumb" src="{% url 'entries:image' entry.pk %}"
+                         alt="" width="96" height="96" loading="lazy" decoding="async">
                   </a>
                 {% endif %}
-                <h2><a href="{{ entry.url }}">{{ entry.display_title }}</a></h2>
-                {% if entry.notes %}<p>{{ entry.notes|linebreaks }}</p>{% endif %}
-                {% if entry.field_values.all %}
-                  <dl>
-                    {% for value in entry.field_values.all %}
-                      <dt>{{ value.definition.name }}</dt>
-                      <dd>{{ value.value }}</dd>
-                    {% endfor %}
-                  </dl>
-                {% endif %}
-                {% if entry.tags.all %}
-                  <ul class="row">
-                    {% for each in entry.tags.all %}
-                      <li><a class="tag" href="{% url 'entries:list' %}?tag={{ each.name|urlencode }}">{{ each.name }}</a></li>
-                    {% endfor %}
-                  </ul>
-                {% endif %}
-                <p><a href="{% url 'entries:edit' entry.pk %}">{% trans "Edit" %}</a></p>
               </article>
             </li>
           {% endfor %}

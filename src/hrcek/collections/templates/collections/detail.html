@@ -57,19 +57,21 @@
       {% for entry in entries %}
         <li>
           <article>
-            <h2><a href="{{ entry.url }}">{{ entry.display_title }}</a></h2>
-            {% if entry.notes %}<p>{{ entry.notes|linebreaks }}</p>{% endif %}
-            {% if entry.tags.all %}
-              <ul class="row">
-                {% for each in entry.tags.all %}<li><a class="tag" href="{% url 'entries:list' %}?tag={{ each.name|urlencode }}">{{ each.name }}</a></li>{% endfor %}
-              </ul>
-            {% endif %}
-            {% if collection.kind == 'manual' %}
-              <form method="post" action="{% url 'collections:remove_entry' collection.pk entry.pk %}">
-                {% csrf_token %}
-                <button type="submit" class="danger">{% trans "Take it out" %}</button>
-              </form>
-            {% endif %}
+            <div class="entry-text">
+              <h2><a href="{{ entry.url }}">{{ entry.display_title }}</a></h2>
+              {% if entry.notes %}<p>{{ entry.notes|linebreaks }}</p>{% endif %}
+              {% if entry.tags.all %}
+                <ul class="row">
+                  {% for each in entry.tags.all %}<li><a class="tag" href="{% url 'entries:list' %}?tag={{ each.name|urlencode }}">{{ each.name }}</a></li>{% endfor %}
+                </ul>
+              {% endif %}
+              {% if collection.kind == 'manual' %}
+                <form method="post" action="{% url 'collections:remove_entry' collection.pk entry.pk %}">
+                  {% csrf_token %}
+                  <button type="submit" class="danger">{% trans "Take it out" %}</button>
+                </form>
+              {% endif %}
+            </div>
           </article>
         </li>
       {% endfor %}

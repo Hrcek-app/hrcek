@@ -15,32 +15,32 @@
       {% for entry in entries %}
         <li>
           <article>
+            <div class="entry-text">
+              <h2><a href="{{ entry.url }}">{{ entry.display_title }}</a></h2>
+              {% if collection.show_notes and entry.notes %}
+                <p>{{ entry.notes|linebreaks }}</p>
+              {% endif %}
+              {% if visible_field_ids %}
+                <dl>
+                  {% for value in entry.field_values.all %}
+                    {% if value.definition.pk in visible_field_ids %}
+                      <dt>{{ value.definition.name }}</dt>
+                      <dd>{{ value.value }}</dd>
+                    {% endif %}
+                  {% endfor %}
+                </dl>
+              {% endif %}
+              {% if collection.show_tags and entry.tags.all %}
+                <ul class="row">
+                  {% for each in entry.tags.all %}<li class="tag">{{ each.name }}</li>{% endfor %}
+                </ul>
+              {% endif %}
+            </div>
             {% if collection.show_images and entry.image %}
-              <a href="{{ entry.url }}">
-                <img src="{% url 'entries:image' entry.pk %}"
-                     alt="" width="{{ entry.image.width }}" height="{{ entry.image.height }}"
-                     loading="lazy" decoding="async"
-                     class="mb-3 w-full h-auto rounded-md border border-edge">
+              <a href="{{ entry.url }}" tabindex="-1" aria-hidden="true">
+                <img class="thumb" src="{% url 'entries:image' entry.pk %}"
+                     alt="" width="96" height="96" loading="lazy" decoding="async">
               </a>
-            {% endif %}
-            <h2><a href="{{ entry.url }}">{{ entry.display_title }}</a></h2>
-            {% if collection.show_notes and entry.notes %}
-              <p>{{ entry.notes|linebreaks }}</p>
-            {% endif %}
-            {% if visible_field_ids %}
-              <dl>
-                {% for value in entry.field_values.all %}
-                  {% if value.definition.pk in visible_field_ids %}
-                    <dt>{{ value.definition.name }}</dt>
-                    <dd>{{ value.value }}</dd>
-                  {% endif %}
-                {% endfor %}
-              </dl>
-            {% endif %}
-            {% if collection.show_tags and entry.tags.all %}
-              <ul class="row">
-                {% for each in entry.tags.all %}<li class="tag">{{ each.name }}</li>{% endfor %}
-              </ul>
             {% endif %}
           </article>
         </li>

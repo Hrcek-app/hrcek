@@ -158,11 +158,19 @@ open until something consumes it.
 
 The list joins the image table (`select_related("image")`) so the page
 does not ask once per entry, and immediately defers both blob columns.
-The page needs only the width and height — to give every `<img>` real
-dimensions, so the list does not jump about as pictures arrive — and
-pulling two pictures per row to render a tag would undo the reason the
-blobs live in their own table. `test_the_list_query_leaves_the_blobs_in_the_table`
+The page needs only to know whether an entry has a picture, and pulling
+two pictures per row to render a tag would undo the reason the blobs
+live in their own table. `test_the_list_query_leaves_the_blobs_in_the_table`
 holds that line.
+
+A picture shows as a 6rem square thumbnail beside the entry's text,
+cropped to fit with `object-fit: cover`, so the `<img>` carries fixed
+dimensions and the list does not jump about as pictures arrive. The
+browser still downloads the display copy and scales it down; at family
+scale a separate thumbnail rendition is not worth its storage. The
+thumbnail's link repeats the title's, so it is `tabindex="-1"` and
+`aria-hidden`: one stop per entry for the keyboard and screen reader.
+A shared collection page shows pictures the same way.
 
 ## On the form
 

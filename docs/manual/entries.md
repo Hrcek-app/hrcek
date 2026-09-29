@@ -53,9 +53,10 @@ address of a picture on the web — one or the other, not both. Hrček
 keeps its own copy, so the picture stays even if the original page
 takes it down.
 
-The picture appears with the entry in your list. To swap it, add
-another; to get rid of it, tick **Remove the picture** and save.
-Changing an entry's title or notes never disturbs its picture.
+The picture appears as a small square beside the entry in your list.
+To swap it, add another; to get rid of it, tick **Remove the picture**
+and save. Changing an entry's title or notes never disturbs its
+picture.
 
 Pictures are private, like everything else here: they are shown to you
 and to nobody else, and the address of one is no use to anyone who is

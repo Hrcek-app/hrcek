@@ -30,9 +30,10 @@ def entry_list(request: HttpRequest) -> HttpResponse:
         Entry.objects.filter(owner=owner)
         .prefetch_related("tags", "field_values__definition")
         # The image is joined so the page does not ask once per entry,
-        # but its blobs are left in the table: the list needs only the
-        # dimensions, and pulling two pictures per row to render an
-        # <img> tag would defeat the point of storing them apart.
+        # but its blobs are left in the table: the list needs only to
+        # know a picture exists, and pulling two pictures per row to
+        # render an <img> tag would defeat the point of storing them
+        # apart.
         .select_related("image")
         .defer("image__original", "image__display")
     )

@@ -155,6 +155,8 @@ defines the small vocabulary templates use for structure:
 | `stacked` | A plain vertical list |
 | `entries` | The entry list: hairline separators, field grid |
 | `messages` | Django's flash messages |
+| `entry-text` | Everything in an entry except its picture |
+| `thumb` | An entry's picture, a small square beside `entry-text` |
 | `tag` | A tag pill |
 | `danger` | A destructive button (deletes) |
 | `theme-toggle` | The icon button in the header that switches themes |
