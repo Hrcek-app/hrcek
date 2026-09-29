@@ -165,6 +165,8 @@ defines the small vocabulary templates use for structure:
 | `notes` | An entry's notes, which `linebreaks` turns into paragraphs; never wrap it in a `<p>` |
 | `tag` | A tag pill |
 | `danger` | A destructive button (deletes) |
+| `actions` | A form's submit button and its way out, side by side |
+| `danger-zone` | A section after a form holding something that cannot be undone, set well apart |
 | `theme-toggle` | The icon button in the header that switches themes |
 
 Checkbox rows get their own treatment. Django renders the label

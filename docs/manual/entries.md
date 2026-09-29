@@ -119,8 +119,12 @@ undone. The page tells you how many entries that is before you confirm.
 
 ## Editing and deleting
 
-Every entry has an "Edit" link. Deleting asks first, and **cannot be
-undone** — there is no trash to recover from.
+Every entry has an "Edit" link. On the edit page, **Save** keeps your
+changes and **Back to your entries** beside it leaves without saving.
+
+**Delete this entry** is set apart at the very bottom of the page, in
+red, so it is not hit on the way to saving. Deleting asks first, and
+**cannot be undone** — there is no trash to recover from.
 
 ## Entries and scripts
 

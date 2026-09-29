@@ -168,3 +168,35 @@ def test_deleting_somebody_elses_entry_is_a_404(client, nina):
     client.force_login(nina)
     assert client.post(reverse("entries:delete", args=[theirs.pk])).status_code == 404
     assert Entry.objects.filter(pk=theirs.pk).exists()
+
+
+def _edit_page(client, owner):
+    entry = Entry.objects.create(owner=owner, url="https://example.com/e")
+    client.force_login(owner)
+    return entry, client.get(reverse("entries:edit", args=[entry.pk])).text
+
+
+def test_leaving_without_saving_sits_beside_save(client, nina):
+    """Save and its way out are one decision, so they share a row."""
+    _entry, body = _edit_page(client, nina)
+    start = body.index('<div class="actions">')
+    actions = body[start : body.index("</div>", start)]
+    assert '<button type="submit">' in actions
+    assert f'href="{reverse("entries:list")}"' in actions
+
+
+def test_deleting_is_set_well_apart_from_saving(client, nina):
+    """A delete link just under Save is one slip away from losing an
+    entry. It lives in its own section after the form, not among the
+    form's actions."""
+    entry, body = _edit_page(client, nina)
+    delete = f'href="{reverse("entries:delete", args=[entry.pk])}"'
+    assert body.index("</form>") < body.index('<section class="danger-zone"')
+    zone = body[body.index('<section class="danger-zone"') :]
+    assert delete in zone[: zone.index("</section>")]
+    assert body.count(delete) == 1
+
+
+def test_a_new_entry_has_nothing_to_delete(client, nina):
+    client.force_login(nina)
+    assert "danger-zone" not in client.get(reverse("entries:create")).text
