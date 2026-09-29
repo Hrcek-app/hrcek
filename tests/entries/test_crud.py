@@ -200,3 +200,27 @@ def test_deleting_is_set_well_apart_from_saving(client, nina):
 def test_a_new_entry_has_nothing_to_delete(client, nina):
     client.force_login(nina)
     assert "danger-zone" not in client.get(reverse("entries:create")).text
+
+
+def _form_tag(body):
+    start = body.index('<form method="post" enctype="multipart/form-data"')
+    return body[start : body.index(">", start) + 1]
+
+
+def test_the_entry_form_is_guarded_against_leaving_unsaved(client, nina):
+    """unsaved.js asks before anybody leaves a changed form."""
+    client.force_login(nina)
+    body = client.get(reverse("entries:create")).text
+    assert "data-guard-unsaved" in _form_tag(body)
+    assert 'data-unsaved="true"' not in _form_tag(body)
+    assert 'src="/static/js/unsaved.js" defer' in body
+
+
+def test_a_form_sent_back_with_errors_counts_as_unsaved(client, nina):
+    """What was typed is on the page but not saved anywhere; leaving
+    would lose it just as surely as leaving a freshly edited form."""
+    client.force_login(nina)
+    body = client.post(
+        reverse("entries:create"), {"url": "not an address", "notes": "Typed."}
+    ).text
+    assert 'data-unsaved="true"' in _form_tag(body)

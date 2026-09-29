@@ -1,9 +1,14 @@
-{% extends "base.html" %}{% load i18n %}
+{% extends "base.html" %}{% load i18n static %}
+{% block head %}<script src="{% static 'js/unsaved.js' %}" defer></script>{% endblock %}
 {% block heading %}
   {% if entry %}{% trans "Edit entry" %}{% else %}{% trans "Save something" %}{% endif %}
 {% endblock %}
 {% block content %}
-  <form method="post" enctype="multipart/form-data">
+  {% comment %}
+    Guarded: leaving with unsaved changes asks first. A form the server
+    sent back with errors is unsaved from the start. See unsaved.js.
+  {% endcomment %}
+  <form method="post" enctype="multipart/form-data" data-guard-unsaved{% if form.is_bound %} data-unsaved="true"{% endif %}>
     {% csrf_token %}
     {{ form.non_field_errors }}
     {% for field in form.entry_fields %}
@@ -16,7 +21,11 @@
         {% include "entries/_field.html" %}
       {% endfor %}
       {% url 'entries:fields' as fields_url %}
-      <p class="text-sm text-muted">{% blocktrans %}Want to record something else about your entries? Add a field in <a href="{{ fields_url }}">your fields</a>.{% endblocktrans %}</p>
+      {% comment %}
+        A new tab, so managing fields never leaves this form half
+        filled in.
+      {% endcomment %}
+      <p class="text-sm text-muted">{% blocktrans %}Want to record something else about your entries? Add a field in <a href="{{ fields_url }}" target="_blank" rel="noopener">your fields</a>, which opens in a new tab. A new field shows up here the next time you open this form.{% endblocktrans %}</p>
     </fieldset>
 
     {% comment %}

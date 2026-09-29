@@ -135,7 +135,28 @@ Errors from `validate_field_value` are keyed by the field's name —
 field was wrong without parsing the message. `_details()` in `api.py`
 turns that into `details.fields`, using `url` for the address.
 
-## The API
+## Unsaved changes on the form
+
+The entry form is marked `data-guard-unsaved`, and
+`src/hrcek/core/static/js/unsaved.js` asks before anybody leaves it
+with changes that are not saved. "Changed" means what the form would
+submit differs from what it held at load, so typing and deleting again
+is not a change. A form re-rendered with errors (`form.is_bound`)
+carries `data-unsaved="true"` and counts as changed from the start:
+its contents are on the page and nowhere else.
+
+Submitting never asks. Everything else does: links, reloads, closing
+the tab. The question is the browser's own `beforeunload` prompt, whose
+wording a page cannot change, and browsers only show it once the user
+has interacted with the page.
+
+Any other form that holds typing worth keeping can opt in with the same
+attribute; the script is loaded by the page's `head` block.
+
+Links on the form that lead elsewhere but are part of filling it in,
+like the one to your fields, open in a new tab instead, so following
+them loses nothing.
+
 
 [The API guide](api.md) is the client-facing contract. What follows is
 why it is shaped that way.
