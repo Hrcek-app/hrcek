@@ -56,10 +56,18 @@ demand.
 
 `Tag.prune_orphans(owner)` deletes that person's tags that no entry uses
 any more, and is called after every save and every delete. Without it
-every typo lives in the tag list forever. It is written as
-`filter(owner=owner, entries__isnull=True)` — a string lookup rather
-than a reverse accessor, because `ty` does not run the django-stubs
-plugin and cannot see `tag.entries`.
+every typo lives in the tag list forever. It spares a tag a label
+collection follows: `Collection.label` cascades, so deleting the tag
+would delete the collection and its shared link as a side effect of
+relabelling. It is written as
+`filter(owner=owner, entries__isnull=True, collections__isnull=True)` —
+string lookups rather than reverse accessors, because `ty` does not run
+the django-stubs plugin and cannot see `tag.entries`.
+
+So a tag can exist with no entries. Everything that shows tags to a
+person goes through `Tag.in_use(owner)`, which lists only tags some
+entry carries: the tag list beside the entries, `GET /api/labels/`, and
+the `?tag=` filter, which answers 404 for a name nothing carries.
 
 ## Custom fields
 

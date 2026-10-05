@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from hrcek.accounts.models import User
+from hrcek.collections.models import Collection
 from hrcek.entries.models import Entry, Tag
 from hrcek.entries.services import save_entry
 
@@ -224,3 +225,105 @@ def test_a_form_sent_back_with_errors_counts_as_unsaved(client, nina):
         reverse("entries:create"), {"url": "not an address", "notes": "Typed."}
     ).text
     assert 'data-unsaved="true"' in _form_tag(body)
+
+
+def _following(owner, tag_name, name="Wants"):
+    return Collection.objects.create(
+        owner=owner,
+        name=name,
+        kind=Collection.BY_LABEL,
+        label=Tag.objects.get(owner=owner, name=tag_name),
+    )
+
+
+def _says_emptied(body, collection):
+    return (
+        f"“{collection.name}” has nothing in it now." in body
+        and reverse("collections:delete", args=[collection.pk]) in body
+    )
+
+
+def test_taking_the_last_label_off_offers_to_delete_its_collection(client, nina):
+    entry, _ = save_entry(nina, url="https://example.com/w", tag_names=["want"])
+    wants = _following(nina, "want")
+    client.force_login(nina)
+    response = client.post(
+        reverse("entries:edit", args=[entry.pk]),
+        {"url": entry.url, "title": "", "notes": "", "tags": ""},
+        follow=True,
+    )
+    assert _says_emptied(response.content.decode(), wants)
+    assert Collection.objects.filter(pk=wants.pk).exists()
+
+
+def test_deleting_the_last_entry_offers_it_too(client, nina):
+    entry, _ = save_entry(nina, url="https://example.com/w", tag_names=["want"])
+    wants = _following(nina, "want")
+    client.force_login(nina)
+    response = client.post(reverse("entries:delete", args=[entry.pk]), follow=True)
+    assert _says_emptied(response.content.decode(), wants)
+    assert Collection.objects.filter(pk=wants.pk).exists()
+
+
+def test_re_saving_by_address_on_the_new_form_offers_it_too(client, nina):
+    save_entry(nina, url="https://example.com/w", tag_names=["want"])
+    wants = _following(nina, "want")
+    client.force_login(nina)
+    response = client.post(
+        reverse("entries:create"),
+        {"url": "https://example.com/w", "title": "", "notes": "", "tags": ""},
+        follow=True,
+    )
+    assert _says_emptied(response.content.decode(), wants)
+
+
+def test_a_label_still_carried_elsewhere_says_nothing(client, nina):
+    entry, _ = save_entry(nina, url="https://example.com/w", tag_names=["want"])
+    save_entry(nina, url="https://example.com/other", tag_names=["want"])
+    _following(nina, "want")
+    client.force_login(nina)
+    response = client.post(
+        reverse("entries:edit", args=[entry.pk]),
+        {"url": entry.url, "title": "", "notes": "", "tags": ""},
+        follow=True,
+    )
+    assert "has nothing in it now" not in response.content.decode()
+
+
+def test_a_collection_already_empty_is_not_mentioned_again(client, nina):
+    save_entry(nina, url="https://example.com/w", tag_names=["want"])
+    entry, _ = save_entry(nina, url="https://example.com/x", tag_names=["other"])
+    wants = _following(nina, "want")
+    Entry.objects.get(url="https://example.com/w").delete()
+    client.force_login(nina)
+    response = client.post(
+        reverse("entries:edit", args=[entry.pk]),
+        {"url": entry.url, "title": "", "notes": "", "tags": "other"},
+        follow=True,
+    )
+    assert f"“{wants.name}”" not in response.content.decode()
+
+
+def test_the_collection_name_is_escaped_in_the_notice(client, nina):
+    entry, _ = save_entry(nina, url="https://example.com/w", tag_names=["want"])
+    _following(nina, "want", name="<b>Wants</b>")
+    client.force_login(nina)
+    body = client.post(
+        reverse("entries:edit", args=[entry.pk]),
+        {"url": entry.url, "title": "", "notes": "", "tags": ""},
+        follow=True,
+    ).content.decode()
+    assert "&lt;b&gt;Wants&lt;/b&gt;" in body
+    assert "<b>Wants</b>" not in body
+
+
+def test_saved_comes_before_the_emptied_notice(client, nina):
+    entry, _ = save_entry(nina, url="https://example.com/w", tag_names=["want"])
+    _following(nina, "want")
+    client.force_login(nina)
+    body = client.post(
+        reverse("entries:edit", args=[entry.pk]),
+        {"url": entry.url, "title": "", "notes": "", "tags": ""},
+        follow=True,
+    ).content.decode()
+    assert body.index("Saved.") < body.index("has nothing in it now")

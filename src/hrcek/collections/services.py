@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from hrcek.accounts.models import User
 from hrcek.collections.errors import NOT_A_MANUAL_COLLECTION, NOT_YOURS
 from hrcek.collections.models import Collection, CollectionEntry
 from hrcek.core.errors import HrcekError
@@ -37,3 +38,19 @@ def _check(collection: Collection, entry: Entry) -> None:
         # 404 rather than 403, as everywhere else here: a 403 would
         # confirm that somebody else's entry exists.
         raise HrcekError(NOT_YOURS)
+
+
+def emptied_label_collections(owner: User, tag_ids: set[int]) -> list[Collection]:
+    """Label collections following one of `tag_ids` that now hold nothing.
+
+    The caller passes the labels an entry carried before a change, so a
+    collection that was already empty is not mentioned again.
+    """
+    return list(
+        Collection.objects.filter(
+            owner=owner,
+            kind=Collection.BY_LABEL,
+            label_id__in=tag_ids,
+            label__entries__isnull=True,
+        )
+    )

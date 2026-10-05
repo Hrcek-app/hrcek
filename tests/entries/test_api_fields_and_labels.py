@@ -5,6 +5,7 @@ import pytest
 from django.utils import timezone
 
 from hrcek.accounts.models import ApiToken, User
+from hrcek.collections.models import Collection
 from hrcek.entries.models import Entry, FieldDefinition, Tag
 
 pytestmark = pytest.mark.django_db
@@ -32,7 +33,18 @@ def signed_in(client, nina):
 
 
 def _label(owner, name):
-    return Tag.objects.create(owner=owner, name=name)
+    """A label in use: only labels an entry carries are listed."""
+    tag = Tag.objects.create(owner=owner, name=name)
+    carrier = Entry.objects.create(owner=owner, url=f"https://example.com/{name}")
+    carrier.tags.add(tag)
+    return tag
+
+
+def _carry(owner, tags):
+    """Many labels at once, all on one entry so they count as in use."""
+    tags = Tag.objects.bulk_create(tags)
+    carrier = Entry.objects.create(owner=owner, url="https://example.com/carrier")
+    carrier.tags.add(*tags)
 
 
 # --- fields ------------------------------------------------------------
@@ -214,7 +226,7 @@ def test_the_next_page_starts_after_the_last_name_seen(signed_in, nina):
 
 
 def test_paging_all_the_way_through_sees_everything_once(signed_in, nina):
-    Tag.objects.bulk_create(Tag(owner=nina, name=f"label-{n:03d}") for n in range(25))
+    _carry(nina, [Tag(owner=nina, name=f"label-{n:03d}") for n in range(25)])
 
     seen: list[str] = []
     after = ""
@@ -293,7 +305,7 @@ def test_a_cursor_works_alongside_a_prefix(signed_in, nina):
 def test_asking_plainly_brings_back_up_to_a_thousand(signed_in, nina):
     """Enough labels exist here that the page size is what limits the
     answer, not the data."""
-    Tag.objects.bulk_create(Tag(owner=nina, name=f"label-{n:05d}") for n in range(1005))
+    _carry(nina, [Tag(owner=nina, name=f"label-{n:05d}") for n in range(1005)])
 
     body = signed_in.get(LABELS).json()
     assert len(body["items"]) == 1000, "a plain request should fill a page"
@@ -321,10 +333,21 @@ def test_a_label_no_entry_uses_is_not_listed(signed_in, nina):
     """Tags are pruned when nothing carries them, so an autocomplete
     never offers a label that has already gone."""
     entry = Entry.objects.create(owner=nina, url="https://example.com/1")
-    tag = _label(nina, "watches")
-    entry.tags.add(tag)
+    entry.tags.add(Tag.objects.create(owner=nina, name="watches"))
     assert signed_in.get(LABELS).json()["count"] == 1
 
     entry.delete()
     Tag.prune_orphans(nina)
+    assert signed_in.get(LABELS).json()["count"] == 0
+
+
+def test_a_label_kept_for_a_collection_is_not_listed(signed_in, nina):
+    """A collection can keep a label nothing carries; an autocomplete
+    must still not offer it."""
+    Collection.objects.create(
+        owner=nina,
+        name="Wants",
+        kind=Collection.BY_LABEL,
+        label=Tag.objects.create(owner=nina, name="want"),
+    )
     assert signed_in.get(LABELS).json()["count"] == 0
