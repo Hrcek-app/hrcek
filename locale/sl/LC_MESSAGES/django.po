@@ -799,6 +799,26 @@ msgstr "Ta vnos ni vaš, da bi ga zbirali."
 msgid "This collection follows a label, so entries cannot be added by hand."
 msgstr "Ta zbirka sledi oznaki, zato vnosov ni mogoče dodajati ročno."
 
+#: src/hrcek/collections/errors.py
+msgid "This collection is not a shared wish list."
+msgstr "Ta zbirka ni deljen seznam želja."
+
+#: src/hrcek/collections/errors.py
+msgid "You cannot say “Got it” on your own wish list."
+msgstr "Na lastnem seznamu želja ne morete označiti »Imam«."
+
+#: src/hrcek/collections/errors.py
+msgid "That item is not on this list."
+msgstr "Tega ni na tem seznamu."
+
+#: src/hrcek/collections/errors.py
+msgid "Somebody else has already got this."
+msgstr "To je nekdo drug že priskrbel."
+
+#: src/hrcek/collections/errors.py
+msgid "Only whoever got this can undo it."
+msgstr "Razveljaviti je mogoče le z računom, s katerim je bilo označeno."
+
 #: src/hrcek/collections/forms.py
 msgid "Optional. Anyone who can see this collection sees its description too."
 msgstr "Neobvezno. Kdor vidi to zbirko, vidi tudi njen opis."
@@ -829,6 +849,16 @@ msgstr ""
 "prikaz. Povezavo je težko uganiti, a ni geslo: komur koli jo pošljete, jo "
 "lahko posreduje naprej. Javno — zbirko vidi kdor koli in jo lahko najdejo "
 "iskalniki. Njen naslov vsebuje vaše javno ime."
+
+#: src/hrcek/collections/forms.py
+msgid ""
+"People you share this with can say “Got it” for anything they have got you. "
+"It then disappears for everybody else, and you keep seeing the whole list, "
+"so you are still surprised."
+msgstr ""
+"Ljudje, s katerimi ga delite, lahko pri vsem, kar so vam priskrbeli, "
+"označijo »Imam«. To potem izgine za vse druge, vi pa še naprej vidite "
+"celoten seznam, zato vas bo še vedno presenetilo."
 
 #: src/hrcek/collections/forms.py
 msgid ""
@@ -925,6 +955,10 @@ msgstr "pokaži slike"
 msgid "visible fields"
 msgstr "vidna polja"
 
+#: src/hrcek/collections/models.py
+msgid "wish list"
+msgstr "seznam želja"
+
 #: src/hrcek/collections/models.py src/hrcek/entries/models.py
 msgid "changed at"
 msgstr "spremenjeno ob"
@@ -948,6 +982,22 @@ msgstr "vnos v zbirki"
 #: src/hrcek/collections/models.py
 msgid "collection entries"
 msgstr "vnosi v zbirki"
+
+#: src/hrcek/collections/models.py
+msgid "got by"
+msgstr "označeno z računom"
+
+#: src/hrcek/collections/models.py
+msgid "got at"
+msgstr "označeno ob"
+
+#: src/hrcek/collections/models.py
+msgid "got it"
+msgstr "oznaka »Imam«"
+
+#: src/hrcek/collections/models.py
+msgid "got its"
+msgstr "oznake »Imam«"
 
 #: src/hrcek/collections/templates/collections/confirm_delete.html
 msgid "Delete this collection?"
@@ -1000,6 +1050,28 @@ msgid "Public. Anyone can see this collection at:"
 msgstr "Javno. Kdor koli lahko vidi to zbirko na:"
 
 #: src/hrcek/collections/templates/collections/detail.html
+msgid "Wish list"
+msgstr "Seznam želja"
+
+#: src/hrcek/collections/templates/collections/detail.html
+msgid "Hide what has been got"
+msgstr "Skrij, kar je že priskrbljeno"
+
+#: src/hrcek/collections/templates/collections/detail.html
+msgid "Show what has been got"
+msgstr "Pokaži, kar je že priskrbljeno"
+
+#: src/hrcek/collections/templates/collections/detail.html
+#: src/hrcek/entries/views.py
+#, python-format
+msgid "Somebody has already got this for “%(name)s”."
+msgstr "To je nekdo že priskrbel za »%(name)s«."
+
+#: src/hrcek/collections/templates/collections/detail.html
+msgid "Put it back on the list"
+msgstr "Vrni na seznam"
+
+#: src/hrcek/collections/templates/collections/detail.html
 #: src/hrcek/entries/templates/entries/list.html
 msgid "Edit"
 msgstr "Uredi"
@@ -1041,6 +1113,10 @@ msgstr "Vsi vaši vnosi so že v tej zbirki."
 #: src/hrcek/collections/templates/collections/detail.html
 msgid "In this collection"
 msgstr "V tej zbirki"
+
+#: src/hrcek/collections/templates/collections/detail.html
+msgid "Got"
+msgstr "Priskrbljeno"
 
 #: src/hrcek/collections/templates/collections/detail.html
 msgid "Take it out"
@@ -1098,6 +1174,31 @@ msgid "You have no collections yet."
 msgstr "Še nimate zbirk."
 
 #: src/hrcek/collections/templates/collections/shared.html
+#, python-format
+msgid ""
+"Signed-in Hrček users can mark what they have got. <a href=\"%(landing)s?"
+"next=%(next)s\">Sign in</a>"
+msgstr ""
+"Prijavljeni uporabniki Hrčka lahko označijo, kar so že priskrbeli. <a "
+"href=\"%(landing)s?next=%(next)s\">Prijava</a>"
+
+#: src/hrcek/collections/templates/collections/shared.html
+msgid "You got this."
+msgstr "To ste priskrbeli vi."
+
+#: src/hrcek/collections/templates/collections/shared.html
+msgid "Undo"
+msgstr "Razveljavi"
+
+#: src/hrcek/collections/templates/collections/shared.html
+msgid "Got it"
+msgstr "Imam"
+
+#: src/hrcek/collections/templates/collections/shared.html
+msgid "Everything on this list has been got."
+msgstr "Vse s tega seznama je že priskrbljeno."
+
+#: src/hrcek/collections/templates/collections/shared.html
 msgid "Nothing here yet."
 msgstr "Tu še ni ničesar."
 
@@ -1116,6 +1217,18 @@ msgstr "Zbirka je izbrisana. Njeni vnosi ostajajo nedotaknjeni."
 #: src/hrcek/collections/views.py
 msgid "That entry cannot be added here."
 msgstr "Tega vnosa ni mogoče dodati sem."
+
+#: src/hrcek/collections/views.py
+msgid "Back on the list."
+msgstr "Spet na seznamu."
+
+#: src/hrcek/collections/views.py
+msgid "Undone. It is back on the list."
+msgstr "Razveljavljeno. Spet je na seznamu."
+
+#: src/hrcek/collections/views.py
+msgid "Got it. Nobody else will see it on the list now."
+msgstr "Zabeleženo. Drugi tega zdaj ne bodo več videli na seznamu."
 
 #: src/hrcek/core/api.py
 msgid "Service is running."
@@ -1584,6 +1697,10 @@ msgstr "Zbirka »%(name)s« je zdaj prazna. Ostane, dokler je ne izbrišete."
 #: src/hrcek/entries/views.py
 msgid "Delete it"
 msgstr "Izbriši jo"
+
+#: src/hrcek/entries/views.py
+msgid "Put it back on the list?"
+msgstr "Vrni na seznam?"
 
 #: src/hrcek/entries/views.py
 msgid "Deleted."

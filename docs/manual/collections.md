@@ -77,6 +77,49 @@ its name.
 Changing a collection back to private closes both doors at once. An
 address that used to work stops working immediately.
 
+## Wish lists
+
+Tick *Wish list* on a collection's edit page to turn it into a list of
+things you would like to be given. Share it by link or publicly, as
+above; a private wish list has nobody to give you anything.
+
+**What visitors see.** Anyone who can open the list sees what is on it.
+Somebody signed in to Hrček also sees a *Got it* button beside each
+item. When they press it, the item disappears for everybody else, so
+nobody gets you the same thing twice. They keep seeing it, marked *You
+got this*, with an *Undo* button in case they pressed it by mistake.
+Visitors who are not signed in only read the list; there is a link to
+sign in.
+
+**What you see.** Everything, as if nothing had been got — even on the
+shared page itself — so the surprise survives you checking what your
+family sees. When you want to know, follow *Show what has been got* on
+the collection's page: each item somebody has got is marked *Got*. You
+are never told who got it. The next time you open the page it is
+unspoiled again.
+
+This only works while you are signed in. Open your own link signed
+out, or read its feed in a feed reader, and Hrček cannot tell it is
+you: you see what any visitor sees, with whatever has been got already
+gone.
+
+**Putting something back.** Beside each item marked *Got* is *Put it
+back on the list*, for a gift that fell through or a mark somebody
+forgot to undo. It clears the mark, whoever made it.
+
+**One list at a time.** The same entry can be on two wish lists, say
+*Birthday* and *Christmas*. Getting it on one says nothing about the
+other.
+
+**Coming back.** Take an item off a wish list and the mark is kept, out
+of sight. If you later put the item back — by hand, or by labelling it
+again on a list that follows a label — Hrček tells you somebody has
+already got it, and offers to put it back on the list. That message
+does give away that it was got; you chose to bring it back.
+
+Turning *Wish list* off hides the buttons and shows every item to
+everybody again. Turning it back on brings the marks back as they were.
+
 ## What visitors see
 
 The collection's name and description are always shown, and so are the

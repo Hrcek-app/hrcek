@@ -82,6 +82,9 @@ class Collection(models.Model):
         related_name="collections",
         verbose_name=_("visible fields"),
     )
+    # Not fixed like `kind`: switching it off only stops marks applying,
+    # so switching it back on finds them where they were.
+    is_wish_list = models.BooleanField(_("wish list"), default=False)
     created_at = models.DateTimeField(_("created at"), auto_now_add=True)
     updated_at = models.DateTimeField(_("changed at"), auto_now=True)
 
@@ -143,6 +146,12 @@ class Collection(models.Model):
     def unlisted_url(self) -> str:
         return reverse("shared:unlisted", kwargs={"secret": self.secret})
 
+    def shared_url(self) -> str:
+        """Whichever address this collection is shared at."""
+        if self.visibility == self.PUBLIC:
+            return self.public_url()
+        return self.unlisted_url()
+
     def is_shared(self) -> bool:
         return self.visibility in (self.UNLISTED, self.PUBLIC)
 
@@ -199,3 +208,45 @@ class CollectionEntry(models.Model):
 
     def __str__(self) -> str:
         return f"{self.entry} in {self.collection}"
+
+
+class GotIt(models.Model):
+    """Somebody has got one item on one wish list for its owner.
+
+    Read only through `Collection.entries()`, so a mark on an item that
+    has left the list does nothing until the item returns — and needs
+    no cleanup in between.
+    """
+
+    collection = models.ForeignKey(
+        Collection,
+        on_delete=models.CASCADE,
+        related_name="got_its",
+        verbose_name=_("collection"),
+    )
+    entry = models.ForeignKey(
+        "entries.Entry",
+        on_delete=models.CASCADE,
+        related_name="got_its",
+        verbose_name=_("entry"),
+    )
+    # Never shown to the owner; it is what lets the giver undo.
+    got_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="+",
+        verbose_name=_("got by"),
+    )
+    got_at = models.DateTimeField(_("got at"), auto_now_add=True)
+
+    class Meta:
+        verbose_name = _("got it")
+        verbose_name_plural = _("got its")
+        constraints: ClassVar[list[models.BaseConstraint]] = [
+            models.UniqueConstraint(
+                fields=["collection", "entry"], name="one_got_it_per_list_entry"
+            )
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.entry} got for {self.collection}"

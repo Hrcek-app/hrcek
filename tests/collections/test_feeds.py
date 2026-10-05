@@ -4,7 +4,7 @@ import pytest
 from django.utils import timezone
 
 from hrcek.accounts.models import User
-from hrcek.collections.models import Collection, CollectionEntry
+from hrcek.collections.models import Collection, CollectionEntry, GotIt
 from hrcek.entries.models import Entry, FieldDefinition, FieldValue, Tag
 
 pytestmark = pytest.mark.django_db
@@ -125,3 +125,26 @@ def test_the_page_points_at_its_feed(client, collection):
     page = client.get("/u/nina/watches/").text
     assert 'type="application/atom+xml"' in page
     assert "/u/nina/watches/feed/" in page
+
+
+def test_a_shared_feed_leaves_out_what_has_been_got(client, collection):
+    _publish(collection, is_wish_list=True)
+    GotIt.objects.create(
+        collection=collection,
+        entry=collection.entries().get(),
+        got_by=_person("ana@example.com"),
+    )
+    feed = client.get(f"/u/nina/{collection.slug}/feed/").content.decode()
+    assert "A watch" not in feed
+
+
+def test_the_private_feed_still_has_everything(client, nina, collection):
+    _publish(collection, is_wish_list=True)
+    GotIt.objects.create(
+        collection=collection,
+        entry=collection.entries().get(),
+        got_by=_person("ana@example.com"),
+    )
+    client.force_login(nina)
+    feed = client.get(f"/collections/{collection.pk}/feed/").content.decode()
+    assert "A watch" in feed

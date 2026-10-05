@@ -760,6 +760,26 @@ msgstr ""
 msgid "This collection follows a label, so entries cannot be added by hand."
 msgstr ""
 
+#: src/hrcek/collections/errors.py
+msgid "This collection is not a shared wish list."
+msgstr ""
+
+#: src/hrcek/collections/errors.py
+msgid "You cannot say “Got it” on your own wish list."
+msgstr ""
+
+#: src/hrcek/collections/errors.py
+msgid "That item is not on this list."
+msgstr ""
+
+#: src/hrcek/collections/errors.py
+msgid "Somebody else has already got this."
+msgstr ""
+
+#: src/hrcek/collections/errors.py
+msgid "Only whoever got this can undo it."
+msgstr ""
+
 #: src/hrcek/collections/forms.py
 msgid "Optional. Anyone who can see this collection sees its description too."
 msgstr ""
@@ -782,6 +802,13 @@ msgid ""
 "a password: whoever you send it to can pass it on. Public — anyone can see "
 "this collection, and it can be found by search engines. Its address contains "
 "your public name."
+msgstr ""
+
+#: src/hrcek/collections/forms.py
+msgid ""
+"People you share this with can say “Got it” for anything they have got you. "
+"It then disappears for everybody else, and you keep seeing the whole list, "
+"so you are still surprised."
 msgstr ""
 
 #: src/hrcek/collections/forms.py
@@ -875,6 +902,10 @@ msgstr ""
 msgid "visible fields"
 msgstr ""
 
+#: src/hrcek/collections/models.py
+msgid "wish list"
+msgstr ""
+
 #: src/hrcek/collections/models.py src/hrcek/entries/models.py
 msgid "changed at"
 msgstr ""
@@ -897,6 +928,22 @@ msgstr ""
 
 #: src/hrcek/collections/models.py
 msgid "collection entries"
+msgstr ""
+
+#: src/hrcek/collections/models.py
+msgid "got by"
+msgstr ""
+
+#: src/hrcek/collections/models.py
+msgid "got at"
+msgstr ""
+
+#: src/hrcek/collections/models.py
+msgid "got it"
+msgstr ""
+
+#: src/hrcek/collections/models.py
+msgid "got its"
 msgstr ""
 
 #: src/hrcek/collections/templates/collections/confirm_delete.html
@@ -947,6 +994,28 @@ msgid "Public. Anyone can see this collection at:"
 msgstr ""
 
 #: src/hrcek/collections/templates/collections/detail.html
+msgid "Wish list"
+msgstr ""
+
+#: src/hrcek/collections/templates/collections/detail.html
+msgid "Hide what has been got"
+msgstr ""
+
+#: src/hrcek/collections/templates/collections/detail.html
+msgid "Show what has been got"
+msgstr ""
+
+#: src/hrcek/collections/templates/collections/detail.html
+#: src/hrcek/entries/views.py
+#, python-format
+msgid "Somebody has already got this for “%(name)s”."
+msgstr ""
+
+#: src/hrcek/collections/templates/collections/detail.html
+msgid "Put it back on the list"
+msgstr ""
+
+#: src/hrcek/collections/templates/collections/detail.html
 #: src/hrcek/entries/templates/entries/list.html
 msgid "Edit"
 msgstr ""
@@ -985,6 +1054,10 @@ msgstr ""
 
 #: src/hrcek/collections/templates/collections/detail.html
 msgid "In this collection"
+msgstr ""
+
+#: src/hrcek/collections/templates/collections/detail.html
+msgid "Got"
 msgstr ""
 
 #: src/hrcek/collections/templates/collections/detail.html
@@ -1039,6 +1112,29 @@ msgid "You have no collections yet."
 msgstr ""
 
 #: src/hrcek/collections/templates/collections/shared.html
+#, python-format
+msgid ""
+"Signed-in Hrček users can mark what they have got. <a href=\"%(landing)s?"
+"next=%(next)s\">Sign in</a>"
+msgstr ""
+
+#: src/hrcek/collections/templates/collections/shared.html
+msgid "You got this."
+msgstr ""
+
+#: src/hrcek/collections/templates/collections/shared.html
+msgid "Undo"
+msgstr ""
+
+#: src/hrcek/collections/templates/collections/shared.html
+msgid "Got it"
+msgstr ""
+
+#: src/hrcek/collections/templates/collections/shared.html
+msgid "Everything on this list has been got."
+msgstr ""
+
+#: src/hrcek/collections/templates/collections/shared.html
 msgid "Nothing here yet."
 msgstr ""
 
@@ -1056,6 +1152,18 @@ msgstr ""
 
 #: src/hrcek/collections/views.py
 msgid "That entry cannot be added here."
+msgstr ""
+
+#: src/hrcek/collections/views.py
+msgid "Back on the list."
+msgstr ""
+
+#: src/hrcek/collections/views.py
+msgid "Undone. It is back on the list."
+msgstr ""
+
+#: src/hrcek/collections/views.py
+msgid "Got it. Nobody else will see it on the list now."
 msgstr ""
 
 #: src/hrcek/core/api.py
@@ -1500,6 +1608,10 @@ msgstr ""
 
 #: src/hrcek/entries/views.py
 msgid "Delete it"
+msgstr ""
+
+#: src/hrcek/entries/views.py
+msgid "Put it back on the list?"
 msgstr ""
 
 #: src/hrcek/entries/views.py

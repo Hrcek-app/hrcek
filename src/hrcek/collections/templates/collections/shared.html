@@ -10,6 +10,14 @@
   {# The description is as visible as the collection itself. #}
   {% if collection.description %}<p>{{ collection.description }}</p>{% endif %}
 
+  {% if messages %}
+    <ul class="messages">{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul>
+  {% endif %}
+  {% if collection.is_wish_list and not user.is_authenticated %}
+    {% url 'landing' as landing %}
+    <p class="kind">{% blocktrans with next=request.path|urlencode %}Signed-in Hrček users can mark what they have got. <a href="{{ landing }}?next={{ next }}">Sign in</a>{% endblocktrans %}</p>
+  {% endif %}
+
   {% if entries %}
     <ul class="entries">
       {% for entry in entries %}
@@ -35,6 +43,18 @@
                   {% for each in entry.tags.all %}<li class="tag">{{ each.name }}</li>{% endfor %}
                 </ul>
               {% endif %}
+              {% if can_get %}
+                {% if entry.pk in mine %}
+                  <p class="kind">{% trans "You got this." %}</p>
+                  <form method="post" action="{% if collection.visibility == 'public' %}{% url 'shared:public_undo' collection.owner.namespace collection.slug entry.pk %}{% else %}{% url 'shared:unlisted_undo' collection.secret entry.pk %}{% endif %}">
+                    {% csrf_token %}<button type="submit">{% trans "Undo" %}</button>
+                  </form>
+                {% else %}
+                  <form method="post" action="{% if collection.visibility == 'public' %}{% url 'shared:public_got_it' collection.owner.namespace collection.slug entry.pk %}{% else %}{% url 'shared:unlisted_got_it' collection.secret entry.pk %}{% endif %}">
+                    {% csrf_token %}<button type="submit">{% trans "Got it" %}</button>
+                  </form>
+                {% endif %}
+              {% endif %}
             </div>
             {% if collection.show_images and entry.image %}
               <a href="{{ entry.url }}" tabindex="-1" aria-hidden="true">
@@ -46,6 +66,8 @@
         </li>
       {% endfor %}
     </ul>
+  {% elif everything_got %}
+    <p>{% trans "Everything on this list has been got." %}</p>
   {% else %}
     <p>{% trans "Nothing here yet." %}</p>
   {% endif %}

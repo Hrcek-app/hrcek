@@ -21,6 +21,17 @@ urlpatterns = [
         name="unlisted_feed",
     ),
     path(
+        "c/<str:secret>/got/<int:entry_pk>/",
+        views.unlisted_got_it,
+        name="unlisted_got_it",
+    ),
+    path(
+        "c/<str:secret>/got/<int:entry_pk>/undo/",
+        views.unlisted_got_it,
+        {"undo": True},
+        name="unlisted_undo",
+    ),
+    path(
         "u/<str:namespace>/<slug:slug>/",
         views.public_collection,
         name="public",
@@ -29,5 +40,16 @@ urlpatterns = [
         "u/<str:namespace>/<slug:slug>/feed/",
         feeds.PublicCollectionFeed(),
         name="public_feed",
+    ),
+    path(
+        "u/<str:namespace>/<slug:slug>/got/<int:entry_pk>/",
+        views.public_got_it,
+        name="public_got_it",
+    ),
+    path(
+        "u/<str:namespace>/<slug:slug>/got/<int:entry_pk>/undo/",
+        views.public_got_it,
+        {"undo": True},
+        name="public_undo",
     ),
 ]

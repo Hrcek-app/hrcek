@@ -21,4 +21,9 @@ urlpatterns = [
         views.collection_remove_entry,
         name="remove_entry",
     ),
+    path(
+        "<int:pk>/got/<int:entry_pk>/put-back/",
+        views.collection_put_back,
+        name="put_back",
+    ),
 ]
