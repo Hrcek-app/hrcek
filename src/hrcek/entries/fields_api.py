@@ -99,11 +99,7 @@ def list_labels(request: HttpRequest, starts_with: str = "") -> QuerySet[Tag]:
     # and what the cursor compares against. A label cannot differ from
     # another only by case — the unique constraint sees to that — so
     # this is a strict order with no ties to break.
-    labels = (
-        Tag.objects.filter(owner=owner)
-        .annotate(sort_key=Lower("name"))
-        .order_by("sort_key")
-    )
+    labels = Tag.in_use(owner).annotate(sort_key=Lower("name")).order_by("sort_key")
     prefix = starts_with.strip()
     if prefix:
         # istartswith, not a pattern: whatever somebody types into an

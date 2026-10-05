@@ -3,6 +3,7 @@ from django.db.utils import IntegrityError
 from django.utils import timezone
 
 from hrcek.accounts.models import User
+from hrcek.collections.models import Collection
 from hrcek.entries.models import Entry, Tag
 
 pytestmark = pytest.mark.django_db
@@ -138,3 +139,34 @@ def test_pruning_leaves_another_persons_tags_alone(nina, marko):
     theirs = Tag.objects.create(owner=marko, name="watches")
     Tag.prune_orphans(nina)
     assert Tag.objects.filter(pk=theirs.pk).exists()
+
+
+def _follow(owner, tag, name="Wants"):
+    return Collection.objects.create(
+        owner=owner, name=name, kind=Collection.BY_LABEL, label=tag
+    )
+
+
+def test_a_label_a_collection_follows_outlives_its_last_entry(nina):
+    entry = Entry.objects.create(owner=nina, url="https://example.com/watch")
+    Tag.set_for(entry, ["want"])
+    collection = _follow(nina, Tag.objects.get(owner=nina, name="want"))
+    Tag.set_for(entry, [])
+    assert Collection.objects.filter(pk=collection.pk).exists()
+    assert Tag.objects.filter(owner=nina, name="want").exists()
+
+
+def test_labelling_again_refills_the_kept_collection(nina):
+    entry = Entry.objects.create(owner=nina, url="https://example.com/watch")
+    Tag.set_for(entry, ["want"])
+    collection = _follow(nina, Tag.objects.get(owner=nina, name="want"))
+    Tag.set_for(entry, [])
+    Tag.set_for(entry, ["Want"])
+    assert list(collection.entries()) == [entry]
+
+
+def test_only_labels_on_an_entry_are_in_use(nina):
+    entry = Entry.objects.create(owner=nina, url="https://example.com/watch")
+    Tag.set_for(entry, ["watches"])
+    _follow(nina, Tag.objects.create(owner=nina, name="kept"))
+    assert [t.name for t in Tag.in_use(nina)] == ["watches"]

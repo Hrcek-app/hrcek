@@ -14,13 +14,71 @@ from django.http import (
     HttpResponseNotModified,
 )
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.utils.html import format_html
 from django.utils.translation import gettext as _
 
 from hrcek.accounts.models import User
+from hrcek.collections.services import emptied_label_collections
 from hrcek.entries import imaging
 from hrcek.entries.forms import EntryForm, FieldDefinitionForm
 from hrcek.entries.models import Entry, EntryImage, FieldDefinition, FieldValue, Tag
 from hrcek.entries.services import save_entry
+
+
+def _tag_ids(entries: list[Entry]) -> set[int]:
+    return set(Tag.objects.filter(entries__in=entries).values_list("pk", flat=True))
+
+
+def _save(
+    request: HttpRequest, owner: User, form: EntryForm, editing: Entry | None = None
+) -> Entry:
+    """Save the entry form and its picture, then say what happened.
+
+    "Saved." comes first and any emptied label collection after it. The
+    labels carried before are those of the entry being edited and
+    of whichever entry already holds the address, because saving under
+    an address already held updates that one instead.
+    """
+    address = Entry.normalise_url(form.cleaned_data["url"])
+    before = [
+        e
+        for e in (editing, Entry.objects.filter(owner=owner, url=address).first())
+        if e
+    ]
+    carried = _tag_ids(before)
+    entry, _created = save_entry(
+        owner,
+        url=form.cleaned_data["url"],
+        title=form.cleaned_data["title"],
+        notes=form.cleaned_data["notes"],
+        tag_names=form.tag_names(),
+        fields=form.field_values(),
+    )
+    _apply_picture(entry, form)
+    messages.success(request, _("Saved."))
+    _say_if_emptied(request, owner, carried)
+    return entry
+
+
+def _say_if_emptied(request: HttpRequest, owner: User, carried: set[int]) -> None:
+    """Tell the owner which label collections this change left empty.
+
+    The collection is kept: deleting it is the owner's call, so the
+    notice links to its delete page rather than asking first, which
+    would cost anything typed or chosen on the form.
+    """
+    for collection in emptied_label_collections(owner, carried):
+        messages.info(
+            request,
+            format_html(
+                '{} <a href="{}">{}</a>',
+                _("“%(name)s” has nothing in it now. It stays until you delete it.")
+                % {"name": collection.name},
+                reverse("collections:delete", args=[collection.pk]),
+                _("Delete it"),
+            ),
+        )
 
 
 @login_required
@@ -39,7 +97,12 @@ def entry_list(request: HttpRequest) -> HttpResponse:
     )
 
     tag = request.GET.get("tag", "").strip()
+    in_use = Tag.in_use(owner)
     if tag:
+        # A label nothing carries has no page, whether it never existed
+        # or is only kept because a collection follows it.
+        if not in_use.filter(name__iexact=tag).exists():
+            raise Http404
         entries = entries.filter(tags__name__iexact=tag)
 
     paginator = Paginator(entries, settings.ENTRIES_PER_PAGE)
@@ -50,7 +113,7 @@ def entry_list(request: HttpRequest) -> HttpResponse:
     return render(
         request,
         "entries/list.html",
-        {"page": page, "tag": tag, "tags": Tag.objects.filter(owner=owner)},
+        {"page": page, "tag": tag, "tags": in_use},
     )
 
 
@@ -65,16 +128,7 @@ def entry_create(request: HttpRequest) -> HttpResponse:
         return render(request, "entries/form.html", {"form": form})
 
     # A URL already held is an update, not a duplicate.
-    entry, _created = save_entry(
-        owner,
-        url=form.cleaned_data["url"],
-        title=form.cleaned_data["title"],
-        notes=form.cleaned_data["notes"],
-        tag_names=form.tag_names(),
-        fields=form.field_values(),
-    )
-    _apply_picture(entry, form)
-    messages.success(request, _("Saved."))
+    _save(request, owner, form)
     return redirect("entries:list")
 
 
@@ -94,16 +148,7 @@ def entry_edit(request: HttpRequest, pk: int) -> HttpResponse:
     if not form.is_valid():
         return render(request, "entries/form.html", {"form": form, "entry": entry})
 
-    entry, _created = save_entry(
-        owner,
-        url=form.cleaned_data["url"],
-        title=form.cleaned_data["title"],
-        notes=form.cleaned_data["notes"],
-        tag_names=form.tag_names(),
-        fields=form.field_values(),
-    )
-    _apply_picture(entry, form)
-    messages.success(request, _("Saved."))
+    _save(request, owner, form, editing=entry)
     return redirect("entries:list")
 
 
@@ -115,10 +160,12 @@ def entry_delete(request: HttpRequest, pk: int) -> HttpResponse:
     if request.method != "POST":
         return render(request, "entries/confirm_delete.html", {"entry": entry})
 
+    carried = _tag_ids([entry])
     entry.delete()
     # Deleting the entry can leave tags with nothing on them.
     Tag.prune_orphans(owner)
     messages.success(request, _("Deleted."))
+    _say_if_emptied(request, owner, carried)
     return redirect("entries:list")
 
 

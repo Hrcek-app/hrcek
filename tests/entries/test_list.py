@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from hrcek.accounts.models import User
+from hrcek.collections.models import Collection
 from hrcek.entries.models import Entry, Tag
 from tests.entries.helpers import _structure
 
@@ -101,13 +102,6 @@ def test_the_tag_filter_ignores_case(client, nina):
     client.force_login(nina)
     page = client.get(reverse("entries:list"), {"tag": "watches"}).context["page"]
     assert [e.pk for e in page] == [kept.pk]
-
-
-def test_an_unknown_tag_yields_nothing_rather_than_everything(client, nina):
-    _entries(nina, 3)
-    client.force_login(nina)
-    page = client.get(reverse("entries:list"), {"tag": "nope"}).context["page"]
-    assert list(page) == []
 
 
 def test_signing_in_lands_on_the_entry_list(client, nina):
@@ -221,3 +215,36 @@ def test_the_parts_of_an_entry_are_spaced_evenly():
         Path(settings.BASE_DIR) / "src/hrcek/core/static/css/hrcek.css"
     ).read_text(encoding="utf-8")
     assert "ul.entries .entry-text>*+*{margin-block-start:" in compiled
+
+
+def _kept_empty_label(owner):
+    tag = Tag.objects.create(owner=owner, name="want")
+    Collection.objects.create(
+        owner=owner, name="Wants", kind=Collection.BY_LABEL, label=tag
+    )
+    return tag
+
+
+def test_a_label_kept_for_a_collection_is_not_in_the_tag_list(client, nina):
+    (entry,) = _entries(nina, 1)
+    Tag.set_for(entry, ["watches"])
+    _kept_empty_label(nina)
+    client.force_login(nina)
+    body = client.get(reverse("entries:list")).text
+    aside = body[body.index("<aside") : body.index("</aside>")]
+    assert "?tag=watches" in aside
+    assert "?tag=want" not in aside
+
+
+@pytest.mark.parametrize("name", ["want", "never-was"])
+def test_filtering_by_a_label_nothing_carries_is_a_404(client, nina, name):
+    _kept_empty_label(nina)
+    client.force_login(nina)
+    assert client.get(reverse("entries:list"), {"tag": name}).status_code == 404
+
+
+def test_filtering_ignores_capitals(client, nina):
+    (entry,) = _entries(nina, 1)
+    Tag.set_for(entry, ["Watches"])
+    client.force_login(nina)
+    assert client.get(reverse("entries:list"), {"tag": "watches"}).status_code == 200

@@ -70,11 +70,25 @@ class Tag(models.Model):
     def prune_orphans(cls, owner: object) -> None:
         """Remove this owner's tags that no entry uses any more.
 
-        Otherwise every typo lives in the tag list forever. Written as a
-        string lookup rather than through a reverse accessor, which ty
-        cannot see.
+        Otherwise every typo lives in the tag list forever. A tag a
+        collection follows is spared: deleting it would take the
+        collection with it, shared link and all, and that is the
+        owner's decision rather than a side effect of relabelling.
+        Written as string lookups rather than through reverse
+        accessors, which ty cannot see.
         """
-        cls.objects.filter(owner=owner, entries__isnull=True).delete()
+        cls.objects.filter(
+            owner=owner, entries__isnull=True, collections__isnull=True
+        ).delete()
+
+    @classmethod
+    def in_use(cls, owner: object) -> models.QuerySet[Tag]:
+        """This owner's tags that at least one entry carries.
+
+        What anybody is shown as "your labels": a tag kept only because
+        a collection follows it has nothing to list.
+        """
+        return cls.objects.filter(owner=owner, entries__isnull=False).distinct()
 
 
 class Entry(models.Model):

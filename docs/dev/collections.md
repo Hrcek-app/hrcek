@@ -51,6 +51,19 @@ orderings:
 Pages, feeds and tests all call this method. Nothing re-implements the
 ordering, so nothing can drift out of step with it.
 
+### A label left with no entries
+
+`Tag.prune_orphans` spares a tag a collection follows (see
+[entries](entries.md#tags)), so a label collection survives its last
+entry. The entry form and the entry delete view compare the tags the
+entry carried before the change with
+`collections.services.emptied_label_collections(owner, tag_ids)`, and
+add a notice per collection the change emptied, linking to its delete
+page. The notice comes after the save rather than as a question before
+it, because a confirmation step in front of the entry form would drop a
+picture chosen in its file input. The API keeps the collection without
+saying anything; it has nobody to ask.
+
 ## Ownership
 
 `services.add_entry` is the only way an entry joins a collection, and

@@ -41,9 +41,11 @@ wide screen, after them on a narrow one. Click a tag there, or on any
 entry, to see only the entries carrying it; the tag you are looking at
 is shown in bold, and **All entries** takes you back.
 
-**A tag stops existing once nothing uses it.** Take the last entry off
-`diving` and the tag disappears. This keeps the list from filling up
-with typos; it also means a tag is not a place to keep something.
+**A tag disappears once nothing uses it.** Take the last entry off
+`diving` and the tag leaves the list, and its page is gone. This keeps
+the list from filling up with typos; it also means a tag is not a place
+to keep something. A collection following the tag is not deleted with
+it: see [Collections](collections.md).
 
 ## Pictures
 

@@ -1494,6 +1494,15 @@ msgid "All entries"
 msgstr ""
 
 #: src/hrcek/entries/views.py
+#, python-format
+msgid "“%(name)s” has nothing in it now. It stays until you delete it."
+msgstr ""
+
+#: src/hrcek/entries/views.py
+msgid "Delete it"
+msgstr ""
+
+#: src/hrcek/entries/views.py
 msgid "Deleted."
 msgstr ""
 

@@ -1577,6 +1577,15 @@ msgid "All entries"
 msgstr "Vsi vnosi"
 
 #: src/hrcek/entries/views.py
+#, python-format
+msgid "“%(name)s” has nothing in it now. It stays until you delete it."
+msgstr "Zbirka »%(name)s« je zdaj prazna. Ostane, dokler je ne izbrišete."
+
+#: src/hrcek/entries/views.py
+msgid "Delete it"
+msgstr "Izbriši jo"
+
+#: src/hrcek/entries/views.py
 msgid "Deleted."
 msgstr "Izbrisano."
 
