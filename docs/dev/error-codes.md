@@ -63,6 +63,11 @@ over HTTP, so they have no status.
 | `HRC-ACCT-0006` | 409 | Another account already uses that email address. Shown inline on the form too, where the status is 200 because the person can simply pick another. |
 | `HRC-COLL-0001` | 404 | An entry belonging to somebody else was offered to a collection. 404, not 403: a 403 would confirm the entry exists. |
 | `HRC-COLL-0002` | 422 | Entries cannot be added by hand to a collection that follows a label; its membership comes from the label. |
+| `HRC-COLL-0003` | 404 | "Got it" was asked of a collection that is not a wish list, or is not shared. Switching either off stops new marks at once. |
+| `HRC-COLL-0004` | 403 | The owner tried to say "Got it", or to undo one, on their own wish list. Undo refuses the owner before looking, so its answer cannot reveal whether an item was got. |
+| `HRC-COLL-0005` | 404 | The item named is not on the list now. Unknown ids and other people's entries get the same answer, so nothing is revealed. |
+| `HRC-COLL-0006` | 409 | Somebody else already got this item on this list. |
+| `HRC-COLL-0007` | 403 | Only the person who said "Got it" can undo it. The owner uses "Put it back on the list" instead. |
 | `HRC-IMAGE-0001` | 422 | The bytes are not a raster image Pillow can decode, or are in a format we do not accept. SVG is refused on purpose. |
 | `HRC-IMAGE-0002` | 422 | The image is larger than the byte limit. `details.limit_bytes` carries the limit. |
 | `HRC-IMAGE-0003` | 422 | The image decoded as a known format but could not be read — truncated, damaged, or too many pixels. `details.limit_pixels` appears in the last case. |

@@ -19,7 +19,11 @@ from django.utils.html import format_html
 from django.utils.translation import gettext as _
 
 from hrcek.accounts.models import User
-from hrcek.collections.services import emptied_label_collections
+from hrcek.collections.services import (
+    already_got_on,
+    emptied_label_collections,
+    label_wish_lists_holding,
+)
 from hrcek.entries import imaging
 from hrcek.entries.forms import EntryForm, FieldDefinitionForm
 from hrcek.entries.models import Entry, EntryImage, FieldDefinition, FieldValue, Tag
@@ -35,18 +39,19 @@ def _save(
 ) -> Entry:
     """Save the entry form and its picture, then say what happened.
 
-    "Saved." comes first and any emptied label collection after it. The
-    labels carried before are those of the entry being edited and
-    of whichever entry already holds the address, because saving under
-    an address already held updates that one instead.
+    "Saved." comes first, then any label collection the change emptied,
+    then any label wish list it brought the entry back onto where it
+    was already got. The labels carried before are those of the entry
+    being edited and of whichever entry already holds the address,
+    because saving under an address already held updates that one
+    instead.
     """
     address = Entry.normalise_url(form.cleaned_data["url"])
-    before = [
-        e
-        for e in (editing, Entry.objects.filter(owner=owner, url=address).first())
-        if e
-    ]
-    carried = _tag_ids(before)
+    holder = Entry.objects.filter(owner=owner, url=address).first()
+    carried = _tag_ids([e for e in (editing, holder) if e])
+    # The entry that will be saved is the one holding the address; only
+    # a wish list it *arrives* on is news.
+    on_wish_lists = label_wish_lists_holding(holder) if holder else set()
     entry, _created = save_entry(
         owner,
         url=form.cleaned_data["url"],
@@ -58,6 +63,7 @@ def _save(
     _apply_picture(entry, form)
     messages.success(request, _("Saved."))
     _say_if_emptied(request, owner, carried)
+    _say_if_already_got(request, entry, label_wish_lists_holding(entry) - on_wish_lists)
     return entry
 
 
@@ -77,6 +83,29 @@ def _say_if_emptied(request: HttpRequest, owner: User, carried: set[int]) -> Non
                 % {"name": collection.name},
                 reverse("collections:delete", args=[collection.pk]),
                 _("Delete it"),
+            ),
+        )
+
+
+def _say_if_already_got(
+    request: HttpRequest, entry: Entry, arrived_on: set[int]
+) -> None:
+    """Tell the owner that a wish list `entry` just joined had it got.
+
+    Never who got it. The link opens the list with a button to put the
+    item back on it.
+    """
+    for collection in already_got_on(entry, arrived_on):
+        url = reverse("collections:detail", args=[collection.pk])
+        messages.info(
+            request,
+            format_html(
+                '{} <a href="{}?back={}">{}</a>',
+                _("Somebody has already got this for “%(name)s”.")
+                % {"name": collection.name},
+                url,
+                entry.pk,
+                _("Put it back on the list?"),
             ),
         )
 

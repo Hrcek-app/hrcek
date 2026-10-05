@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from hrcek.accounts.models import User
-from hrcek.collections.models import Collection
+from hrcek.collections.models import Collection, GotIt
 from hrcek.entries.models import Entry, Tag
 from hrcek.entries.services import save_entry
 
@@ -327,3 +327,71 @@ def test_saved_comes_before_the_emptied_notice(client, nina):
         follow=True,
     ).content.decode()
     assert body.index("Saved.") < body.index("has nothing in it now")
+
+
+def _label_wish_list(owner, tag_name="want"):
+    tag, _ = Tag.objects.get_or_create(owner=owner, name=tag_name)
+    return Collection.objects.create(
+        owner=owner,
+        name="Wants",
+        kind=Collection.BY_LABEL,
+        label=tag,
+        visibility=Collection.UNLISTED,
+        is_wish_list=True,
+    )
+
+
+def _got(wishes, entry):
+    GotIt.objects.create(
+        collection=wishes, entry=entry, got_by=_person("ana@example.com")
+    )
+
+
+def _says_already_got(body, wishes, entry):
+    return (
+        "Somebody has already got this for “Wants”." in body
+        and f"/collections/{wishes.pk}/?back={entry.pk}" in body
+    )
+
+
+def test_relabelling_an_item_already_got_says_so(client, nina):
+    entry, _ = save_entry(nina, url="https://example.com/w", tag_names=["want"])
+    wishes = _label_wish_list(nina)
+    _got(wishes, entry)
+    save_entry(nina, url="https://example.com/keep", tag_names=["want"])
+    entry.tags.clear()
+    client.force_login(nina)
+    body = client.post(
+        reverse("entries:edit", args=[entry.pk]),
+        {"url": entry.url, "title": "", "notes": "", "tags": "want"},
+        follow=True,
+    ).content.decode()
+    assert _says_already_got(body, wishes, entry)
+    assert "ana@example.com" not in body
+
+
+def test_saving_an_item_that_stays_on_the_list_says_nothing(client, nina):
+    entry, _ = save_entry(nina, url="https://example.com/w", tag_names=["want"])
+    wishes = _label_wish_list(nina)
+    _got(wishes, entry)
+    client.force_login(nina)
+    body = client.post(
+        reverse("entries:edit", args=[entry.pk]),
+        {"url": entry.url, "title": "Renamed", "notes": "", "tags": "want"},
+        follow=True,
+    ).content.decode()
+    assert "already got" not in body
+
+
+def test_re_adding_by_address_on_the_new_form_says_so_too(client, nina):
+    entry, _ = save_entry(nina, url="https://example.com/w", tag_names=["want"])
+    wishes = _label_wish_list(nina)
+    _got(wishes, entry)
+    save_entry(nina, url="https://example.com/w", tag_names=[])
+    client.force_login(nina)
+    body = client.post(
+        reverse("entries:create"),
+        {"url": "https://example.com/w", "title": "", "notes": "", "tags": "want"},
+        follow=True,
+    ).content.decode()
+    assert _says_already_got(body, wishes, entry)

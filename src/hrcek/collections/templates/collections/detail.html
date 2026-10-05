@@ -23,6 +23,28 @@
       <a href="{{ collection.public_url }}">{{ collection.public_url }}</a></p>
   {% endif %}
 
+  {% if collection.is_wish_list %}
+    <ul class="row">
+      <li><span class="tag">{% trans "Wish list" %}</span></li>
+      <li>
+        {% if reveal %}
+          <a href="{% url 'collections:detail' collection.pk %}">{% trans "Hide what has been got" %}</a>
+        {% else %}
+          <a href="?got=show">{% trans "Show what has been got" %}</a>
+        {% endif %}
+      </li>
+    </ul>
+    {% if came_back %}
+      <ul class="messages"><li>
+        <p>{% blocktrans with name=collection.name %}Somebody has already got this for “{{ name }}”.{% endblocktrans %}
+          <strong>{{ came_back.display_title }}</strong></p>
+        <form method="post" action="{% url 'collections:put_back' collection.pk came_back.pk %}">
+          {% csrf_token %}<button type="submit">{% trans "Put it back on the list" %}</button>
+        </form>
+      </li></ul>
+    {% endif %}
+  {% endif %}
+
   <ul class="row">
     <li><a href="{% url 'collections:edit' collection.pk %}">{% trans "Edit" %}</a></li>
     <li><a href="{% url 'collections:list' %}">{% trans "Your collections" %}</a></li>
@@ -64,6 +86,13 @@
                 <ul class="row">
                   {% for each in entry.tags.all %}<li><a class="tag" href="{% url 'entries:list' %}?tag={{ each.name|urlencode }}">{{ each.name }}</a></li>{% endfor %}
                 </ul>
+              {% endif %}
+              {% if entry.pk in got %}
+                <p><span class="tag got">{% trans "Got" %}</span></p>
+                <form method="post" action="{% url 'collections:put_back' collection.pk entry.pk %}">
+                  {% csrf_token %}<input type="hidden" name="reveal" value="1">
+                  <button type="submit">{% trans "Put it back on the list" %}</button>
+                </form>
               {% endif %}
               {% if collection.kind == 'manual' %}
                 <form method="post" action="{% url 'collections:remove_entry' collection.pk entry.pk %}">

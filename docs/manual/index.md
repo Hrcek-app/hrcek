@@ -12,5 +12,5 @@ can get back to them later.
 
 This manual describes what Hrček does today. It is still early: you can
 have an account, save things to it, record your own fields against
-them, and give each one a picture. Shared collections are still to
-come.
+them, give each one a picture, gather them into collections, share
+those, and turn one into a wish list.

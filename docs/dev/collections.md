@@ -131,6 +131,68 @@ default and turned on per collection. Hidden means **absent from the
 HTML**, not styled away: the template asks before it renders, and
 `test_hidden_things_are_absent_from_the_source` holds that line.
 
+## Wish lists
+
+`Collection.is_wish_list` turns a shared collection into a list
+visitors can say "Got it" on. A mark is a `GotIt` row: `collection`,
+`entry`, `got_by`, `got_at`, unique on `(collection, entry)`. It belongs
+to one list, not to the entry, so the same entry on two wish lists is
+two separate wishes.
+
+**No maintenance.** Marks are only ever read through
+`Collection.entries()`, so a mark on an item that has left the list —
+taken out by hand, or no longer labelled — does nothing, and nothing
+deletes it. If the item returns, the mark returns with it. Switching
+`is_wish_list` off suspends every mark the same way.
+
+The rules live in `collections/services.py`, and pages, feeds and the
+entry form go through them rather than querying `GotIt`:
+
+| Function | Purpose |
+|---|---|
+| `get_it` / `undo_got_it` | a visitor marks or unmarks; raises `HRC-COLL-0003`–`0007` |
+| `put_back` | the owner clears a mark; ownership is the caller's check |
+| `shared_entries(collection, viewer)` | what a shared page or feed lists |
+| `got_entry_ids` / `got_by_viewer` | ids for the owner's reveal and the giver's *Undo* |
+| `label_wish_lists_holding` / `already_got_on` | the came-back notice on entry save |
+
+Who sees what on a shared page of a wish list:
+
+| Viewer | Nobody got it | They got it | Somebody else got it |
+|---|---|---|---|
+| Not signed in | shown | — | hidden |
+| Signed in | shown, *Got it* | shown, *Undo* | hidden |
+| The owner | shown, no buttons | — | shown |
+
+Shared feeds use `shared_entries` with an anonymous viewer; the
+owner's private feed overrides `listed()` to return everything.
+
+The actions sit under the shared address, so the secret stays the only
+key to an unlisted list:
+
+| Action | Address | Route |
+|---|---|---|
+| Got it | `/c/<secret>/got/<entry>/` | `shared:unlisted_got_it` |
+| Undo | `/c/<secret>/got/<entry>/undo/` | `shared:unlisted_undo` |
+| Got it | `/u/<namespace>/<slug>/got/<entry>/` | `shared:public_got_it` |
+| Undo | `/u/<namespace>/<slug>/got/<entry>/undo/` | `shared:public_undo` |
+| Put back | `/collections/<id>/got/<entry>/put-back/` | `collections:put_back` |
+
+All POST only. A visitor who is not signed in has no buttons; one who
+posts anyway (a page loaded before signing out) is sent to sign in with
+`next` set to the shared *page*, since the action address would answer
+GET with 405. The entry is looked up among the owner's entries and
+checked against the list by `get_it`, so an unknown id, a stranger's
+entry and an entry not on this list all get `HRC-COLL-0005`.
+
+The owner's page takes two query parameters. `?got=show` reveals the
+marks; it is never remembered, and `got` is only put in the template
+context when it is set. `?back=<entry>` shows the came-back notice for
+that entry, and only if it is got on this list. Adding an entry by hand
+redirects there when the entry is already got; saving an entry form
+compares `label_wish_lists_holding` before and after and links there
+for each label wish list the entry arrived on.
+
 ## Pictures
 
 Entry images used to be readable by their owner and nobody else.
@@ -156,7 +218,8 @@ be reachable anywhere its page is not.
 | unlisted | `/c/<secret>/feed/` | `shared:unlisted_feed` |
 | public | `/u/<namespace>/<slug>/feed/` | `shared:public_feed` |
 
-Items come from `Collection.entries()` — the same method the page uses,
+Items come from `Collection.entries()` — through `shared_entries()` for
+the shared feeds, see [wish lists](#wish-lists) — the same as the page,
 so neither what a feed holds nor the order it holds it in can drift
 from the page. Notes appear only where `show_notes` is on; a feed that
 carried what its page hides would be a back door, and

@@ -19,6 +19,7 @@ class CollectionForm(forms.ModelForm):
             "kind",
             "label",
             "visibility",
+            "is_wish_list",
             "show_notes",
             "show_tags",
             "show_images",
@@ -46,6 +47,12 @@ class CollectionForm(forms.ModelForm):
                 "Public — anyone can see this collection, and it can be "
                 "found by search engines. Its address contains your "
                 "public name."
+            ),
+            "is_wish_list": _(
+                "People you share this with can say “Got it” for "
+                "anything they have got you. It then disappears for "
+                "everybody else, and you keep seeing the whole list, so "
+                "you are still surprised."
             ),
             "show_notes": _(
                 "Shown to everyone who can see the page. Anything you "

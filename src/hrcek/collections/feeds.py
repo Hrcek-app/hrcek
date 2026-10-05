@@ -10,13 +10,16 @@ from __future__ import annotations
 
 from typing import cast
 
+from django.contrib.auth.models import AnonymousUser
 from django.contrib.syndication.views import Feed
+from django.db.models import QuerySet
 from django.http import Http404, HttpRequest
 from django.shortcuts import get_object_or_404
 from django.utils.feedgenerator import Atom1Feed
 
 from hrcek.accounts.models import User
 from hrcek.collections.models import Collection
+from hrcek.collections.services import shared_entries
 from hrcek.entries.models import Entry
 
 
@@ -43,9 +46,14 @@ class BaseCollectionFeed(Feed):
         return obj.description
 
     def items(self, obj: Collection) -> list[Entry]:
-        # The same method the page uses, so the two cannot drift apart
-        # in what they hold or the order they hold it in.
-        return list(obj.entries()[:50])
+        return list(self.listed(obj)[:50])
+
+    def listed(self, obj: Collection) -> QuerySet[Entry]:
+        # The same function the page uses, so the two cannot drift apart
+        # in what they hold or the order they hold it in. A feed reader
+        # is nobody in particular, so a shared feed lists what an
+        # anonymous visitor would see.
+        return shared_entries(obj, AnonymousUser())
 
     def item_title(self, item: Entry) -> str:
         return item.display_title
@@ -61,6 +69,10 @@ class BaseCollectionFeed(Feed):
 
 class PrivateCollectionFeed(BaseCollectionFeed):
     """The owner's own feed for a collection at any visibility."""
+
+    def listed(self, obj: Collection) -> QuerySet[Entry]:
+        # The owner's own feed: everything, got or not.
+        return obj.entries()
 
     def get_object(self, request: HttpRequest, pk: int) -> Collection:
         if not request.user.is_authenticated:
