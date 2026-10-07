@@ -475,6 +475,10 @@ msgstr ""
 msgid "Forgotten your password?"
 msgstr ""
 
+#: src/hrcek/accounts/templates/accounts/landing.html
+msgid "No account yet? Sign up"
+msgstr ""
+
 #: src/hrcek/accounts/templates/accounts/message.html
 #: src/hrcek/core/templates/500.html
 msgid "Something went wrong"
