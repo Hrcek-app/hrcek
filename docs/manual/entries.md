@@ -133,11 +133,28 @@ date.
 Every entry has an "Edit" link, and beside it a "Delete" link, so you
 do not have to open an entry to remove it. Delete asks you to confirm
 first, and **cannot be undone** — there is no trash to recover from.
-Confirming, or choosing "Keep it" instead, takes you back to wherever
-you were looking — page 2, or a label's filtered list — rather than
-to the top of your entries. If you deleted the last entry with the
-label you were looking at, that label is gone too, so you land on all
-your entries instead.
+The question appears over the list itself, with "Keep it" ready to
+press; "Keep it", or the Escape key, closes it and leaves everything as
+it was. Confirming removes the entry from the list on the spot: the
+page does not reload, the card simply disappears, and screen readers
+announce what was deleted. If that was the last entry you had, you
+see "Nothing saved yet."; if it was the last one with the label you
+were looking at, you land on all your entries instead, since that
+label is gone too, with a note at the top saying what was deleted. If
+deleting it also left a [collection](collections.md) with nothing in
+it, that notice appears straight away, in the usual place at the top
+of the page.
+
+If a delete fails to go through — your connection drops, say — the
+entry is **not** removed, and an error at the top of the page says
+"Something went wrong. Please check and try again."
+
+With JavaScript switched off in your browser, the question is a page
+of its own, and confirming takes you back to wherever you were
+looking — page 2, or a label's filtered list — rather than to the top
+of your entries. If you deleted the last entry with the label you were
+looking at, that label is gone too, so you land on all your entries
+instead.
 
 On the edit page, **Save** keeps your changes and **Back to your
 entries** beside it leaves without saving.

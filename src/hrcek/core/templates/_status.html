@@ -1,0 +1,10 @@
+{% load i18n %}{% comment %}
+  The one live region of a page: what an in-place change did, read out
+  by screen readers. base.html renders it empty; a fragment includes it
+  with status and oob=True, and htmx moves only its text into the
+  page's region (innerHTML), so the region itself is never replaced.
+  See docs/dev/javascript.md. data-error-text is the generic message
+  js/htmx-errors.js writes here, and as an error in #messages, when a
+  request fails outright: a plain script file carries no translation,
+  so the translated string travels on the element it acts on instead.
+{% endcomment %}<div id="status" class="sr-only" role="status" aria-live="polite" data-error-text="{% trans "Something went wrong. Please check and try again." %}"{% if oob %} hx-swap-oob="innerHTML"{% endif %}>{{ status }}</div>

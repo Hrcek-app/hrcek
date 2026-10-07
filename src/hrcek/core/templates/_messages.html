@@ -1,0 +1,8 @@
+{% comment %}
+  The flash-message list: a different kind of role="status" than
+  #status — rendered with the page, not written to afterwards, holding
+  what the last request did. Always rendered, even with nothing in it,
+  so an in-place action can swap it out of band by id; a :empty rule in
+  static_src/hrcek.css keeps an empty one from changing the page's
+  look.
+{% endcomment %}<ul class="messages" id="messages" role="status"{% if oob %} hx-swap-oob="true"{% endif %}>{% for message in messages %}<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>{% endfor %}</ul>

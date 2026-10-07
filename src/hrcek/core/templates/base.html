@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
   {% comment %}
+    htmx swaps a 4xx or 5xx like any other response unless told not
+    to. An error page swapped into a form or a card is never wanted;
+    a 422 is (a form rendered back with its errors). See
+    docs/dev/javascript.md.
+  {% endcomment %}
+  <meta name="htmx-config" content='{"noSwap":[204,304,404,"5xx"]}'>
+  {% comment %}
     A theme somebody pinned with the header toggle, applied before the
     first paint. Inline and blocking on purpose: deferred, the page
     would flash in the system theme first. See static/js/theme.js.
@@ -23,10 +30,19 @@
   <link rel="icon" href="{% static 'img/favicon-32.png' %}" sizes="32x32" type="image/png">
   <link rel="apple-touch-icon" href="{% static 'img/apple-touch-icon.png' %}">
   <script src="{% static 'js/theme.js' %}" defer></script>
+  <script src="{% static 'js/vendor/htmx-4.0.0.min.js' %}" defer></script>
+  <script src="{% static 'js/confirm-dialog.js' %}" defer></script>
+  <script src="{% static 'js/delete-focus.js' %}" defer></script>
+  <script src="{% static 'js/htmx-errors.js' %}" defer></script>
   {% block head %}{% endblock %}
 </head>
-<body class="bg-surface text-ink font-sans leading-relaxed min-h-screen">
+{% comment %}
+  htmx sends the CSRF token with every request it makes from anywhere
+  in the page. See docs/dev/javascript.md.
+{% endcomment %}
+<body class="bg-surface text-ink font-sans leading-relaxed min-h-screen" hx-headers:inherited='{"X-CSRFToken": "{{ csrf_token }}"}'>
   <div class="px-4 py-10 sm:px-8 lg:px-12">
+    {% include "_status.html" with status="" oob=False %}
     <header class="mb-10 flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
       <a href="/" class="flex items-center gap-2 text-lg font-bold tracking-tight">
         {# The name is the link text; the head beside it is decoration. #}
@@ -65,11 +81,7 @@
     <main class="{% block width %}max-w-2xl{% endblock %}">
       {% block prelude %}{% endblock %}
       <h1 class="text-2xl font-bold tracking-tight mb-6">{% block heading %}{% trans "Hrček" %}{% endblock %}</h1>
-      {% if messages %}
-        <ul class="messages" role="status">
-          {% for message in messages %}<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>{% endfor %}
-        </ul>
-      {% endif %}
+      {% include "_messages.html" %}
       {% block content %}{% endblock %}
     </main>
     <footer class="mt-16 border-t border-edge pt-4">

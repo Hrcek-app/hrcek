@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hrcek 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-29 07:50+0000\n"
+"POT-Creation-Date: 2026-10-08 23:53+0000\n"
 "Language-Team: English\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
@@ -971,12 +971,14 @@ msgstr ""
 #: src/hrcek/collections/templates/collections/confirm_delete.html
 #: src/hrcek/entries/templates/entries/confirm_delete.html
 #: src/hrcek/entries/templates/entries/field_confirm_delete.html
+#: src/hrcek/entries/templates/entries/list.html
 msgid "Yes, delete it"
 msgstr ""
 
 #: src/hrcek/collections/templates/collections/confirm_delete.html
 #: src/hrcek/entries/templates/entries/confirm_delete.html
 #: src/hrcek/entries/templates/entries/field_confirm_delete.html
+#: src/hrcek/entries/templates/entries/list.html
 msgid "Keep it"
 msgstr ""
 
@@ -1305,6 +1307,10 @@ msgstr ""
 msgid "The fault is on our side, not yours. Please try again in a moment."
 msgstr ""
 
+#: src/hrcek/core/templates/_status.html
+msgid "Something went wrong. Please check and try again."
+msgstr ""
+
 #: src/hrcek/core/templates/base.html
 msgid "Main"
 msgstr ""
@@ -1357,7 +1363,8 @@ msgstr ""
 msgid "That image could not be fetched."
 msgstr ""
 
-#: src/hrcek/entries/forms.py src/hrcek/entries/templates/entries/list.html
+#: src/hrcek/entries/forms.py
+#: src/hrcek/entries/templates/entries/_tags_sidebar.html
 msgid "Tags"
 msgstr ""
 
@@ -1506,7 +1513,16 @@ msgstr ""
 msgid "This field must be one of: %(options)s."
 msgstr ""
 
+#: src/hrcek/entries/templates/entries/_empty_list.html
+msgid "Nothing saved yet."
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/_tags_sidebar.html
+msgid "All entries"
+msgstr ""
+
 #: src/hrcek/entries/templates/entries/confirm_delete.html
+#: src/hrcek/entries/templates/entries/list.html
 msgid "Delete this entry?"
 msgstr ""
 
@@ -1611,10 +1627,6 @@ msgid "Added"
 msgstr ""
 
 #: src/hrcek/entries/templates/entries/list.html
-msgid "Nothing saved yet."
-msgstr ""
-
-#: src/hrcek/entries/templates/entries/list.html
 msgid "Pages"
 msgstr ""
 
@@ -1631,10 +1643,6 @@ msgstr ""
 msgid "Older"
 msgstr ""
 
-#: src/hrcek/entries/templates/entries/list.html
-msgid "All entries"
-msgstr ""
-
 #: src/hrcek/entries/views.py
 #, python-format
 msgid "“%(name)s” has nothing in it now. It stays until you delete it."
@@ -1647,6 +1655,18 @@ msgstr ""
 #: src/hrcek/entries/views.py
 msgid "Put it back on the list?"
 msgstr ""
+
+#: src/hrcek/entries/views.py
+#, python-format
+msgid "Deleted “%(title)s”."
+msgstr ""
+
+#: src/hrcek/entries/views.py
+#, python-format
+msgid "%(count)d label collection now has nothing in it."
+msgid_plural "%(count)d label collections now have nothing in it."
+msgstr[0] ""
+msgstr[1] ""
 
 #: src/hrcek/entries/views.py
 msgid "Deleted."
