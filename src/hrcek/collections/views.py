@@ -53,6 +53,9 @@ def collection_create(request: HttpRequest) -> HttpResponse:
     collection = form.save(commit=False)
     collection.owner = owner
     collection.save()
+    # commit=False skips the many-to-many fields (visible_fields):
+    # they need the row's pk, which only exists after save() above.
+    form.save_m2m()
     messages.success(request, _("Collection made."))
     return redirect("collections:detail", pk=collection.pk)
 

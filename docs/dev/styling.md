@@ -181,11 +181,16 @@ in light and the moon in dark.
 
 ## Markup Django generates
 
-Forms render with `{{ form.as_p }}`, and Django also emits
-`class="errorlist"` and `class="helptext"`. That markup cannot carry
-utility classes, so it is styled once, by element and class selectors,
-in the `@layer components` block of the source file. The same block
-defines the small vocabulary templates use for structure:
+Most forms render with `{{ form.as_p }}`, and Django also emits
+`class="errorlist"` and `class="helptext"`. Two forms are laid out by
+hand in the same markup: the entry form renders each field through
+`entries/_field.html`, which reproduces what `as_p` emits so it can
+group fields in fieldsets, and the collection form
+(`collections/form.html`) writes out each field's label, input, errors
+and `helptext` itself around its "Show" fieldset. None of this markup
+can carry utility classes, so it is styled once, by element and class
+selectors, in the `@layer components` block of the source file. The
+same block defines the small vocabulary templates use for structure:
 
 | Class | Meaning |
 |---|---|
