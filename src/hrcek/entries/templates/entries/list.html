@@ -11,7 +11,7 @@
   </ul>
 
   {% comment %}
-    The tags come after the entries in the page, so on a phone they
+    The labels come after the entries in the page, so on a phone they
     follow the list; from lg up they sit in a column beside it.
   {% endcomment %}
   <div class="lg:grid lg:grid-cols-[minmax(0,1fr)_14rem] lg:gap-12">
@@ -34,13 +34,7 @@
                       {% endfor %}
                     </dl>
                   {% endif %}</div>
-                <div class="entry-labels">{% if entry.tags.all %}
-                    <ul class="row">
-                      {% for each in entry.tags.all %}
-                        <li><a class="tag" href="{% url 'entries:list' %}?tag={{ each.name|urlencode }}">{{ each.name }}</a></li>
-                      {% endfor %}
-                    </ul>
-                  {% endif %}</div>
+                {% include "entries/_entry_labels.html" with entry=entry %}
                 <div class="entry-actions">
                   <ul class="row">
                     <li><a href="{% url 'entries:edit' entry.pk %}">{% trans "Edit" %}</a></li>

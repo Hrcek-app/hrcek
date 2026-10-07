@@ -19,7 +19,12 @@ class Tag(models.Model):
 
     Nina's "watches" and Marko's "watches" are unrelated rows; neither
     can see the other's.
+
+    Called a tag in code, the API and the database, and a label
+    everywhere a person reads it.
     """
+
+    NAME_MAX_LENGTH = 50
 
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -27,11 +32,11 @@ class Tag(models.Model):
         related_name="tags",
         verbose_name=_("owner"),
     )
-    name = models.CharField(_("name"), max_length=50)
+    name = models.CharField(_("name"), max_length=NAME_MAX_LENGTH)
 
     class Meta:
-        verbose_name = _("tag")
-        verbose_name_plural = _("tags")
+        verbose_name = _("label")
+        verbose_name_plural = _("labels")
         ordering = ("name",)
         constraints: ClassVar[list[models.BaseConstraint]] = [
             models.UniqueConstraint(
@@ -106,7 +111,7 @@ class Entry(models.Model):
     title = models.CharField(_("title"), max_length=300, blank=True)
     notes = models.TextField(_("notes"), blank=True)
     tags = models.ManyToManyField(
-        Tag, related_name="entries", blank=True, verbose_name=_("tags")
+        Tag, related_name="entries", blank=True, verbose_name=_("labels")
     )
     created_at = models.DateTimeField(_("saved at"), auto_now_add=True)
     updated_at = models.DateTimeField(_("changed at"), auto_now=True)

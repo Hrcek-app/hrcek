@@ -97,8 +97,8 @@ gap from the one before it; the parts' own margins are dropped, so no
 combination of them adds up to a bigger gap or collapses to none.
 `entries/list.html`'s own card is different — see [the entries
 list](entries.md#the-entries-list) — a flex column of four named
-rows, spaced the same way but with the actions row pushed to the
-card's bottom instead.
+rows (head, body, labels, actions), spaced the same way but with the
+actions row pushed to the card's bottom instead.
 
 `ul.entries` is a grid that fits as many columns of at least 22rem as
 the window allows, so one column on a phone and three or four on a

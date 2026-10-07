@@ -1,11 +1,13 @@
 {% load i18n %}{% comment %}
-  The "Tags" sidebar, shared by the list page and the out-of-band
+  The "Labels" sidebar, shared by the list page, the out-of-band
   fragment a delete sends when pruning a label leaves it offering a
-  dead link. Always rendered, even with nothing in `tags`, so the swap
-  has a stable id to land on; a :empty rule in static_src/hrcek.css
-  keeps an empty one from changing the page's look, same as before a
-  tag existed to show here at all.
-{% endcomment %}<aside class="my-8 border-t border-edge pt-6 lg:sticky lg:top-8 lg:self-start" id="tags-sidebar"{% if oob %} hx-swap-oob="true"{% endif %}>{% if tags %}<h2 id="tags-heading" class="mt-0">{% trans "Tags" %}</h2>
+  dead link, and the out-of-band fragment an in-place label add or
+  remove sends for the same reason. Always rendered, even with nothing
+  in `tags`, so the swap has a stable id to land on; a :empty rule in
+  static_src/hrcek.css keeps an empty one from changing the page's
+  look, same as before a label existed to show here at all. The id and
+  the `tag`/`tags` names are the code's own — see entries.md#tags.
+{% endcomment %}<aside class="my-8 border-t border-edge pt-6 lg:sticky lg:top-8 lg:self-start" id="tags-sidebar"{% if oob %} hx-swap-oob="true"{% endif %}>{% if tags %}<h2 id="tags-heading" class="mt-0">{% trans "Labels" %}</h2>
     <nav aria-labelledby="tags-heading">
       <ul class="row">
         {% for each in tags %}

@@ -2,7 +2,7 @@
 
 An entry is one thing you want to keep: a page you mean to read, a watch
 you are pricing, a recipe. It holds a web address, a title, some notes,
-and any tags you give it.
+and any labels you give it.
 
 ## Saving something
 
@@ -14,7 +14,7 @@ Sign in and you land on your entries. "Save something" asks for:
   address instead.
 - **Notes** — anything you want to remember. Plain text; line breaks are
   kept.
-- **Tags** — separated by commas.
+- **Labels** — separated by commas.
 
 ## Saving the same address twice
 
@@ -29,23 +29,54 @@ add to an entry, edit it rather than saving the address again.
 Two different people saving the same address is unrelated. Your entries
 are yours.
 
-## Tags
+## Labels
 
-Tags are your own: nobody else sees them, and nobody else's appear in
-your list. Capitals do not make a tag different — `Watches` and
-`watches` are the same tag, and the first spelling you used is the one
-shown.
+Labels are your own: nobody else sees them, and nobody else's appear in
+your list. Capitals do not make a label different — `Watches` and
+`watches` are the same label, and the first spelling you used is the
+one shown.
 
-Every tag you have is listed under **Tags**: beside your entries on a
-wide screen, after them on a narrow one. Click a tag there, or on any
-entry, to see only the entries carrying it; the tag you are looking at
-is shown in bold, and **All entries** takes you back.
+Every label you have is listed under **Labels**: beside your entries on
+a wide screen, after them on a narrow one. Click a label there, or on
+any entry, to see only the entries carrying it; the label you are
+looking at is shown in bold, and **All entries** takes you back.
 
-**A tag disappears once nothing uses it.** Take the last entry off
-`diving` and the tag leaves the list, and its page is gone. This keeps
-the list from filling up with typos; it also means a tag is not a place
-to keep something. A collection following the tag is not deleted with
-it: see [Collections](collections.md).
+### Adding and removing labels in the list
+
+You do not have to open an entry to label it. Under each entry in your
+list, **+ Label** opens a small box: type a label and press Enter or
+**Add**. Several at once work too, separated by commas. Adding a label
+the entry already has, in any capitals, changes nothing. The box stays
+open and ready, so you can type the next one straight away — while it
+is, the same control reads **× Cancel**; click it, or press Escape, to
+close the box without adding anything.
+
+Each label on an entry has a small **×** beside it that takes it off
+that entry — only that one; other entries keep it.
+
+Both happen in place: the page does not reload, you stay where you
+were in the list, and the labels on the entry change before your eyes
+— that is the confirmation; screen readers announce what changed. If
+the change fails to go through, an error at the top of the page says
+"Something went wrong. Please check and try again.", and the entry's
+labels stay as they were. (With JavaScript switched off in your
+browser, the page reloads and brings you back to the same place
+instead, with a note at the top saying what changed.)
+
+If you were looking at a label's own list and took that label off the
+last entry carrying it, you land on all your entries instead, with a
+note saying the label was removed, because that label's list no
+longer exists — whether or not JavaScript is switched on.
+
+A label can be at most 50 characters long.
+
+**A label disappears once nothing uses it.** Take the last entry off
+`diving` and the label leaves the list, and its page is gone. This
+keeps the list from filling up with typos; it also means a label is not
+a place to keep something. A collection following the label is not
+deleted with it: see [Collections](collections.md). If that leaves the
+collection with nothing in it, that notice appears straight away too,
+in the usual place at the top of the page.
 
 ## Pictures
 
