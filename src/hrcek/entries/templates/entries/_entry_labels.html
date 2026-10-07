@@ -1,0 +1,51 @@
+{% load i18n %}{% comment %}
+  An entry's labels, with a form to remove each and one to add more
+  (always rendered, even with none yet, so there is always somewhere
+  to add the first one). labels.py answers htmx with this template
+  alone, so it is the whole div: the article's third child, which the
+  grid in static_src/hrcek.css relies on. entries/list.html's own loop
+  `{% include %}`s it the same way, with no `status`, so the page it
+  renders with never carries a second live region, messages swap or
+  sidebar swap of its own — `status` is only ever set by labels.py,
+  so it also guards draining `_messages.html` here (any notice
+  `_say_if_emptied`/`_say_if_already_got` queued, same as a delete
+  that empties a collection). See docs/dev/javascript.md.
+{% endcomment %}<div class="entry-labels" id="labels-{{ entry.pk }}">
+  <ul class="row">
+    {% for each in entry.tags.all %}
+      <li class="label-chip">
+        <a class="tag" href="{% url 'entries:list' %}?tag={{ each.name|urlencode }}">{{ each.name }}</a>
+        <form method="post" action="{% url 'entries:label_remove' entry.pk %}"
+              hx-post="{% url 'entries:label_remove' entry.pk %}"
+              hx-target="#labels-{{ entry.pk }}" hx-swap="outerHTML">
+          {% csrf_token %}<input type="hidden" name="name" value="{{ each.name }}">
+          <input type="hidden" name="next" value="{{ next|default:request.get_full_path }}">
+          <button type="submit" class="label-remove" aria-label="{% blocktrans with name=each.name %}Remove label {{ name }}{% endblocktrans %}"><span aria-hidden="true">×</span></button>
+        </form>
+      </li>
+    {% endfor %}
+    <li>
+      <details class="label-add"{% if label_open %} open{% endif %}>
+        {% comment %}
+          Two spans, CSS-toggled on details[open] (static_src/hrcek.css):
+          "+ Label" closed, "× Cancel" open — clicking the summary either
+          way is <details>'s own behaviour. The "×" is decorative,
+          aria-hidden, so the open summary's accessible name is plainly
+          "Cancel"; closed, it stays "+ Label", as before.
+        {% endcomment %}
+        <summary{% if label_removed %} autofocus{% endif %}><span class="label-add-text">{% trans "+ Label" %}</span><span class="label-cancel-text"><span aria-hidden="true">×</span> {% trans "Cancel" %}</span></summary>
+        <form method="post" action="{% url 'entries:label_add' entry.pk %}"
+              hx-post="{% url 'entries:label_add' entry.pk %}"
+              hx-target="#labels-{{ entry.pk }}" hx-swap="outerHTML">
+          {% csrf_token %}<input type="hidden" name="next" value="{{ next|default:request.get_full_path }}">
+          <label for="label-{{ entry.pk }}" class="sr-only">{% trans "New label" %}</label>
+          <input id="label-{{ entry.pk }}" name="name" required autocomplete="off"{% if label_open %} autofocus{% endif %}{% if label_error %} value="{{ label_value }}" aria-invalid="true" aria-describedby="label-{{ entry.pk }}-error"{% endif %}>
+          <button type="submit" class="secondary">{% trans "Add" %}</button>
+          {% if label_error %}<p class="errorlist" id="label-{{ entry.pk }}-error">{{ label_error }}</p>{% endif %}
+        </form>
+      </details>
+    </li>
+  </ul>
+  {% if status %}{% include "_status.html" with status=status oob=True %}{% include "_messages.html" with oob=True %}{% endif %}
+  {% if refresh_tags %}{% include "entries/_tags_sidebar.html" with tags=tags tag=tag oob=True %}{% endif %}
+</div>
