@@ -81,6 +81,15 @@ through the `width` block, which holds the classes of `<main>`:
   collection do this. On those pages, paragraphs and forms sitting
   directly in `<main>` are still capped at the same measure; only the
   lists stretch.
+- A page with nothing to orient against — a sign-in form, the 404
+  page, an error preview — sets `{% block width %}max-w-2xl
+  mx-auto{% endblock %}`. Centred, it reads as its own small page
+  rather than as content pinned to the left of a wide window. Use this
+  for every page that is only a form or a short message and has no
+  surrounding navigation of its own to anchor it: signing in, signing
+  up, resetting a password, accepting an invitation, and the 404 and
+  500 pages. An ordinary working page (the account hub, a collection)
+  keeps the default, unmoved block so it lines up with the header.
 
 Inside an entry, every part (title, notes, fields, tags, the edit
 link) keeps the same gap from the one before it; the parts' own
@@ -92,7 +101,23 @@ the window allows, so one column on a phone and three or four on a
 desktop. Every entry opens with its own hairline, because which entry
 starts a row depends on the window.
 
-## Light and dark themes
+## Flash messages
+
+Django's messages are rendered in exactly one place: `base.html`,
+right after the `<h1>` and before `{% block content %}`. No template
+has its own `{% if messages %}` block any more; a page that needs one
+gets it for free by extending `base.html`. Each message is an
+`<li class="{{ message.tags }}">` inside a single
+`<ul class="messages" role="status">`, so a success and an error on
+the same page are told apart by their tag, not by a separate markup
+shape. A message built with `format_html` (a link inviting the reader
+back to a wish list, say) renders unescaped, as `{{ message }}` always
+has — moving the markup into `base.html` changed nothing about that.
+
+The one exception is `collections/detail.html`'s "came back" notice: it
+also looks like a `ul.messages` panel, but it is not a Django message
+(it has no tag, and survives a redirect that would clear real
+messages), so it stays written out in the template.
 
 Pages follow the system theme unless somebody pins one with the toggle
 in the header. The mechanism is the token block again: two dark blocks

@@ -133,6 +133,10 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 LANGUAGE_CODE = "en"
+# English dates follow Django's own "en" locale, which is American
+# (month first, "Oct. 7, 2026"). This module overrides them to the
+# British forms Hrček's users expect. See docs/dev/i18n.md.
+FORMAT_MODULE_PATH = ["hrcek.formats"]
 LANGUAGES = [
     ("en", _("English")),
     ("sl", _("Slovenian")),

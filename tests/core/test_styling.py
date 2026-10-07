@@ -156,3 +156,9 @@ def test_the_entry_list_uses_the_whole_width(client, django_user_model):
 def test_entries_flow_into_columns_when_there_is_room():
     assert "ul.entries" in _source_css()
     assert "repeat(auto-fill,minmax(min(100%,22rem),1fr))" in _compiled_css()
+
+
+def test_messages_have_no_side_bar():
+    css = _compiled_css()
+    block = css.split(".messages", 1)[1].split("}", 1)[0]
+    assert "border-inline-start" not in block

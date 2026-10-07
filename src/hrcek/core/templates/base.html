@@ -65,6 +65,11 @@
     <main class="{% block width %}max-w-2xl{% endblock %}">
       {% block prelude %}{% endblock %}
       <h1 class="text-2xl font-bold tracking-tight mb-6">{% block heading %}{% trans "Hrček" %}{% endblock %}</h1>
+      {% if messages %}
+        <ul class="messages" role="status">
+          {% for message in messages %}<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>{% endfor %}
+        </ul>
+      {% endif %}
       {% block content %}{% endblock %}
     </main>
     <footer class="mt-16 border-t border-edge pt-4">

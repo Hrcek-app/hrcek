@@ -10,9 +10,6 @@
   {# The description is as visible as the collection itself. #}
   {% if collection.description %}<p>{{ collection.description }}</p>{% endif %}
 
-  {% if messages %}
-    <ul class="messages">{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul>
-  {% endif %}
   {% if collection.is_wish_list and not user.is_authenticated %}
     {% url 'landing' as landing %}
     <p class="kind">{% blocktrans with next=request.path|urlencode %}Signed-in Hrček users can mark what they have got. <a href="{{ landing }}?next={{ next }}">Sign in</a>{% endblocktrans %}</p>
