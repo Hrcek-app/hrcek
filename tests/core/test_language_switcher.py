@@ -28,3 +28,12 @@ def test_browser_preference_still_wins_when_nothing_is_chosen(client):
     assert "Prijava" in response.text
     response = client.get(reverse("landing"), headers={"accept-language": "en"})
     assert "Sign in" in response.text
+
+
+def test_the_page_declares_the_language_it_is_in(client):
+    """Screen readers and browser translation read `lang`, so it must
+    follow the language the page is actually shown in."""
+    english = client.get(reverse("landing"), headers={"accept-language": "en"})
+    slovene = client.get(reverse("landing"), headers={"accept-language": "sl"})
+    assert '<html lang="en">' in english.text
+    assert '<html lang="sl">' in slovene.text
