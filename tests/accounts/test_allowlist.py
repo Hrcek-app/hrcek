@@ -1,6 +1,7 @@
 import pytest
 from django.core.exceptions import ValidationError
 
+from hrcek.accounts import allowlist
 from hrcek.accounts.allowlist import is_signup_allowed
 from hrcek.accounts.models import AllowedDomain, AllowedEmail
 
@@ -58,3 +59,17 @@ def test_a_domain_must_look_like_a_domain():
 def test_domains_are_stored_normalised():
     domain = AllowedDomain.objects.create(domain="  Example.COM ")
     assert domain.domain == "example.com"
+
+
+def test_the_allowlist_is_closed_when_both_tables_are_empty():
+    assert allowlist.is_open() is False
+
+
+def test_one_allowed_domain_opens_it():
+    AllowedDomain.objects.create(domain="example.com")
+    assert allowlist.is_open() is True
+
+
+def test_one_allowed_address_opens_it():
+    AllowedEmail.objects.create(email="ana@example.org")
+    assert allowlist.is_open() is True

@@ -23,3 +23,8 @@ def is_signup_allowed(email: str) -> bool:
 
     domain = address.rsplit("@", 1)[1]
     return bool(domain) and AllowedDomain.objects.filter(domain=domain).exists()
+
+
+def is_open() -> bool:
+    """True when anybody at all may sign up, so the form is worth offering."""
+    return AllowedEmail.objects.exists() or AllowedDomain.objects.exists()

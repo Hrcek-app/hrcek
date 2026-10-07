@@ -82,9 +82,11 @@ scripts should use bearer tokens rather than session login anyway.
 ## The pages
 
 `/` is the sign-in page: `LoginView` with `redirect_authenticated_user`,
-so anyone already signed in is sent to `/accounts/me/`. It links to the
-password reset and deliberately not to signup, which would advertise a
-form that rejects most visitors.
+so anyone already signed in is sent to `/accounts/me/`. It always links
+to the password reset, and links to signup only while
+`allowlist.is_open()` — with both tables empty there is nothing to
+offer, and a link to a form that refuses every visitor would be a dead
+end.
 
 **A gap that was closed here.** Django's `AuthenticationForm` checks only
 `is_active`, so the web form used to admit unconfirmed accounts that the
@@ -173,7 +175,9 @@ decision the visitor cannot act on, so it gets its own page with
 
 `AllowedEmail` and `AllowedDomain`, both admin-managed.
 `is_signup_allowed()` matches an address exactly, or its domain
-exactly.
+exactly. `is_open()` answers the coarser question of whether either
+table has anything in it at all, which is what the landing page checks
+before it offers the signup link.
 
 Domain matching is never a suffix match: allowing `example.com` must
 not admit `notexample.com`. With both tables empty nobody may sign up,
