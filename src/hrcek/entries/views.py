@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import defaultdict
 from typing import cast
 from urllib.parse import parse_qs, urlsplit
 
@@ -21,11 +22,13 @@ from django.utils.translation import gettext as _
 from django.utils.translation import ngettext
 
 from hrcek.accounts.models import User
-from hrcek.collections.models import Collection
+from hrcek.collections.models import Collection, CollectionEntry
 from hrcek.collections.services import (
+    add_entry,
     already_got_on,
     emptied_label_collections,
     label_wish_lists_holding,
+    remove_entry,
 )
 from hrcek.core.htmx import htmx_redirect, is_htmx, vary_on_htmx
 from hrcek.core.navigation import safe_next
@@ -46,11 +49,11 @@ def _save(
     """Save the entry form and its picture, then say what happened.
 
     "Saved." comes first, then any label collection the change emptied,
-    then any label wish list it brought the entry back onto where it
-    was already got. The labels carried before are those of the entry
-    being edited and of whichever entry already holds the address,
-    because saving under an address already held updates that one
-    instead.
+    then any wish list — manual or by label — it brought the entry
+    back onto where it was already got. The labels carried before are
+    those of the entry being edited and of whichever entry already
+    holds the address, because saving under an address already held
+    updates that one instead.
     """
     address = Entry.normalise_url(form.cleaned_data["url"])
     holder = Entry.objects.filter(owner=owner, url=address).first()
@@ -67,10 +70,119 @@ def _save(
         fields=form.field_values(),
     )
     _apply_picture(entry, form)
+    # Only the edited entry's own form was ticked with its memberships;
+    # editing onto an address another entry holds saves onto that one,
+    # whose memberships that form never showed.
+    joined_manual_wish_lists = _sync_collections(
+        owner, entry, form, remove=editing is not None and entry.pk == editing.pk
+    )
     messages.success(request, _("Saved."))
     _say_if_emptied(request, owner, carried)
-    _say_if_already_got(request, entry, label_wish_lists_holding(entry) - on_wish_lists)
+    arrived_wish_lists = (
+        label_wish_lists_holding(entry) - on_wish_lists
+    ) | joined_manual_wish_lists
+    _say_if_already_got(request, entry, arrived_wish_lists)
     return entry
+
+
+def _sync_collections(
+    owner: User, entry: Entry, form: EntryForm, *, remove: bool
+) -> set[int]:
+    """Match the entry's manual memberships to what the form asked for.
+
+    `form.fields["collections"]` is already limited to this owner's
+    manual collections, so `wanted` can only hold collections add_entry
+    will accept. Returns the ids of the wish lists among them the
+    entry has just joined, so the caller can say if one already has it
+    got, the same way a label wish list does.
+
+    `remove=False` on create: the create form never shows what an
+    already-held address's entry currently belongs to (there is no
+    instance to pre-tick from), so an empty `collections` there means
+    "nothing chosen", not "take it out of everything" — re-saving a
+    bookmark under an address you already hold must never silently
+    empty its hand-picked memberships, wish lists included. Only
+    editing an existing entry, where the form is pre-ticked with what
+    it already holds, may remove — and only when the entry saved is the
+    one being edited, not another entry already holding the new address.
+    """
+    wanted = set(form.cleaned_data["collections"])
+    held = set(
+        Collection.objects.filter(
+            owner=owner, kind=Collection.MANUAL, memberships__entry=entry
+        )
+    )
+    joined = wanted - held
+    for collection in joined:
+        add_entry(collection, entry)
+    if remove:
+        for collection in held - wanted:
+            remove_entry(collection, entry)
+    return {c.pk for c in joined if c.is_wish_list}
+
+
+def _label_collections(owner: User, entry: Entry | None) -> list[Collection]:
+    """The owner's label collections that `entry` is already in.
+
+    Read-only on the entry form: a label collection decides its own
+    membership, so there is nothing here to tick.
+    """
+    if entry is None:
+        return []
+    tag_ids = entry.tags.values_list("pk", flat=True)
+    return list(
+        Collection.objects.filter(
+            owner=owner, kind=Collection.BY_LABEL, label_id__in=tag_ids
+        )
+    )
+
+
+def _attach_in_collections(owner: User, entries: list[Entry]) -> None:
+    """Set `entry.in_collections` and `entry.addable_collections`.
+
+    The first is every collection holding the entry, hand-picked or by
+    label, by name; the second the owner's hand-picked collections it
+    is not in yet, by name, for the list's "+ Collection" to offer.
+
+    Two queries in total, however many entries are on the page: one
+    for the owner's collections, one for the page's manual
+    memberships. Label membership comes from each entry's own
+    (already prefetched) tags, so it costs nothing extra.
+    """
+    owned = sorted(Collection.objects.filter(owner=owner), key=_by_name)
+    manual = [c for c in owned if c.kind == Collection.MANUAL]
+    manual_ids = {c.pk for c in manual}
+    by_label_id = {
+        c.label_id: c  # ty: ignore[unresolved-attribute]
+        for c in owned
+        if c.kind == Collection.BY_LABEL
+    }
+
+    manual_by_entry: dict[int, list[Collection]] = defaultdict(list)
+    memberships = CollectionEntry.objects.filter(
+        collection_id__in=manual_ids, entry_id__in=[e.pk for e in entries]
+    ).select_related("collection")
+    for membership in memberships:
+        manual_by_entry[membership.entry_id].append(  # ty: ignore[unresolved-attribute]
+            membership.collection
+        )
+
+    for entry in entries:
+        label_hits = [
+            by_label_id[tag.pk] for tag in entry.tags.all() if tag.pk in by_label_id
+        ]
+        held = manual_by_entry.get(entry.pk, [])
+        entry.in_collections = sorted(  # ty: ignore[unresolved-attribute]
+            [*held, *label_hits], key=_by_name
+        )
+        held_ids = {c.pk for c in held}
+        entry.addable_collections = [  # ty: ignore[unresolved-attribute]
+            c for c in manual if c.pk not in held_ids
+        ]
+
+
+def _by_name(collection: Collection) -> str:
+    return collection.name.lower()
 
 
 def _say_if_emptied(
@@ -150,6 +262,7 @@ def entry_list(request: HttpRequest) -> HttpResponse:
     # get_page, not page: it copes with a missing, non-numeric or
     # out-of-range number instead of raising.
     page = paginator.get_page(request.GET.get("page"))
+    _attach_in_collections(owner, list(page))
 
     return render(
         request,
@@ -162,11 +275,19 @@ def entry_list(request: HttpRequest) -> HttpResponse:
 def entry_create(request: HttpRequest) -> HttpResponse:
     owner = cast("User", request.user)
     if request.method != "POST":
-        return render(request, "entries/form.html", {"form": EntryForm(owner)})
+        return render(
+            request,
+            "entries/form.html",
+            {"form": EntryForm(owner), "label_collections": []},
+        )
 
     form = EntryForm(owner, request.POST, request.FILES)
     if not form.is_valid():
-        return render(request, "entries/form.html", {"form": form})
+        return render(
+            request,
+            "entries/form.html",
+            {"form": form, "label_collections": []},
+        )
 
     # A URL already held is an update, not a duplicate.
     _save(request, owner, form)
@@ -182,12 +303,24 @@ def entry_edit(request: HttpRequest, pk: int) -> HttpResponse:
         return render(
             request,
             "entries/form.html",
-            {"form": EntryForm(owner, instance=entry), "entry": entry},
+            {
+                "form": EntryForm(owner, instance=entry),
+                "entry": entry,
+                "label_collections": _label_collections(owner, entry),
+            },
         )
 
     form = EntryForm(owner, request.POST, request.FILES, instance=entry)
     if not form.is_valid():
-        return render(request, "entries/form.html", {"form": form, "entry": entry})
+        return render(
+            request,
+            "entries/form.html",
+            {
+                "form": form,
+                "entry": entry,
+                "label_collections": _label_collections(owner, entry),
+            },
+        )
 
     _save(request, owner, form, editing=entry)
     return redirect("entries:list")

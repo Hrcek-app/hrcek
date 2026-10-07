@@ -15,9 +15,8 @@ from django.views.decorators.http import require_http_methods
 from hrcek.accounts.models import User
 from hrcek.collections.errors import NOT_ON_THE_LIST
 from hrcek.collections.forms import CollectionForm
-from hrcek.collections.models import Collection, CollectionEntry
+from hrcek.collections.models import Collection
 from hrcek.collections.services import (
-    add_entry,
     get_it,
     got_by_viewer,
     got_entry_ids,
@@ -27,6 +26,7 @@ from hrcek.collections.services import (
     undo_got_it,
 )
 from hrcek.core.errors import HrcekError
+from hrcek.core.htmx import is_htmx, vary_on_htmx
 from hrcek.entries.models import Entry
 
 
@@ -61,15 +61,6 @@ def collection_create(request: HttpRequest) -> HttpResponse:
 def collection_detail(request: HttpRequest, pk: int) -> HttpResponse:
     owner = cast("User", request.user)
     collection = get_object_or_404(Collection, pk=pk, owner=owner)
-    # Only what is not already in it, and only where membership is
-    # chosen by hand at all.
-    candidates = (
-        Entry.objects.filter(owner=owner).exclude(
-            collection_memberships__collection=collection
-        )
-        if collection.kind == Collection.MANUAL
-        else Entry.objects.none()
-    )
     got = got_entry_ids(collection)
     reveal = collection.is_wish_list and request.GET.get("got") == "show"
     back = request.GET.get("back", "")
@@ -79,7 +70,6 @@ def collection_detail(request: HttpRequest, pk: int) -> HttpResponse:
         {
             "collection": collection,
             "entries": collection.entries().prefetch_related("tags"),
-            "candidates": candidates,
             "reveal": reveal,
             # Only handed to the template when asked for, so a slip
             # there cannot spoil the surprise.
@@ -136,30 +126,6 @@ def collection_delete(request: HttpRequest, pk: int) -> HttpResponse:
 
 @require_http_methods(["POST"])
 @login_required
-def collection_add_entry(request: HttpRequest, pk: int) -> HttpResponse:
-    owner = cast("User", request.user)
-    collection = get_object_or_404(Collection, pk=pk, owner=owner)
-    # Scoped to the owner, so somebody else's id is simply not found.
-    entry = get_object_or_404(Entry, pk=request.POST.get("entry"), owner=owner)
-    # Only an entry arriving is news; a second submission of one already
-    # here must not announce anything.
-    arriving = not CollectionEntry.objects.filter(
-        collection=collection, entry=entry
-    ).exists()
-    try:
-        add_entry(collection, entry)
-    except HrcekError:
-        # The only reachable cause is a label collection, whose page
-        # offers no such form; treat it as a wrong turn, not a crash.
-        messages.error(request, _("That entry cannot be added here."))
-    if arriving and entry.pk in got_entry_ids(collection):
-        url = reverse("collections:detail", args=[collection.pk])
-        return redirect(f"{url}?back={entry.pk}")
-    return redirect("collections:detail", pk=collection.pk)
-
-
-@require_http_methods(["POST"])
-@login_required
 def collection_put_back(request: HttpRequest, pk: int, entry_pk: int) -> HttpResponse:
     """The owner clears a "Got it", whoever said it."""
     owner = cast("User", request.user)
@@ -178,10 +144,29 @@ def collection_remove_entry(
     request: HttpRequest, pk: int, entry_pk: int
 ) -> HttpResponse:
     owner = cast("User", request.user)
-    collection = get_object_or_404(Collection, pk=pk, owner=owner)
+    # Only a hand-picked collection has entries to take out — the same
+    # rule as the entry's own "+ Collection" line
+    # (entries.in_collections._hand_picked); anything else is a 404.
+    collection = get_object_or_404(
+        Collection, pk=pk, owner=owner, kind=Collection.MANUAL
+    )
     entry = get_object_or_404(Entry, pk=entry_pk, owner=owner)
     remove_entry(collection, entry)
-    return redirect("collections:detail", pk=collection.pk)
+    if not is_htmx(request):
+        return vary_on_htmx(redirect("collections:detail", pk=collection.pk))
+
+    # The row itself goes by the form's own hx-swap="delete"; everything
+    # this answer says lands out of band. See docs/dev/collections.md.
+    response = render(
+        request,
+        "collections/_remove_result.html",
+        {
+            "status": _("“%(entry)s” taken out of “%(collection)s”.")
+            % {"entry": entry.display_title, "collection": collection.name},
+            "empty": not collection.entries().exists(),
+        },
+    )
+    return vary_on_htmx(response)
 
 
 def _unlisted(secret: str) -> Collection:

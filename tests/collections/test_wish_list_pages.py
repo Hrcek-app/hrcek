@@ -277,19 +277,31 @@ def test_nobody_else_can_put_back(client, wishes, ana):
     assert GotIt.objects.exists()
 
 
+def _tick(client, entry, collection):
+    """Save the entry's own form with `collection` ticked: the way an
+    entry joins a manual collection now that the collection's own page
+    offers no form for it."""
+    return client.post(
+        reverse("entries:edit", args=[entry.pk]),
+        {
+            "url": entry.url,
+            "title": entry.title,
+            "notes": "",
+            "tags": "",
+            "collections": [collection.pk],
+        },
+        follow=True,
+    )
+
+
 def test_adding_back_an_item_already_got_says_so(client, wishes, nina, ana):
     entry = _on(wishes, "Watch")
     GotIt.objects.create(collection=wishes, entry=entry, got_by=ana)
     CollectionEntry.objects.filter(entry=entry).delete()
     client.force_login(nina)
-    response = client.post(
-        reverse("collections:add_entry", args=[wishes.pk]),
-        {"entry": entry.pk},
-        follow=True,
-    )
-    page = response.content.decode()
+    page = _tick(client, entry, wishes).content.decode()
     assert "Somebody has already got this for “Birthday”." in page
-    assert reverse("collections:put_back", args=[wishes.pk, entry.pk]) in page
+    assert f"/collections/{wishes.pk}/?back={entry.pk}" in page
     assert "ana@example.com" not in page
 
 
@@ -303,12 +315,8 @@ def test_the_came_back_notice_shows_nothing_for_an_item_not_got(client, wishes, 
 def test_adding_a_fresh_item_says_nothing_of_the_sort(client, wishes, nina):
     entry = Entry.objects.create(owner=nina, url="https://example.com/new")
     client.force_login(nina)
-    response = client.post(
-        reverse("collections:add_entry", args=[wishes.pk]),
-        {"entry": entry.pk},
-        follow=True,
-    )
-    assert "already got" not in response.content.decode()
+    page = _tick(client, entry, wishes).content.decode()
+    assert "already got" not in page
 
 
 def test_a_strange_back_parameter_is_ignored(client, wishes, nina):
@@ -321,13 +329,13 @@ def test_a_strange_back_parameter_is_ignored(client, wishes, nina):
 def test_resubmitting_an_item_already_on_the_list_says_nothing(
     client, wishes, nina, ana
 ):
+    """Already a member before the save, so this is not an arrival:
+    nothing is said, got or not."""
     entry = _on(wishes, "Watch")
     GotIt.objects.create(collection=wishes, entry=entry, got_by=ana)
     client.force_login(nina)
-    response = client.post(
-        reverse("collections:add_entry", args=[wishes.pk]), {"entry": entry.pk}
-    )
-    assert response.url == f"/collections/{wishes.pk}/"
+    page = _tick(client, entry, wishes).content.decode()
+    assert "already got" not in page
 
 
 def test_the_owner_cannot_probe_through_undo(client, wishes, nina, ana):

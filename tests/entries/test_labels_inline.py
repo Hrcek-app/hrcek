@@ -458,10 +458,10 @@ def test_the_summary_carries_both_plus_label_and_cancel_text(client, person, ent
     for details[open] — see docs/dev/javascript.md."""
     body = client.get(reverse("entries:list")).content.decode()
     summary = _summary(body)
-    assert '<span class="label-add-text">+ Label</span>' in summary
+    assert '<span class="add-pill-text">+ Label</span>' in summary
     # The multiplication sign is decorative (aria-hidden), so the
     # accessible name is "Cancel" alone.
-    assert '<span class="label-cancel-text"><span aria-hidden="true">' in summary
+    assert '<span class="add-pill-cancel-text"><span aria-hidden="true">' in summary
     assert "</span> Cancel</span>" in summary
 
 

@@ -171,14 +171,132 @@ Links on the form that lead elsewhere but are part of filling it in,
 like the one to your fields, open in a new tab instead, so following
 them loses nothing.
 
+## Collections on the entry
+
+`EntryForm.collections` is a `ModelMultipleChoiceField`
+(`CheckboxSelectMultiple`) whose queryset is the owner's manual
+collections only — see
+[collections](collections.md#where-membership-is-chosen) for why that
+queryset is what keeps a crafted POST from reaching another owner's
+collection, or a by-label one. `_sync_collections` reconciles what the
+form asked for against what the entry currently holds, after the entry
+itself is saved, calling `services.add_entry`/`remove_entry` for the
+difference.
+
+**`_sync_collections` only removes when editing.** `_save` passes it
+`remove=editing is not None and entry.pk == editing.pk` — `True` from
+`entry_edit`, `False` from `entry_create`. The create form has no
+instance to pre-tick from, so it cannot show what an address already
+held belongs to; if saving over that address under an empty
+`collections` removed memberships too, re-saving a bookmark you already
+have — a plain re-import, say — would silently empty its hand-picked
+collections, wish lists included. Ticking something on the create
+form still adds it; nothing is ever taken out from there. Only the edit
+form, pre-ticked with what the entry already holds, can remove.
+
+The second half of the condition covers editing entry A to an address
+entry B already holds: `save_entry` saves onto B, and A's form was
+ticked with A's memberships, not B's, so leaving something unticked
+there says nothing about B. It only adds, as the create form does.
+
+A label collection decides its own membership, so it is never offered
+as a choice; the entry form names it instead, read-only, in
+`label_collections` — the owner's label collections whose `label_id`
+is among the entry's current tag ids. The sentence naming it
+(`entries/form.html`) is built with `blocktrans` and named variables,
+so the collection's name and the label's name are escaped like any
+other data, and its link opens in a new tab, matching every other
+link on this form.
+
+**The fieldset is left out when there is nothing in it.** With no
+manual collections to tick and no label collections to name, the
+whole `<fieldset>` is skipped; with only label collections to name,
+the checkbox group (and its help text) is left out and only the "Also
+in …" sentences render, under the same `<legend>`. Checked with
+`{% if form.collections.field.queryset or label_collections %}` —
+`field.queryset` rather than `.exists()`, so the same evaluation that
+decides this also populates the queryset's result cache that the
+widget then renders from, instead of running the query twice. Since
+`CheckboxSelectMultiple` is a fieldset-style widget, Django does not
+stamp `aria-describedby` onto it the way it does an ordinary input
+(`BoundField.build_widget_attrs` skips it for `use_fieldset` widgets),
+so the template adds it to the `<fieldset>` itself from
+`form.collections.aria_describedby`, and gives the help text's `<p>`
+the matching `id="{{ form.collections.auto_id }}_helptext"` by hand to
+match.
+
+### The "In:" line
+
+Each entry in `entries/list.html` that belongs to at least one
+collection, or could join one, shows `entries/_entry_collections.html`
+inside `entry-body`: "In:" and every collection it is in — manual by
+membership, by label through the entry's own tags — each linking to
+the collection, then a "+ Collection" pill. Building it costs two
+queries for the whole page, not one per entry:
+`views._attach_in_collections` fetches the owner's collections once,
+then the page entries' manual memberships once, and reads label
+membership off each entry's already-prefetched tags. It sets
+`entry.in_collections` and `entry.addable_collections` (the owner's
+manual collections the entry is not in, by name) before the template
+renders, so the template itself does no querying. With neither, the
+template renders nothing at all, so an `entry-body` with no notes and
+no fields still renders genuinely empty.
+
+### Adding and taking out from the list
+
+`in_collections.py` holds two views, `collection_add` and
+`collection_remove` (`POST /entries/<pk>/collections/add/` and
+`…/remove/`, field `collection`), shaped like `labels.py`: owner-only
+(`get_object_or_404(Entry, pk=pk, owner=…)`), and the posted id must be
+one of the owner's **manual** collections — somebody else's, a label
+collection, an unknown id or no number at all are the same 404, so a
+crafted post learns nothing. They call `services.add_entry` and
+`remove_entry`, both harmless when repeated.
+
+- **Each hand-picked collection** on the line carries a small × form
+  posting to `collection_remove`, its `aria-label` "Take “entry” out of
+  “collection”". A label collection stays a plain link: only its label
+  decides it.
+- **"+ Collection"** is a `<details class="add-pill collection-add
+  js-only">` listing one small form per addable collection, each
+  button labelled "Add to “collection”". It is left out when the entry
+  is already in every hand-picked collection, and it is for
+  JavaScript only: without it the entry's edit form is the way, and
+  `.js-only` keeps the pill out of sight — the whole line, while the
+  entry is in nothing yet and the pill is all it holds (see
+  [JavaScript](javascript.md#controls-for-javascript-only-js-only)).
+  Open, its summary reads **Cancel**, and Escape closes it, the same
+  as "+ Label".
+
+**Answers.** Without htmx, a redirect to `safe_next` with "Added to
+“collection”." or "Taken out of “collection”." as a message. With
+htmx, the same sentence in `#status` and this entry's
+`entries/_entry_collections.html` alone, swapped `outerHTML` over
+`#collections-<pk>`, carrying `_messages.html` with `oob=True` too.
+That is what brings the wish-list notice to the owner in place:
+adding an entry back onto a manual wish list where somebody already
+got it queues `views._say_if_already_got`'s message, exactly as
+ticking that list on the entry form does, and the fragment drains it
+into `#messages` instead of leaving it for the next page. Only a
+genuine join says it: adding to a list the entry is already on says
+nothing more. The forms declare `hx-status:4xx`/`5xx` `"swap:none"`,
+so a refused or failed request leaves the line alone and
+`js/htmx-errors.js` says so.
+
+**Focus.** After adding, `autofocus` goes on the "+ Collection"
+summary, closed, while anything is left to add; after adding the last
+one, on that collection's own ×. After taking out, on the summary,
+which the collection just left now appears under.
+
 ## The entries list
 
 Each `<article>` in `entries/list.html` always renders the same four
 direct `<div>` children, in order, whether or not they have anything
-in them: `entry-head` (title and the date added), `entry-body` (notes
-and fields), `entry-labels` (the chips, and the "+ Label" form) and
-`entry-actions` (Edit and Delete). An entry's optional picture is a
-fifth, sibling element, `a.entry-thumb`.
+in them: `entry-head` (title and the date added), `entry-body` (notes,
+fields and which collections the entry is in), `entry-labels` (the
+chips, and the "+ Label" form) and `entry-actions` (Edit and Delete).
+An entry's optional picture is a fifth, sibling element,
+`a.entry-thumb`.
 
 Always rendering all four, even empty, is what gives later branches
 somewhere to put a new row (an "In:" line, say) without touching the
@@ -198,7 +316,7 @@ is pushed to the bottom of that stretched height with a plain
 `entry-body` holds only conditional content, so the template glues its
 opening tag straight to its first `{% if %}` and its last `{% endif %}`
 straight to the closing tag, with no whitespace in between. An entry
-with no notes and no fields therefore renders
+with no notes, no fields and no collections therefore renders
 `<div class="entry-body"></div>`, genuinely empty rather than full of
 blank lines, and a `:empty` rule in `static_src/hrcek.css` hides it, so
 that row adds no gap either side of itself in the flex column.
@@ -390,7 +508,7 @@ than letting focus fall to the top of the page. The swap is
 `outerHTML`: htmx 4's `outerMorph` keeps the input's typed value across
 the swap, which would leave the added label sitting in the box. While
 open, that same summary reads **Cancel** and closes the `<details>`
-on a click or on Escape — CSS and `js/label-add.js`, not this view;
+on a click or on Escape — CSS and `js/add-pill.js`, not this view;
 see [JavaScript](javascript.md#forms-changed-in-place-the-entries-labels).
 
 **The sidebar.** Adding a label nobody had yet, or removing the last
