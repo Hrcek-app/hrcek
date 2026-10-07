@@ -1,0 +1,11 @@
+{% comment %}
+  What a successful in-place delete answers with: no page, every piece
+  out of band. htmx's "delete" swap on the entry's own <li> ignores
+  this response body entirely, so none of this needs a main target:
+  #status always; "Nothing saved yet." when the filtered list the
+  delete was started from is now empty; the "Tags" sidebar when
+  pruning a label this delete emptied left it offering a dead link;
+  the message list always, draining whatever this request queued (the
+  emptied-collection notice, with its link) so nothing is left for a
+  later page to show again.
+{% endcomment %}{% include "_status.html" with status=status oob=True %}{% if empty %}{% include "entries/_empty_list.html" with oob=True %}{% endif %}{% if refresh_tags %}{% include "entries/_tags_sidebar.html" with tags=tags tag=tag oob=True %}{% endif %}{% include "_messages.html" with oob=True %}

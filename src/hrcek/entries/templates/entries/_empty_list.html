@@ -1,0 +1,6 @@
+{% load i18n %}{% comment %}
+  "Nothing saved yet.", shared by the list page's own empty state and
+  the out-of-band fragment a delete sends when it empties the list. The
+  id is what lets htmx swap this in over the (now also empty)
+  ul.entries, whichever tag it is rendered as.
+{% endcomment %}<p id="entries-list"{% if oob %} hx-swap-oob="true"{% endif %}>{% trans "Nothing saved yet." %}</p>

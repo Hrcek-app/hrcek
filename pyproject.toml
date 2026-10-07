@@ -25,6 +25,7 @@ dev = [
     "django-stubs~=6.1.0",
     "debugpy~=1.8",
     "mjml-python~=1.4.2",
+    "pytest-playwright~=0.9.0",
 ]
 
 [build-system]
@@ -36,8 +37,11 @@ packages = ["src/hrcek"]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "hrcek.settings.test"
-addopts = "-ra --strict-markers --strict-config"
+# Browser tests are slow and need Playwright's browsers installed;
+# run them with -m browser (see docs/dev/testing.md).
+addopts = '-ra --strict-markers --strict-config -m "not browser"'
 testpaths = ["tests"]
+markers = ["browser: drives a real browser (run with -m browser)"]
 filterwarnings = ["error"]
 
 [tool.ruff]

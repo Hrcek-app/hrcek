@@ -359,6 +359,139 @@ def test_deleting_the_last_entry_offers_it_too(client, nina):
     assert Collection.objects.filter(pk=wants.pk).exists()
 
 
+def _htmx_post(client, url, data=None):
+    return client.post(url, data or {}, headers={"HX-Request": "true"})
+
+
+def test_deleting_with_htmx_does_not_redirect(client, nina):
+    """In place: 200 with a fragment, not the usual 302 to `next`."""
+    entry, _ = save_entry(nina, url="https://example.com/watch")
+    client.force_login(nina)
+    response = _htmx_post(client, reverse("entries:delete", args=[entry.pk]))
+    assert response.status_code == 200
+    assert "Location" not in response
+    assert not Entry.objects.filter(pk=entry.pk).exists()
+
+
+def test_deleting_with_htmx_announces_the_title_out_of_band(client, nina):
+    entry, _ = save_entry(nina, url="https://example.com/watch", title="A watch")
+    client.force_login(nina)
+    body = _htmx_post(client, reverse("entries:delete", args=[entry.pk])).text
+    assert 'id="status"' in body
+    assert 'hx-swap-oob="true"' in body
+    assert "Deleted “A watch”." in body
+
+
+def test_deleting_the_only_entry_with_htmx_says_nothing_saved_yet(client, nina):
+    entry, _ = save_entry(nina, url="https://example.com/watch")
+    client.force_login(nina)
+    body = _htmx_post(client, reverse("entries:delete", args=[entry.pk])).text
+    assert 'id="entries-list"' in body
+    assert "Nothing saved yet." in body
+
+
+def test_deleting_with_entries_still_left_says_nothing_about_the_list(client, nina):
+    entry, _ = save_entry(nina, url="https://example.com/watch")
+    save_entry(nina, url="https://example.com/kept")
+    client.force_login(nina)
+    body = _htmx_post(client, reverse("entries:delete", args=[entry.pk])).text
+    assert "entries-list" not in body
+
+
+def test_deleting_the_last_entry_of_a_filtered_label_with_htmx_redirects(client, nina):
+    """Pruning the filtered label leaves no fragment to swap, so this is
+    a full navigation, same as `still_there` sends the plain path to."""
+    entry, _ = save_entry(nina, url="https://example.com/rare", tag_names=["rare"])
+    save_entry(nina, url="https://example.com/common", tag_names=["common"])
+    client.force_login(nina)
+    response = _htmx_post(
+        client,
+        reverse("entries:delete", args=[entry.pk]),
+        {"next": "/entries/?tag=rare"},
+    )
+    assert response.status_code == 200
+    assert response["HX-Redirect"] == reverse("entries:list")
+    assert "entries-list" not in response.text
+
+
+def test_the_page_an_htmx_delete_redirects_to_confirms_the_delete(client, nina):
+    """The navigation replaces the page the status would have been
+    written to, so the confirmation travels as a message instead."""
+    entry, _ = save_entry(
+        nina, url="https://example.com/rare", title="Rare", tag_names=["rare"]
+    )
+    save_entry(nina, url="https://example.com/common", tag_names=["common"])
+    client.force_login(nina)
+    _htmx_post(
+        client,
+        reverse("entries:delete", args=[entry.pk]),
+        {"next": "/entries/?tag=rare"},
+    )
+    page = client.get(reverse("entries:list"))
+    assert [str(m) for m in page.context["messages"]] == ["Deleted “Rare”."]
+
+
+def test_deleting_one_of_several_tagged_entries_with_htmx_stays_in_place(client, nina):
+    """The label survives this delete, so there is still a page to
+    update in place — no redirect."""
+    entry, _ = save_entry(nina, url="https://example.com/rare", tag_names=["rare"])
+    save_entry(nina, url="https://example.com/also-rare", tag_names=["rare"])
+    client.force_login(nina)
+    response = _htmx_post(
+        client,
+        reverse("entries:delete", args=[entry.pk]),
+        {"next": "/entries/?tag=rare"},
+    )
+    assert response.status_code == 200
+    assert "HX-Redirect" not in response
+    assert "entries-list" not in response.text
+
+
+def test_deleting_with_htmx_swaps_the_emptied_collection_notice_in(client, nina):
+    """The link has nowhere sensible to live but the messages list, so
+    it is drained from the queue and shown now, not left for later."""
+    entry, _ = save_entry(nina, url="https://example.com/w", tag_names=["want"])
+    wants = _following(nina, "want")
+    client.force_login(nina)
+    response = _htmx_post(client, reverse("entries:delete", args=[entry.pk]))
+    body = response.text
+    assert 'id="messages"' in body
+    assert "has nothing in it now" in body
+    assert reverse("collections:delete", args=[wants.pk]) in body
+    # And the status text, link-free, says so briefly too.
+    assert "nothing in it" in body.split('id="status"')[1].split("</div>")[0]
+
+    # Nothing left queued for the next page to show again.
+    later = client.get(reverse("entries:list"))
+    assert "has nothing in it now" not in later.content.decode()
+
+
+def test_deleting_with_htmx_refreshes_a_pruned_tags_sidebar(client, nina):
+    """A secondary label this delete empties is gone from the owner's
+    tags too; the sidebar on screen must stop offering it."""
+    entry, _ = save_entry(
+        nina, url="https://example.com/both", tag_names=["kept", "rare"]
+    )
+    save_entry(nina, url="https://example.com/other", tag_names=["kept"])
+    client.force_login(nina)
+    body = _htmx_post(
+        client,
+        reverse("entries:delete", args=[entry.pk]),
+        {"next": "/entries/?tag=kept"},
+    ).text
+    assert 'id="tags-sidebar"' in body
+    assert 'href="?tag=kept"' in body
+    assert "rare" not in body
+
+
+def test_deleting_with_htmx_leaves_an_unrelated_tags_sidebar_alone(client, nina):
+    entry, _ = save_entry(nina, url="https://example.com/a", tag_names=["kept"])
+    save_entry(nina, url="https://example.com/b", tag_names=["kept"])
+    client.force_login(nina)
+    body = _htmx_post(client, reverse("entries:delete", args=[entry.pk])).text
+    assert "tags-sidebar" not in body
+
+
 def test_re_saving_by_address_on_the_new_form_offers_it_too(client, nina):
     save_entry(nina, url="https://example.com/w", tag_names=["want"])
     wants = _following(nina, "want")

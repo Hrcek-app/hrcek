@@ -50,15 +50,17 @@ def _scrubbed(response) -> bytes:
     """The page minus its CSRF masks.
 
     Django salts the rendered CSRF token differently on every response,
-    so the footer's language form makes byte-identical pages impossible.
-    The mask differs between any two requests, regardless of whether an
-    account exists, so it is noise to this comparison, not a signal.
+    so the footer's language form, and the token handed to htmx on
+    <body>, make byte-identical pages impossible. The mask differs
+    between any two requests, regardless of whether an account exists,
+    so it is noise to this comparison, not a signal.
     """
-    return re.sub(
+    content = re.sub(
         rb'name="csrfmiddlewaretoken" value="[^"]*"',
         b'name="csrfmiddlewaretoken" value="scrubbed"',
         response.content,
     )
+    return re.sub(rb'"X-CSRFToken": "[^"]*"', b'"X-CSRFToken": "scrubbed"', content)
 
 
 def test_an_existing_address_is_indistinguishable(client, open_domain):
