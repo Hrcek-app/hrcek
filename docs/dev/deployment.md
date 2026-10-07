@@ -246,7 +246,8 @@ On the host, as the user that runs Docker:
 
    A stolen key can then only deploy one of the published images. It
    cannot open a shell or run anything else.
-4. Record the host key: `ssh-keyscan -t ed25519 <host>`.
+4. Record the host key: `ssh-keyscan -t ed25519 <host>`, adding
+   `-p <port>` if SSH does not listen on 22.
 5. Check the lock: start `./deploy vX.Y.Z` in one shell and run it
    again in another; the second must say `Another deploy is running.`
 
@@ -256,8 +257,9 @@ On GitHub:
    tags: `main` (for the Run workflow button) and `v*`. Optionally,
    require your review.
 2. Add its secrets: `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY` (the
-   private half) and `DEPLOY_KNOWN_HOSTS` (the `ssh-keyscan` line).
-   Delete the private key file from the host afterwards.
+   private half) and `DEPLOY_KNOWN_HOSTS` (the `ssh-keyscan` line),
+   plus `DEPLOY_PORT` if SSH does not listen on 22. Delete the private
+   key file from the host afterwards.
 3. Settings → Rules → New tag ruleset for `v*`, restricting creation to
    maintainers.
 4. After the first push to `main`, make the `hrcek` package public
