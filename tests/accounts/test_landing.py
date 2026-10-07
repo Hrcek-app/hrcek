@@ -4,7 +4,7 @@ from django.shortcuts import resolve_url
 from django.urls import reverse
 from django.utils import timezone
 
-from hrcek.accounts.models import User
+from hrcek.accounts.models import AllowedDomain, AllowedEmail, User
 
 pytestmark = pytest.mark.django_db
 
@@ -36,9 +36,19 @@ def test_it_offers_a_login_form_and_a_reset_link(client):
     assert reverse("accounts:password_reset") in body
 
 
-def test_it_does_not_advertise_signup(client):
-    # The form rejects almost everyone who would find it there.
+def test_it_does_not_advertise_signup_while_nobody_may_sign_up(client):
+    # The form would reject everyone who found it there.
     assert reverse("accounts:signup") not in client.get("/").content.decode()
+
+
+def test_it_offers_signup_once_a_domain_is_allowed(client):
+    AllowedDomain.objects.create(domain="example.com")
+    assert reverse("accounts:signup") in client.get("/").content.decode()
+
+
+def test_it_offers_signup_once_an_address_is_allowed(client):
+    AllowedEmail.objects.create(email="ana@example.org")
+    assert reverse("accounts:signup") in client.get("/").content.decode()
 
 
 def test_a_signed_in_visitor_is_redirected_away(client, person):

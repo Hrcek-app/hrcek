@@ -22,6 +22,10 @@ permitted in advance, either individually or because your whole email
 domain is allowed. If it has not, you will be told so, and the way
 forward is an invitation.
 
+The sign-in page shows a "Sign up" link whenever anybody at all is
+allowed to self-register. If nobody is, the link is not shown, since
+it would only lead to a form that turns you away.
+
 After signing up you get a confirmation email. **You cannot sign in
 until you follow that link.** It expires after two days.
 
