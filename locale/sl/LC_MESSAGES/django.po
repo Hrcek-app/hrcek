@@ -813,7 +813,7 @@ msgstr "Tega ni na tem seznamu."
 
 #: src/hrcek/collections/errors.py
 msgid "Somebody else has already got this."
-msgstr "To je nekdo drug že priskrbel."
+msgstr "Nekdo drug je ta vnos že priskrbel."
 
 #: src/hrcek/collections/errors.py
 msgid "Only whoever got this can undo it."
@@ -857,7 +857,7 @@ msgid ""
 "so you are still surprised."
 msgstr ""
 "Ljudje, s katerimi ga delite, lahko pri vsem, kar so vam priskrbeli, "
-"označijo »Imam«. To potem izgine za vse druge, vi pa še naprej vidite "
+"označijo »Imam«. Ta vnos potem izgine za vse druge, vi pa še naprej vidite "
 "celoten seznam, zato vas bo še vedno presenetilo."
 
 #: src/hrcek/collections/forms.py
@@ -1116,7 +1116,7 @@ msgstr "V tej zbirki"
 
 #: src/hrcek/collections/templates/collections/detail.html
 msgid "Got"
-msgstr "Priskrbljeno"
+msgstr "Dobljeno"
 
 #: src/hrcek/collections/templates/collections/detail.html
 msgid "Take it out"
@@ -1220,7 +1220,7 @@ msgstr "Tega vnosa ni mogoče dodati sem."
 
 #: src/hrcek/collections/views.py
 msgid "Back on the list."
-msgstr "Spet na seznamu."
+msgstr "Nazaj na seznamu."
 
 #: src/hrcek/collections/views.py
 msgid "Undone. It is back on the list."
