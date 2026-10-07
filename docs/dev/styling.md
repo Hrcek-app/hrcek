@@ -91,15 +91,23 @@ through the `width` block, which holds the classes of `<main>`:
   500 pages. An ordinary working page (the account hub, a collection)
   keeps the default, unmoved block so it lines up with the header.
 
-Inside an entry, every part (title, notes, fields, tags, the edit
-link) keeps the same gap from the one before it; the parts' own
-margins are dropped, so no combination of them adds up to a bigger
-gap or collapses to none.
+Inside a collection's entry (a single `.entry-text` div: title, notes,
+fields, tags, the "Got it"/"Undo" button), every part keeps the same
+gap from the one before it; the parts' own margins are dropped, so no
+combination of them adds up to a bigger gap or collapses to none.
+`entries/list.html`'s own card is different — see [the entries
+list](entries.md#the-entries-list) — a flex column of four named
+rows, spaced the same way but with the actions row pushed to the
+card's bottom instead.
 
 `ul.entries` is a grid that fits as many columns of at least 22rem as
 the window allows, so one column on a phone and three or four on a
 desktop. Every entry opens with its own hairline, because which entry
-starts a row depends on the window.
+starts a row depends on the window. Cards sharing a visual row are
+stretched to equal height by the grid's own default alignment; that
+used to also be shared across each card's internal rows with
+`grid-template-rows: subgrid`, which made one entry's long notes push
+every other card's labels and actions down to match. It no longer is.
 
 ## Flash messages
 
@@ -185,8 +193,10 @@ defines the small vocabulary templates use for structure:
 | `stacked` | A plain vertical list |
 | `entries` | The entry list: hairline separators, field grid |
 | `messages` | Django's flash messages |
-| `entry-text` | Everything in an entry except its picture |
-| `thumb` | An entry's picture, a small square beside `entry-text` |
+| `entry-text` | A collection's entry: everything except its picture |
+| `entry-head`, `entry-body`, `entry-labels`, `entry-actions` | An `entries/list.html` card's four rows — see [the entries list](entries.md#the-entries-list) |
+| `entry-thumb` | Such a card's picture, pinned to its top end |
+| `thumb` | An entry's picture, a small square |
 | `notes` | An entry's notes, which `linebreaks` turns into paragraphs; never wrap it in a `<p>` |
 | `tag` | A tag pill |
 | `danger` | A destructive button (deletes) |

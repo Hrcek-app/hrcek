@@ -24,9 +24,11 @@ from hrcek.collections.services import (
     emptied_label_collections,
     label_wish_lists_holding,
 )
+from hrcek.core.navigation import safe_next
 from hrcek.entries import imaging
 from hrcek.entries.forms import EntryForm, FieldDefinitionForm
 from hrcek.entries.models import Entry, EntryImage, FieldDefinition, FieldValue, Tag
+from hrcek.entries.navigation import still_there
 from hrcek.entries.services import save_entry
 
 
@@ -185,9 +187,14 @@ def entry_edit(request: HttpRequest, pk: int) -> HttpResponse:
 def entry_delete(request: HttpRequest, pk: int) -> HttpResponse:
     owner = cast("User", request.user)
     entry = get_object_or_404(Entry, pk=pk, owner=owner)
+    default = reverse("entries:list")
 
     if request.method != "POST":
-        return render(request, "entries/confirm_delete.html", {"entry": entry})
+        return render(
+            request,
+            "entries/confirm_delete.html",
+            {"entry": entry, "next": safe_next(request, default)},
+        )
 
     carried = _tag_ids([entry])
     entry.delete()
@@ -195,7 +202,7 @@ def entry_delete(request: HttpRequest, pk: int) -> HttpResponse:
     Tag.prune_orphans(owner)
     messages.success(request, _("Deleted."))
     _say_if_emptied(request, owner, carried)
-    return redirect("entries:list")
+    return redirect(still_there(safe_next(request, default), owner))
 
 
 @login_required

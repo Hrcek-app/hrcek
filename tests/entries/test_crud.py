@@ -1,3 +1,5 @@
+from urllib.parse import unquote
+
 import pytest
 from django.urls import reverse
 from django.utils import timezone
@@ -169,6 +171,98 @@ def test_deleting_somebody_elses_entry_is_a_404(client, nina):
     client.force_login(nina)
     assert client.post(reverse("entries:delete", args=[theirs.pk])).status_code == 404
     assert Entry.objects.filter(pk=theirs.pk).exists()
+
+
+def test_delete_returns_to_next(client, nina):
+    entry, _ = save_entry(nina, url="https://example.com/watch")
+    client.force_login(nina)
+    response = client.post(
+        reverse("entries:delete", args=[entry.pk]), {"next": "/entries/?page=2"}
+    )
+    assert response["Location"] == "/entries/?page=2"
+
+
+def test_delete_ignores_an_off_site_next(client, nina):
+    entry, _ = save_entry(nina, url="https://example.com/watch")
+    client.force_login(nina)
+    response = client.post(
+        reverse("entries:delete", args=[entry.pk]),
+        {"next": "https://evil.example/"},
+    )
+    assert response["Location"] == reverse("entries:list")
+
+
+def test_deleting_the_last_entry_of_the_last_page_still_works(client, nina, settings):
+    """Deleting it leaves that page number out of range; the list view
+    already copes with that (Paginator.get_page), so returning there
+    must not blow up."""
+    for n in range(settings.ENTRIES_PER_PAGE + 1):
+        save_entry(nina, url=f"https://example.com/{n}")
+    client.force_login(nina)
+    last = Entry.objects.filter(owner=nina).earliest("created_at", "pk")
+    response = client.post(
+        reverse("entries:delete", args=[last.pk]),
+        {"next": "/entries/?page=2"},
+        follow=True,
+    )
+    assert response.status_code == 200
+
+
+def test_delete_from_a_filtered_page_2_returns_to_it(client, nina, settings):
+    """Not just "the list": the exact page and label filter the
+    delete was started from, round-tripped through the rendered
+    Delete link and back."""
+    for n in range(settings.ENTRIES_PER_PAGE + 1):
+        entry = Entry.objects.create(owner=nina, url=f"https://example.com/{n}")
+        Tag.set_for(entry, ["watches"])
+    client.force_login(nina)
+    current = "/entries/?tag=watches&page=2"
+    body = client.get(current).text
+    oldest = Entry.objects.filter(owner=nina).earliest("created_at", "pk")
+
+    delete_prefix = reverse("entries:delete", args=[oldest.pk]) + "?next="
+    start = body.index(delete_prefix) + len(delete_prefix)
+    next_value = unquote(body[start : body.index('"', start)])
+    assert next_value == current
+
+    response = client.post(
+        reverse("entries:delete", args=[oldest.pk]), {"next": next_value}
+    )
+    assert response["Location"] == current
+
+
+def test_deleting_the_last_entry_of_a_filtered_label_returns_to_all_entries(
+    client, nina
+):
+    """Deleting it prunes the label, and a label nothing carries has no
+    page: going back there would be a 404."""
+    entry, _ = save_entry(nina, url="https://example.com/rare", tag_names=["rare"])
+    client.force_login(nina)
+    response = client.post(
+        reverse("entries:delete", args=[entry.pk]), {"next": "/entries/?tag=Rare "}
+    )
+    assert response["Location"] == reverse("entries:list")
+    assert client.get(response["Location"]).status_code == 200
+
+
+def test_deleting_one_of_several_entries_of_a_label_returns_to_its_page(client, nina):
+    entry, _ = save_entry(nina, url="https://example.com/rare", tag_names=["rare"])
+    save_entry(nina, url="https://example.com/also-rare", tag_names=["rare"])
+    client.force_login(nina)
+    response = client.post(
+        reverse("entries:delete", args=[entry.pk]), {"next": "/entries/?tag=rare"}
+    )
+    assert response["Location"] == "/entries/?tag=rare"
+
+
+def test_the_delete_confirmation_keeps_the_way_back(client, nina):
+    entry, _ = save_entry(nina, url="https://example.com/watch")
+    client.force_login(nina)
+    body = client.get(
+        reverse("entries:delete", args=[entry.pk]), {"next": "/entries/?page=2"}
+    ).text
+    assert '<input type="hidden" name="next" value="/entries/?page=2">' in body
+    assert 'href="/entries/?page=2"' in body
 
 
 def _edit_page(client, owner):
