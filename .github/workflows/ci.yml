@@ -58,9 +58,37 @@ jobs:
       - name: Run the test suite
         run: uv run pytest
 
+  # Drives Chromium, Firefox and WebKit through the pages' JavaScript
+  # enhancements, and through the same pages with JavaScript off.
+  browser:
+    name: Browser tests
+    needs: test
+    if: github.event_name != 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7  # v10.2.0
+        with:
+          enable-cache: true
+
+      - name: Install Python
+        run: uv python install 3.13
+
+      - name: Install dependencies
+        run: uv sync --locked
+
+      - name: Install the browsers
+        run: uv run playwright install --with-deps chromium firefox webkit
+
+      - name: Run the browser tests
+        run: uv run pytest -m browser --browser chromium --browser firefox --browser webkit
+
   image:
     name: Build, smoke-test and publish the image
-    needs: test
+    # A broken enhancement must not ship either.
+    needs: [test, browser]
     if: github.event_name != 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:

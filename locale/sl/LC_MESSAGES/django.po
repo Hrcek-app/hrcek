@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hrcek 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-29 07:50+0000\n"
+"POT-Creation-Date: 2026-10-08 23:53+0000\n"
 "Language-Team: Slovenian\n"
 "Language: sl\n"
 "MIME-Version: 1.0\n"
@@ -1025,12 +1025,14 @@ msgstr "Tega ni mogoče razveljaviti."
 #: src/hrcek/collections/templates/collections/confirm_delete.html
 #: src/hrcek/entries/templates/entries/confirm_delete.html
 #: src/hrcek/entries/templates/entries/field_confirm_delete.html
+#: src/hrcek/entries/templates/entries/list.html
 msgid "Yes, delete it"
 msgstr "Da, izbriši"
 
 #: src/hrcek/collections/templates/collections/confirm_delete.html
 #: src/hrcek/entries/templates/entries/confirm_delete.html
 #: src/hrcek/entries/templates/entries/field_confirm_delete.html
+#: src/hrcek/entries/templates/entries/list.html
 msgid "Keep it"
 msgstr "Obdrži"
 
@@ -1381,6 +1383,10 @@ msgstr "Na začetno stran"
 msgid "The fault is on our side, not yours. Please try again in a moment."
 msgstr "Napaka je na naši strani, ne na vaši. Poskusite znova čez trenutek."
 
+#: src/hrcek/core/templates/_status.html
+msgid "Something went wrong. Please check and try again."
+msgstr "Nekaj je šlo narobe. Preverite in poskusite znova."
+
 #: src/hrcek/core/templates/base.html
 msgid "Main"
 msgstr "Glavni meni"
@@ -1433,7 +1439,8 @@ msgstr "Ta naslov kaže nekam, kamor Hrček ne gre."
 msgid "That image could not be fetched."
 msgstr "Te slike ni bilo mogoče prenesti."
 
-#: src/hrcek/entries/forms.py src/hrcek/entries/templates/entries/list.html
+#: src/hrcek/entries/forms.py
+#: src/hrcek/entries/templates/entries/_tags_sidebar.html
 msgid "Tags"
 msgstr "Oznake"
 
@@ -1582,7 +1589,16 @@ msgstr "To polje sprejme število."
 msgid "This field must be one of: %(options)s."
 msgstr "To polje mora biti eno od: %(options)s."
 
+#: src/hrcek/entries/templates/entries/_empty_list.html
+msgid "Nothing saved yet."
+msgstr "Zaenkrat še ni nič shranjenega."
+
+#: src/hrcek/entries/templates/entries/_tags_sidebar.html
+msgid "All entries"
+msgstr "Vsi vnosi"
+
 #: src/hrcek/entries/templates/entries/confirm_delete.html
+#: src/hrcek/entries/templates/entries/list.html
 msgid "Delete this entry?"
 msgstr "Izbrišem ta vnos?"
 
@@ -1701,10 +1717,6 @@ msgid "Added"
 msgstr "Dodano"
 
 #: src/hrcek/entries/templates/entries/list.html
-msgid "Nothing saved yet."
-msgstr "Zaenkrat še ni nič shranjenega."
-
-#: src/hrcek/entries/templates/entries/list.html
 msgid "Pages"
 msgstr "Strani"
 
@@ -1721,10 +1733,6 @@ msgstr "Stran %(current)s od %(total)s"
 msgid "Older"
 msgstr "Starejši"
 
-#: src/hrcek/entries/templates/entries/list.html
-msgid "All entries"
-msgstr "Vsi vnosi"
-
 #: src/hrcek/entries/views.py
 #, python-format
 msgid "“%(name)s” has nothing in it now. It stays until you delete it."
@@ -1737,6 +1745,20 @@ msgstr "Izbriši jo"
 #: src/hrcek/entries/views.py
 msgid "Put it back on the list?"
 msgstr "Vrni na seznam?"
+
+#: src/hrcek/entries/views.py
+#, python-format
+msgid "Deleted “%(title)s”."
+msgstr "Izbrisano: »%(title)s«."
+
+#: src/hrcek/entries/views.py
+#, python-format
+msgid "%(count)d label collection now has nothing in it."
+msgid_plural "%(count)d label collections now have nothing in it."
+msgstr[0] "%(count)d zbirka je zdaj prazna."
+msgstr[1] "%(count)d zbirki sta zdaj prazni."
+msgstr[2] "%(count)d zbirke so zdaj prazne."
+msgstr[3] "%(count)d zbirk je zdaj praznih."
 
 #: src/hrcek/entries/views.py
 msgid "Deleted."

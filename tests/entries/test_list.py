@@ -166,6 +166,16 @@ def test_an_empty_list_still_says_so(client, nina):
     assert "Nothing saved yet." in client.get(reverse("entries:list")).content.decode()
 
 
+def test_the_tags_sidebar_renders_empty_rather_than_not_at_all(client, nina):
+    """Always rendered, so an out-of-band delete fragment has a stable
+    id to land on — but with nothing in it when there are no tags, so
+    it takes no room (a :empty rule in static_src/hrcek.css)."""
+    client.force_login(nina)
+    body = client.get(reverse("entries:list")).text
+    assert 'id="tags-sidebar"></aside>' in body
+    assert "tags-heading" not in body
+
+
 def test_the_tag_filter_is_an_aside_that_follows_the_entries(client, nina):
     """The tags are not the page's main content. They sit in an aside
     placed after the entries, so on a phone they follow the list, and

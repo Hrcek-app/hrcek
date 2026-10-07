@@ -1,7 +1,9 @@
 default_install_hook_types: [pre-commit]
-# The compiled stylesheet is machine-generated; whitespace and newline
-# fixers must not touch it, or every rebuild would re-trip the hooks.
-exclude: '^src/hrcek/core/static/css/hrcek\.css$'
+# The compiled stylesheet is machine-generated, and vendored scripts
+# must stay byte-for-byte what upstream shipped (their checksums are in
+# docs/dev/javascript.md); whitespace and newline fixers must not touch
+# either.
+exclude: '^src/hrcek/core/static/css/hrcek\.css$|^src/hrcek/core/static/js/vendor/'
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
