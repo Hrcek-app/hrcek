@@ -6,10 +6,6 @@
 {% endblock %}
 {% block heading %}{{ collection.name }}{% endblock %}
 {% block content %}
-  {% if messages %}
-    <ul class="messages">{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul>
-  {% endif %}
-
   {% if collection.description %}<p>{{ collection.description }}</p>{% endif %}
 
   {% if collection.visibility == 'private' %}
