@@ -25,6 +25,16 @@ class CollectionForm(forms.ModelForm):
             "show_images",
             "visible_fields",
         )
+        widgets: ClassVar[dict[str, Any]] = {
+            "visible_fields": forms.CheckboxSelectMultiple,
+        }
+        labels: ClassVar[dict[str, Any]] = {
+            "is_wish_list": _("Wish list"),
+            "show_notes": _("Notes"),
+            "show_images": _("Pictures"),
+            "show_tags": _("Labels"),
+            "visible_fields": _("Your fields"),
+        }
         help_texts: ClassVar[dict[str, Any]] = {
             "description": _(
                 "Optional. Anyone who can see this collection sees its description too."
@@ -54,17 +64,9 @@ class CollectionForm(forms.ModelForm):
                 "everybody else, and you keep seeing the whole list, so "
                 "you are still surprised."
             ),
-            "show_notes": _(
-                "Shown to everyone who can see the page. Anything you "
-                "leave unticked stays private."
-            ),
             "show_images": _(
                 "A picture you show here can be opened by anyone who can "
                 "see this page, even outside it."
-            ),
-            "visible_fields": _(
-                "Only the fields you tick are shown. The address and the "
-                "title of each entry are always shown."
             ),
         }
 
@@ -89,6 +91,15 @@ class CollectionForm(forms.ModelForm):
         # Not required, and absent means private: a submission that
         # somehow omits it must never publish anything by accident.
         self.fields["visibility"].required = False
+        # The box sits before its label on these; a colon would point
+        # at nothing. Text inputs and selects keep Django's default.
+        for checkbox_field in (
+            "is_wish_list",
+            "show_notes",
+            "show_images",
+            "show_tags",
+        ):
+            self.fields[checkbox_field].label_suffix = ""
         if self.instance.pk:
             # Fixed once the collection exists: switching would either
             # discard what was chosen by hand or swallow a label's
