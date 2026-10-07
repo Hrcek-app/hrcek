@@ -199,6 +199,37 @@
     margin: 0;
   }
 
+  /* The "Show" group: an unstyled list, its rows laid out exactly
+     like the checkbox rows above, box before label and help text
+     dropping to its own line. */
+  form ul.checks {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  form ul.checks > li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(var(--spacing) * 2);
+    margin-block: calc(var(--spacing) * 3);
+  }
+  form ul.checks > li > input {
+    order: -1;
+    width: 1rem;
+    height: 1rem;
+    margin: 0;
+  }
+  form ul.checks > li > label {
+    display: inline;
+    margin: 0;
+    font-weight: 400;
+  }
+  form ul.checks > li > .helptext {
+    flex-basis: 100%;
+    margin: 0;
+  }
+
   /* A group of related inputs on a longer form, opened by a hairline
      and a heading, like a section of the page. */
   form fieldset {

@@ -9,8 +9,94 @@
 
   <form method="post" data-collection-form>
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">{% trans "Save" %}</button>
+    {{ form.non_field_errors }}
+
+    {{ form.name.errors }}
+    <p>{{ form.name.label_tag }} {{ form.name }}</p>
+
+    {{ form.description.errors }}
+    <p>
+      {{ form.description.label_tag }} {{ form.description }}
+      {% if form.description.help_text %}
+        <span class="helptext" id="{{ form.description.auto_id }}_helptext">{{ form.description.help_text }}</span>
+      {% endif %}
+    </p>
+
+    {% if form.kind %}
+      {{ form.kind.errors }}
+      <p>
+        {{ form.kind.label_tag }} {{ form.kind }}
+        {% if form.kind.help_text %}
+          <span class="helptext" id="{{ form.kind.auto_id }}_helptext">{{ form.kind.help_text }}</span>
+        {% endif %}
+      </p>
+
+      {{ form.label.errors }}
+      <p>
+        {{ form.label.label_tag }} {{ form.label }}
+        {% if form.label.help_text %}
+          <span class="helptext" id="{{ form.label.auto_id }}_helptext">{{ form.label.help_text }}</span>
+        {% endif %}
+      </p>
+    {% endif %}
+
+    {{ form.visibility.errors }}
+    <p>
+      {{ form.visibility.label_tag }} {{ form.visibility }}
+      {% if form.visibility.help_text %}
+        <span class="helptext" id="{{ form.visibility.auto_id }}_helptext">{{ form.visibility.help_text }}</span>
+      {% endif %}
+    </p>
+
+    {{ form.is_wish_list.errors }}
+    <p>
+      {{ form.is_wish_list.label_tag }} {{ form.is_wish_list }}
+      {% if form.is_wish_list.help_text %}
+        <span class="helptext" id="{{ form.is_wish_list.auto_id }}_helptext">{{ form.is_wish_list.help_text }}</span>
+      {% endif %}
+    </p>
+
+    {% comment %}
+      One fieldset for everything a visitor to the collection might
+      see. Each checkbox keeps its own label and, where it has one, its
+      own help directly under it; the sentence about what is private by
+      default belongs to the group as a whole, so it comes last and is
+      tied to the fieldset itself rather than to any one checkbox.
+    {% endcomment %}
+    <fieldset class="show" aria-describedby="show-helptext{% if form.visible_fields.errors %} {{ form.visible_fields.auto_id }}_error{% endif %}">
+      <legend>{% trans "Show" %}</legend>
+      <ul class="checks">
+        <li>
+          {{ form.show_notes.errors }}
+          {{ form.show_notes.label_tag }} {{ form.show_notes }}
+        </li>
+        <li>
+          {{ form.show_images.errors }}
+          {{ form.show_images.label_tag }} {{ form.show_images }}
+          {% if form.show_images.help_text %}
+            <p class="helptext" id="{{ form.show_images.auto_id }}_helptext">{{ form.show_images.help_text }}</p>
+          {% endif %}
+        </li>
+        <li>
+          {{ form.show_tags.errors }}
+          {{ form.show_tags.label_tag }} {{ form.show_tags }}
+        </li>
+        {{ form.visible_fields.errors }}
+        {% for choice in form.visible_fields %}
+          <li>{{ choice.tag }} <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label></li>
+        {% endfor %}
+      </ul>
+      <p class="helptext" id="show-helptext">{% trans "Anything you leave unticked stays private. The address and title of each entry are always shown." %}</p>
+    </fieldset>
+
+    <div class="actions">
+      <button type="submit">{% trans "Save" %}</button>
+      {% if collection %}
+        <a href="{% url 'collections:detail' collection.pk %}" target="_blank" rel="noopener">{% trans "Back to the collection" %}</a>
+      {% else %}
+        <a href="{% url 'collections:list' %}" target="_blank" rel="noopener">{% trans "Back to your collections" %}</a>
+      {% endif %}
+    </div>
   </form>
 
   {% if form.kind %}
@@ -44,9 +130,8 @@
   {% endif %}
 
   {% if collection %}
-    <p><a href="{% url 'collections:delete' collection.pk %}">{% trans "Delete this collection" %}</a></p>
-    <p><a href="{% url 'collections:detail' collection.pk %}">{% trans "Back to the collection" %}</a></p>
-  {% else %}
-    <p><a href="{% url 'collections:list' %}">{% trans "Back to your collections" %}</a></p>
+    <section class="danger-zone">
+      <p><a href="{% url 'collections:delete' collection.pk %}">{% trans "Delete this collection" %}</a></p>
+    </section>
   {% endif %}
 {% endblock %}

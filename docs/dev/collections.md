@@ -184,6 +184,26 @@ default and turned on per collection. Hidden means **absent from the
 HTML**, not styled away: the template asks before it renders, and
 `test_hidden_things_are_absent_from_the_source` holds that line.
 
+### The form's "Show" group
+
+`show_notes`, `show_images`, `show_tags` and `visible_fields` sit in
+one `<fieldset class="show">` on `CollectionForm`, under one legend,
+`visible_fields` as `CheckboxSelectMultiple` rather than the default
+multi-select — one checkbox per `FieldDefinition` the owner has. The
+checkbox fields carry an empty `label_suffix` (set per field in
+`__init__`, not on the form), so their labels read "Notes" rather than
+"Notes:"; text inputs and selects elsewhere on the form keep the
+default suffix. Pictures' own help text sits directly under its
+checkbox, tied to it by `aria-describedby` the way Django ties any
+field to its help text; the sentence describing the group as a whole
+("Anything you leave unticked stays private…") comes after the last
+checkbox and is tied to the `<fieldset>` itself the same way, since no
+single checkbox owns it.
+
+The form's way back — "Back to your collections" on create, "Back to
+the collection" on edit — opens in a new tab (`target="_blank"
+rel="noopener"`), so following it never costs what has been typed.
+
 ## Wish lists
 
 `Collection.is_wish_list` turns a shared collection into a list

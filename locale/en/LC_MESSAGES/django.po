@@ -384,6 +384,7 @@ msgid ""
 msgstr ""
 
 #: src/hrcek/accounts/templates/accounts/account.html
+#: src/hrcek/collections/forms.py
 #: src/hrcek/entries/templates/entries/fields.html
 msgid "Your fields"
 msgstr ""
@@ -787,6 +788,24 @@ msgid "Only whoever got this can undo it."
 msgstr ""
 
 #: src/hrcek/collections/forms.py
+#: src/hrcek/collections/templates/collections/detail.html
+msgid "Wish list"
+msgstr ""
+
+#: src/hrcek/collections/forms.py
+msgid "Notes"
+msgstr ""
+
+#: src/hrcek/collections/forms.py
+msgid "Pictures"
+msgstr ""
+
+#: src/hrcek/collections/forms.py src/hrcek/entries/forms.py
+#: src/hrcek/entries/templates/entries/_tags_sidebar.html
+msgid "Labels"
+msgstr ""
+
+#: src/hrcek/collections/forms.py
 msgid "Optional. Anyone who can see this collection sees its description too."
 msgstr ""
 
@@ -819,20 +838,8 @@ msgstr ""
 
 #: src/hrcek/collections/forms.py
 msgid ""
-"Shown to everyone who can see the page. Anything you leave unticked stays "
-"private."
-msgstr ""
-
-#: src/hrcek/collections/forms.py
-msgid ""
 "A picture you show here can be opened by anyone who can see this page, even "
 "outside it."
-msgstr ""
-
-#: src/hrcek/collections/forms.py
-msgid ""
-"Only the fields you tick are shown. The address and the title of each entry "
-"are always shown."
 msgstr ""
 
 #: src/hrcek/collections/forms.py
@@ -1006,10 +1013,6 @@ msgid "Public. Anyone can see this collection at:"
 msgstr ""
 
 #: src/hrcek/collections/templates/collections/detail.html
-msgid "Wish list"
-msgstr ""
-
-#: src/hrcek/collections/templates/collections/detail.html
 msgid "Hide what has been got"
 msgstr ""
 
@@ -1081,12 +1084,18 @@ msgid ""
 msgstr ""
 
 #: src/hrcek/collections/templates/collections/form.html
-#: src/hrcek/entries/templates/entries/form.html
-msgid "Save"
+msgid "Show"
 msgstr ""
 
 #: src/hrcek/collections/templates/collections/form.html
-msgid "Delete this collection"
+msgid ""
+"Anything you leave unticked stays private. The address and title of each "
+"entry are always shown."
+msgstr ""
+
+#: src/hrcek/collections/templates/collections/form.html
+#: src/hrcek/entries/templates/entries/form.html
+msgid "Save"
 msgstr ""
 
 #: src/hrcek/collections/templates/collections/form.html
@@ -1095,6 +1104,10 @@ msgstr ""
 
 #: src/hrcek/collections/templates/collections/form.html
 msgid "Back to your collections"
+msgstr ""
+
+#: src/hrcek/collections/templates/collections/form.html
+msgid "Delete this collection"
 msgstr ""
 
 #: src/hrcek/collections/templates/collections/list.html
@@ -1351,11 +1364,6 @@ msgstr ""
 
 #: src/hrcek/entries/errors.py
 msgid "That image could not be fetched."
-msgstr ""
-
-#: src/hrcek/entries/forms.py
-#: src/hrcek/entries/templates/entries/_tags_sidebar.html
-msgid "Labels"
 msgstr ""
 
 #: src/hrcek/entries/forms.py
