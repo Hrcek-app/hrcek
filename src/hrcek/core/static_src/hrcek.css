@@ -549,11 +549,13 @@
     background-color: transparent;
   }
   button.label-remove:focus-visible,
-  details.label-add > summary:focus-visible {
+  button.collection-remove:focus-visible,
+  details.add-pill > summary:focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 1px;
   }
-  details.label-add > summary {
+  /* The dashed "+ Label" and "+ Collection" pills (js/add-pill.js). */
+  details.add-pill > summary {
     display: inline-block;
     list-style: none;
     cursor: pointer;
@@ -563,24 +565,32 @@
     border-radius: calc(infinity * 1px);
     padding: calc(var(--spacing) * 0.5) calc(var(--spacing) * 2);
   }
-  details.label-add > summary::-webkit-details-marker {
+  details.add-pill > summary::-webkit-details-marker {
     display: none;
   }
-  details.label-add > summary:hover {
+  details.add-pill > summary:hover {
     color: var(--color-accent);
     border-color: var(--color-accent);
   }
   /* "+ Label" closed, "× Cancel" open — see entries/_entry_labels.html.
      display: none takes the hidden span out of the accessible name
      too, so the summary announces plainly as "Cancel" while open. */
-  details.label-add > summary .label-cancel-text {
+  details.add-pill > summary .add-pill-cancel-text {
     display: none;
   }
-  details.label-add[open] > summary .label-add-text {
+  details.add-pill[open] > summary .add-pill-text {
     display: none;
   }
-  details.label-add[open] > summary .label-cancel-text {
+  details.add-pill[open] > summary .add-pill-cancel-text {
     display: inline;
+  }
+  /* A control that only works with JavaScript is out of sight unless
+     base.html's inline script has marked the page (html.js). An
+     entry-body holding nothing else then goes too, like an empty one,
+     rather than leaving a blank row in the card. */
+  html:not(.js) .js-only,
+  html:not(.js) ul.entries article > .entry-body:not(:has(> :not(.js-only))) {
+    display: none;
   }
   /* Open, the form takes a line of its own below the pills, rather
      than hanging off whichever pill came last. */
@@ -607,6 +617,66 @@
   details.label-add .errorlist {
     flex-basis: 100%;
     margin-block: 0;
+  }
+
+  /* An entry's collections on the list (entries/_entry_collections.html):
+     "In:", each collection, a small × beside each hand-picked one, then
+     "+ Collection", which opens a list of the ones it could join. The
+     gap alone separates the names; a comma would land after the ×. */
+  .entry-collections {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: calc(var(--spacing) * 1) calc(var(--spacing) * 2);
+    font-size: var(--text-sm);
+  }
+  .entry-collections .in-label {
+    color: var(--color-muted);
+  }
+  ul.in-collections {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: calc(var(--spacing) * 1) calc(var(--spacing) * 3);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  ul.in-collections > li {
+    display: inline-flex;
+    align-items: baseline;
+  }
+  ul.in-collections form {
+    display: contents;
+  }
+  button.collection-remove {
+    padding: 0 calc(var(--spacing) * 1);
+    font-size: var(--text-xs);
+    font-weight: 400;
+    line-height: 1;
+    color: var(--color-muted);
+    background-color: transparent;
+    border-radius: calc(infinity * 1px);
+  }
+  button.collection-remove:hover {
+    color: var(--color-danger);
+    background-color: transparent;
+  }
+  /* Open, the choices take a line of their own below. */
+  details.collection-add[open] {
+    flex-basis: 100%;
+  }
+  details.collection-add ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--spacing) * 2);
+    list-style: none;
+    margin: calc(var(--spacing) * 2) 0 0;
+    padding: 0;
+  }
+  details.collection-add button {
+    padding: calc(var(--spacing) * 1) calc(var(--spacing) * 3);
+    font-size: var(--text-sm);
   }
 
   .kind {

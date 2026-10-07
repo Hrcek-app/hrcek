@@ -25,7 +25,7 @@
       </li>
     {% endfor %}
     <li>
-      <details class="label-add"{% if label_open %} open{% endif %}>
+      <details class="add-pill label-add"{% if label_open %} open{% endif %}>
         {% comment %}
           Two spans, CSS-toggled on details[open] (static_src/hrcek.css):
           "+ Label" closed, "× Cancel" open — clicking the summary either
@@ -33,7 +33,7 @@
           aria-hidden, so the open summary's accessible name is plainly
           "Cancel"; closed, it stays "+ Label", as before.
         {% endcomment %}
-        <summary{% if label_removed %} autofocus{% endif %}><span class="label-add-text">{% trans "+ Label" %}</span><span class="label-cancel-text"><span aria-hidden="true">×</span> {% trans "Cancel" %}</span></summary>
+        <summary{% if label_removed %} autofocus{% endif %}><span class="add-pill-text">{% trans "+ Label" %}</span><span class="add-pill-cancel-text"><span aria-hidden="true">×</span> {% trans "Cancel" %}</span></summary>
         <form method="post" action="{% url 'entries:label_add' entry.pk %}"
               hx-post="{% url 'entries:label_add' entry.pk %}"
               hx-target="#labels-{{ entry.pk }}" hx-swap="outerHTML">

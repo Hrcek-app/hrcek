@@ -15,6 +15,8 @@ Sign in and you land on your entries. "Save something" asks for:
 - **Notes** — anything you want to remember. Plain text; line breaks are
   kept.
 - **Labels** — separated by commas.
+- **Collections** — tick any collection you fill by hand to put this
+  entry in it straight away.
 
 ## Saving the same address twice
 
@@ -25,6 +27,18 @@ or an import can be re-run without doubling everything.
 It is also worth knowing before it surprises you. Re-saving a page with
 an empty notes box replaces the notes you had written. If you want to
 add to an entry, edit it rather than saving the address again.
+
+**Collections only ever get added this way, never taken away.** "Save
+something" has no way of showing you what the address you are about to
+save already belongs to, so ticking nothing there never empties a
+collection — wish lists included. Ticking one adds the entry to it, on
+top of whatever it already held. To take an entry out of a collection,
+edit it instead: there, the box shows what it already holds, and
+unticking something really does take it out. The one exception: if you
+change an entry's address to one another of your entries already has,
+Hrček updates that other entry, and since the box was showing the
+first entry's collections, the save only adds to it and never takes it
+out of anything.
 
 Two different people saving the same address is unrelated. Your entries
 are yours.
@@ -77,6 +91,57 @@ a place to keep something. A collection following the label is not
 deleted with it: see [Collections](collections.md). If that leaves the
 collection with nothing in it, that notice appears straight away too,
 in the usual place at the top of the page.
+
+## Collections on the entry
+
+The form for saving or editing an entry has a **Collections** box of
+its own, when you have at least one collection you fill by hand.
+Ticking one and saving puts the entry in it. On the edit form,
+unticking one and saving takes the entry out again; on "Save
+something", nothing is ever taken out — see [Saving the same address
+twice](#saving-the-same-address-twice). Several at once work too —
+tick as many as you like before saving.
+
+A collection that follows a label decides its own membership — label
+an entry and it joins; take the label off and it leaves — so it is
+never offered here as something to tick. If this entry already
+carries a label such a collection follows, the form says so instead,
+with a link to that collection that opens in a new tab. See
+[Collections](collections.md) for more about the two kinds. If you
+have no collection to tick and this entry is not named by a label one
+either, the box does not appear at all.
+
+Your entries list shows, under each entry, which of your collections
+it is in — "In:" followed by their names, each linking to the
+collection.
+
+### Adding to collections from the list
+
+You do not have to open an entry to put it in a collection you fill
+by hand. Under each entry in your list, **+ Collection** opens a short
+list of those collections the entry is not in yet; choose one and the
+entry joins it. While the list is open the control reads **× Cancel**;
+click it, or press Escape, to close it without choosing. Once an entry
+is in every collection you fill by hand, **+ Collection** is not shown.
+
+Each collection you fill by hand has a small **×** beside its name on
+the "In:" line, which takes the entry out of that collection — only
+that one. A collection that follows a label has no **×**: take the
+label off instead.
+
+Both happen in place: the page does not reload, and the "In:" line
+changes before your eyes — that is the confirmation; screen readers
+announce what changed. If you put something back on a wish list where
+somebody had already got it, a note at the top of the page tells you
+straight away, the same as when you tick that list on the entry's own
+page. If the change fails to go through, an error at the top of the
+page says "Something went wrong. Please check and try again.", and
+nothing changes.
+
+**+ Collection** needs JavaScript. With it switched off in your
+browser, use the entry's **Edit** page to choose its collections; the
+**×** still works, reloading the page and bringing you back to the
+same place.
 
 ## Pictures
 

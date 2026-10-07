@@ -1,0 +1,66 @@
+{% load i18n %}{% comment %}
+  An entry's collections on the list: "In:" and each collection holding
+  it, then "+ Collection" to add it to another hand-picked one.
+
+  in_collections.py answers htmx with this template alone, so the div is
+  the whole of it, swapped as a unit (outerHTML). entries/list.html's
+  own loop `{% include %}`s it inside div.entry-body with no `status`,
+  so the page never carries a second live region or messages swap of
+  its own. Rendered only when there is something to show or offer, so
+  an entry-body with nothing else in it still renders genuinely empty;
+  list.html asks the same question before including it, since even an
+  empty include leaves this file's final newline behind.
+
+  A hand-picked collection carries an × to take the entry out; one that
+  follows a label stays a plain link, since only the label decides it.
+  "+ Collection" is .js-only: without JavaScript the entry's edit form
+  is the way to choose collections, and this one stays out of sight.
+  So is the whole line while the entry is in nothing yet, since the
+  pill is then all it holds, and a static_src/hrcek.css rule then takes
+  an entry-body holding nothing else out of the card too.
+  Its forms declare swap:none for 4xx/5xx, so a refused or failed
+  request leaves the line as it was and js/htmx-errors.js says so.
+  See docs/dev/entries.md and docs/dev/javascript.md.
+{% endcomment %}{% if entry.in_collections or entry.addable_collections %}<div class="entry-collections{% if not entry.in_collections %} js-only{% endif %}" id="collections-{{ entry.pk }}">
+  {% if entry.in_collections %}
+    <span class="in-label">{% trans "In:" %}</span>
+    <ul class="in-collections">
+      {% for collection in entry.in_collections %}
+        <li>
+          <a href="{% url 'collections:detail' collection.pk %}">{{ collection.name }}</a>
+          {% if collection.kind == "manual" %}
+            <form method="post" action="{% url 'entries:collection_remove' entry.pk %}"
+                  hx-post="{% url 'entries:collection_remove' entry.pk %}"
+                  hx-target="#collections-{{ entry.pk }}" hx-swap="outerHTML"
+                  hx-status:4xx="swap:none" hx-status:5xx="swap:none"
+                  hx-disable="find button">
+              {% csrf_token %}<input type="hidden" name="collection" value="{{ collection.pk }}">
+              <input type="hidden" name="next" value="{{ next|default:request.get_full_path }}">
+              <button type="submit" class="collection-remove" aria-label="{% blocktrans with entry=entry.display_title collection=collection.name %}Take “{{ entry }}” out of “{{ collection }}”{% endblocktrans %}"{% if focus_remove == collection.pk %} autofocus{% endif %}><span aria-hidden="true">×</span></button>
+            </form>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+  {% if entry.addable_collections %}
+    <details class="add-pill collection-add js-only">
+      <summary{% if focus_pill %} autofocus{% endif %}><span class="add-pill-text">{% trans "+ Collection" %}</span><span class="add-pill-cancel-text"><span aria-hidden="true">×</span> {% trans "Cancel" %}</span></summary>
+      <ul>
+        {% for collection in entry.addable_collections %}
+          <li>
+            <form method="post" action="{% url 'entries:collection_add' entry.pk %}"
+                  hx-post="{% url 'entries:collection_add' entry.pk %}"
+                  hx-target="#collections-{{ entry.pk }}" hx-swap="outerHTML"
+                  hx-status:4xx="swap:none" hx-status:5xx="swap:none"
+                  hx-disable="find button">
+              {% csrf_token %}<input type="hidden" name="collection" value="{{ collection.pk }}">
+              <input type="hidden" name="next" value="{{ next|default:request.get_full_path }}">
+              <button type="submit" class="secondary" aria-label="{% blocktrans with collection=collection.name %}Add to “{{ collection }}”{% endblocktrans %}">{{ collection.name }}</button>
+            </form>
+          </li>
+        {% endfor %}
+      </ul>
+    </details>
+  {% endif %}
+</div>{% endif %}{% if status %}{% include "_status.html" with status=status oob=True %}{% include "_messages.html" with oob=True %}{% endif %}

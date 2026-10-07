@@ -51,6 +51,57 @@ orderings:
 Pages, feeds and tests all call this method. Nothing re-implements the
 ordering, so nothing can drift out of step with it.
 
+### Where membership is chosen
+
+A manual collection's membership is chosen on the *entry's* form, not
+the collection's own page. `EntryForm.collections` is a
+`ModelMultipleChoiceField`, `CheckboxSelectMultiple`, whose queryset is
+`Collection.objects.filter(owner=owner, kind=Collection.MANUAL)` — this
+owner's hand-picked collections only. That queryset is what makes a
+crafted POST naming another owner's collection, or a by-label one, an
+ordinary invalid-choice form error rather than something `add_entry`
+has to refuse: the id is simply not among the valid choices, so the
+form is invalid and nothing is written.
+
+`entries.views._sync_collections` compares what the form asked for
+against what the entry currently holds and calls `add_entry` or
+`remove_entry` for the difference, after the entry itself is saved —
+but only removes when the entry saved is the one being edited: the
+create form saved over an address already held, or an edit that moves
+an entry onto another entry's address, only ever adds, never empties a
+collection the holder already belonged to. See
+[entries](entries.md#collections-on-the-entry) for why. A label
+collection is shown on the same form, read-only, naming the label
+that puts the entry there.
+
+The entries list offers the same choice one collection at a time:
+`entries.in_collections.collection_add` and `collection_remove`,
+behind its "+ Collection" pill and the × beside each hand-picked
+collection on an entry's "In:" line. With no form queryset to lean on,
+those views look the posted id up as
+`Collection.objects.filter(pk=…, owner=owner, kind=Collection.MANUAL)`
+themselves, so somebody else's collection, a label one, or an unknown
+id is a 404 before `add_entry` is reached. Joining a manual wish list
+that way gives the same "already got" notice the entry form does. See
+[entries](entries.md#adding-and-taking-out-from-the-list).
+
+### Taking an entry out on the collection's page
+
+A manual collection's page has **Take it out** on each entry, posting
+to `views.collection_remove_entry`, which acts only on the owner's
+hand-picked collections — the same rule as the entry's own line
+(`entries.in_collections._hand_picked`); a label collection, or
+anybody else's, is a 404. Without htmx it redirects back to
+the page, as it always has. With htmx the form removes its own row
+(`hx-swap="delete"`) and the view answers with
+`collections/_remove_result.html`: `#status` naming the entry and the
+collection, `#messages` drained, and — when that was the last entry —
+`collections/_empty.html`, the page's own "Nothing in this collection
+yet.", swapped out of band over the list (both carry
+`id="collection-entries"`). Focus moves to the next row, the previous
+one, or the "In this collection" heading. See
+[JavaScript](javascript.md#removing-a-row-in-place-on-a-collections-page).
+
 ### A label left with no entries
 
 `Tag.prune_orphans` spares a tag a collection follows (see
@@ -70,8 +121,10 @@ saying anything; it has nobody to ask.
 it refuses across accounts with `HRC-COLL-0001` — a 404 code, not a
 403, on the project's usual reasoning that a 403 confirms the thing
 exists. It also refuses to add by hand to a label collection
-(`HRC-COLL-0002`), which the pages never offer but a direct POST
-could try.
+(`HRC-COLL-0002`). Neither is reachable from the entry form, since its
+`collections` field's queryset already excludes both. The checks are
+defence in depth, for any other caller of the service. A POST without
+the field is not a way round the form: it is just an empty selection.
 
 Adding twice is deliberately harmless: the page lists each entry once,
 and a double submission should not become an error somebody has to

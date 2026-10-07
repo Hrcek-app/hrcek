@@ -15,7 +15,6 @@ urlpatterns = [
     ),
     path("<int:pk>/edit/", views.collection_edit, name="edit"),
     path("<int:pk>/delete/", views.collection_delete, name="delete"),
-    path("<int:pk>/add/", views.collection_add_entry, name="add_entry"),
     path(
         "<int:pk>/remove/<int:entry_pk>/",
         views.collection_remove_entry,
