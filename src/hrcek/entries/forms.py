@@ -15,7 +15,7 @@ from hrcek.entries.services import validate_field_value
 
 class EntryForm(forms.ModelForm):
     tags = forms.CharField(
-        label=_("Tags"),
+        label=_("Labels"),
         required=False,
         help_text=_("Separated by commas."),
     )

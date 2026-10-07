@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hrcek 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-08 23:53+0000\n"
+"POT-Creation-Date: 2026-10-09 00:43+0000\n"
 "Language-Team: Slovenian\n"
 "Language: sl\n"
 "MIME-Version: 1.0\n"
@@ -933,7 +933,7 @@ msgstr "opis"
 msgid "kind"
 msgstr "vrsta"
 
-#: src/hrcek/collections/models.py
+#: src/hrcek/collections/models.py src/hrcek/entries/models.py
 msgid "label"
 msgstr "oznaka"
 
@@ -1441,7 +1441,7 @@ msgstr "Te slike ni bilo mogoče prenesti."
 
 #: src/hrcek/entries/forms.py
 #: src/hrcek/entries/templates/entries/_tags_sidebar.html
-msgid "Tags"
+msgid "Labels"
 msgstr "Oznake"
 
 #: src/hrcek/entries/forms.py
@@ -1472,12 +1472,46 @@ msgstr "Navedite datoteko ali naslov, ne obojega."
 msgid "You already have a field with that name."
 msgstr "Polje s tem imenom že imate."
 
-#: src/hrcek/entries/models.py
-msgid "tag"
-msgstr "oznaka"
+#: src/hrcek/entries/labels.py
+msgid "Type a label to add."
+msgstr "Vpišite oznako, ki jo želite dodati."
+
+#: src/hrcek/entries/labels.py
+#, python-format
+msgid ""
+"A label can be at most %(limit)d characters long; that one has %(length)d."
+msgstr "Oznaka ima lahko največ %(limit)d znakov; ta jih ima %(length)d."
+
+#: src/hrcek/entries/labels.py
+#, python-format
+msgid "Label “%(name)s” removed."
+msgstr "Oznaka »%(name)s« odstranjena."
+
+#: src/hrcek/entries/labels.py
+#, python-format
+msgid "Label %(names)s added."
+msgid_plural "Labels %(names)s added."
+msgstr[0] "Oznaka %(names)s dodana."
+msgstr[1] "Oznaki %(names)s dodani."
+msgstr[2] "Oznake %(names)s dodane."
+msgstr[3] "Oznake %(names)s dodane."
+
+#: src/hrcek/entries/labels.py
+#, python-format
+msgid "This entry already has the label %(names)s."
+msgid_plural "This entry already has the labels %(names)s."
+msgstr[0] "Ta vnos že ima oznako %(names)s."
+msgstr[1] "Ta vnos že ima oznaki %(names)s."
+msgstr[2] "Ta vnos že ima oznake %(names)s."
+msgstr[3] "Ta vnos že ima oznake %(names)s."
+
+#: src/hrcek/entries/labels.py
+#, python-format
+msgid "“%(name)s”"
+msgstr "»%(name)s«"
 
 #: src/hrcek/entries/models.py
-msgid "tags"
+msgid "labels"
 msgstr "oznake"
 
 #: src/hrcek/entries/models.py
@@ -1592,6 +1626,27 @@ msgstr "To polje mora biti eno od: %(options)s."
 #: src/hrcek/entries/templates/entries/_empty_list.html
 msgid "Nothing saved yet."
 msgstr "Zaenkrat še ni nič shranjenega."
+
+#: src/hrcek/entries/templates/entries/_entry_labels.html
+#, python-format
+msgid "Remove label %(name)s"
+msgstr "Odstrani oznako %(name)s"
+
+#: src/hrcek/entries/templates/entries/_entry_labels.html
+msgid "+ Label"
+msgstr "+ Oznaka"
+
+#: src/hrcek/entries/templates/entries/_entry_labels.html
+msgid "Cancel"
+msgstr "Prekliči"
+
+#: src/hrcek/entries/templates/entries/_entry_labels.html
+msgid "New label"
+msgstr "Nova oznaka"
+
+#: src/hrcek/entries/templates/entries/_entry_labels.html
+msgid "Add"
+msgstr "Dodaj"
 
 #: src/hrcek/entries/templates/entries/_tags_sidebar.html
 msgid "All entries"

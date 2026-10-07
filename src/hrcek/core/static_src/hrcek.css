@@ -496,7 +496,7 @@
     display: none;
   }
 
-  /* A tag pill. On your own pages it is a link to the entries carrying
+  /* A label pill. On your own pages it is a link to the entries carrying
      it; on a shared page it is plain text in the same shape. */
   .tag {
     display: inline-block;
@@ -513,6 +513,100 @@
   main a.tag:hover {
     color: var(--color-accent);
     border-color: var(--color-accent);
+  }
+
+  /* An entry's labels on the list (labels.py): each pill carries its
+     own small way off, and a dashed "+ Label" opens a little form to
+     add more. */
+  .label-chip {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--color-edge);
+    border-radius: calc(infinity * 1px);
+  }
+  .label-chip:has(a.tag:hover) {
+    border-color: var(--color-accent);
+  }
+  main .label-chip a.tag {
+    border: 0;
+    padding-inline-end: calc(var(--spacing) * 1);
+  }
+  .label-chip form {
+    display: contents;
+  }
+  button.label-remove {
+    padding: calc(var(--spacing) * 0.5) calc(var(--spacing) * 2)
+      calc(var(--spacing) * 0.5) calc(var(--spacing) * 1);
+    font-size: var(--text-xs);
+    font-weight: 400;
+    line-height: 1;
+    color: var(--color-muted);
+    background-color: transparent;
+    border-radius: calc(infinity * 1px);
+  }
+  button.label-remove:hover {
+    color: var(--color-danger);
+    background-color: transparent;
+  }
+  button.label-remove:focus-visible,
+  details.label-add > summary:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 1px;
+  }
+  details.label-add > summary {
+    display: inline-block;
+    list-style: none;
+    cursor: pointer;
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+    border: 1px dashed var(--color-edge);
+    border-radius: calc(infinity * 1px);
+    padding: calc(var(--spacing) * 0.5) calc(var(--spacing) * 2);
+  }
+  details.label-add > summary::-webkit-details-marker {
+    display: none;
+  }
+  details.label-add > summary:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+  /* "+ Label" closed, "× Cancel" open — see entries/_entry_labels.html.
+     display: none takes the hidden span out of the accessible name
+     too, so the summary announces plainly as "Cancel" while open. */
+  details.label-add > summary .label-cancel-text {
+    display: none;
+  }
+  details.label-add[open] > summary .label-add-text {
+    display: none;
+  }
+  details.label-add[open] > summary .label-cancel-text {
+    display: inline;
+  }
+  /* Open, the form takes a line of its own below the pills, rather
+     than hanging off whichever pill came last. */
+  .entry-labels li:has(> details.label-add[open]) {
+    flex-basis: 100%;
+  }
+  details.label-add form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(var(--spacing) * 2);
+    margin-block-start: calc(var(--spacing) * 2);
+  }
+  details.label-add input {
+    width: 12rem;
+    max-width: 100%;
+    padding: calc(var(--spacing) * 1) calc(var(--spacing) * 2);
+    font-size: var(--text-sm);
+  }
+  details.label-add button {
+    padding: calc(var(--spacing) * 1) calc(var(--spacing) * 3);
+    font-size: var(--text-sm);
+  }
+  details.label-add .errorlist {
+    flex-basis: 100%;
+    margin-block: 0;
   }
 
   .kind {
