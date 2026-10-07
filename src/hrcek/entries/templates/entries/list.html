@@ -33,7 +33,7 @@
                         <dd>{{ value.value }}</dd>
                       {% endfor %}
                     </dl>
-                  {% endif %}</div>
+                  {% endif %}{% if entry.in_collections or entry.addable_collections %}{% include "entries/_entry_collections.html" with entry=entry %}{% endif %}</div>
                 {% include "entries/_entry_labels.html" with entry=entry %}
                 <div class="entry-actions">
                   <ul class="row">

@@ -1,0 +1,6 @@
+{% load i18n %}{% comment %}
+  "Nothing in this collection yet.", shared by the collection page's own
+  empty state and the out-of-band fragment "Take it out" sends when it
+  empties the page. The id is what lets htmx swap this in over the (now
+  also empty) ul.entries, whichever tag it is rendered as.
+{% endcomment %}<p id="collection-entries"{% if oob %} hx-swap-oob="true"{% endif %}>{% trans "Nothing in this collection yet." %}</p>

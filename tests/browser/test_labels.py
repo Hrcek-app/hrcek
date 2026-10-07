@@ -81,8 +81,8 @@ def test_opening_the_form_shows_cancel(signed_in_page, live_server, entries):
     summary.click()
 
     expect(_labels(page, "First").locator("details")).to_have_attribute("open", "")
-    expect(summary.locator(".label-cancel-text")).to_be_visible()
-    expect(summary.locator(".label-add-text")).to_be_hidden()
+    expect(summary.locator(".add-pill-cancel-text")).to_be_visible()
+    expect(summary.locator(".add-pill-text")).to_be_hidden()
     expect(summary).to_have_accessible_name("Cancel")
 
 
@@ -96,7 +96,7 @@ def test_clicking_cancel_closes_the_form(signed_in_page, live_server, entries):
     summary.click()
 
     expect(_labels(page, "First").locator("details")).not_to_have_attribute("open", "")
-    expect(summary.locator(".label-add-text")).to_be_visible()
+    expect(summary.locator(".add-pill-text")).to_be_visible()
     expect(summary).to_have_accessible_name("+ Label")
 
 

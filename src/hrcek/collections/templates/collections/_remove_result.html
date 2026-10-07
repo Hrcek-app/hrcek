@@ -1,0 +1,7 @@
+{% comment %}
+  What "Take it out" answers htmx with: no page, every piece out of
+  band. The form's hx-swap="delete" on its own row ignores this body
+  entirely: #status always; "Nothing in this collection yet." when that
+  was the last entry; the message list, draining whatever this request
+  queued, so nothing is left for a later page to show again.
+{% endcomment %}{% include "_status.html" with status=status oob=True %}{% if empty %}{% include "collections/_empty.html" with oob=True %}{% endif %}{% include "_messages.html" with oob=True %}

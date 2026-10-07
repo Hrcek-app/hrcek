@@ -118,8 +118,12 @@ def test_the_list_does_not_query_per_entry_or_load_blobs(
     client.force_login(nina)
 
     # One query for the page of entries (image joined in), plus the
-    # prefetches and session/user lookups — not one more per entry.
-    with django_assert_num_queries(7):
+    # prefetches and session/user lookups, plus one for the owner's
+    # collections (for the "In:" line) — empty here, so the second
+    # query _attach_in_collections could run, for the page's manual
+    # memberships, is skipped rather than issued with an empty id
+    # list. Not one more per entry either way.
+    with django_assert_num_queries(8):
         page = client.get(reverse("entries:list"))
     assert page.status_code == 200
 

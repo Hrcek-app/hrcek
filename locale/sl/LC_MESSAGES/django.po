@@ -1005,6 +1005,10 @@ msgstr "oznaka »Imam«"
 msgid "got its"
 msgstr "oznake »Imam«"
 
+#: src/hrcek/collections/templates/collections/_empty.html
+msgid "Nothing in this collection yet."
+msgstr "V tej zbirki še ni ničesar."
+
 #: src/hrcek/collections/templates/collections/confirm_delete.html
 msgid "Delete this collection?"
 msgstr "Izbrišem to zbirko?"
@@ -1103,20 +1107,9 @@ msgstr ""
 "tu; odstranite oznako in izgine. Ročno ni treba dodajati ničesar."
 
 #: src/hrcek/collections/templates/collections/detail.html
-msgid "Add an entry"
-msgstr "Dodaj vnos"
-
-#: src/hrcek/collections/templates/collections/detail.html
-msgid "Entry"
-msgstr "Vnos"
-
-#: src/hrcek/collections/templates/collections/detail.html
-msgid "Add it"
-msgstr "Dodaj"
-
-#: src/hrcek/collections/templates/collections/detail.html
-msgid "Every entry you have is already in this collection."
-msgstr "Vsi vaši vnosi so že v tej zbirki."
+msgid "Tick this collection on an entry's own edit page to put it here."
+msgstr ""
+"Obkljukajte to zbirko na obrazcu za urejanje vnosa, da ga uvrstite sem."
 
 #: src/hrcek/collections/templates/collections/detail.html
 msgid "In this collection"
@@ -1129,10 +1122,6 @@ msgstr "Dobljeno"
 #: src/hrcek/collections/templates/collections/detail.html
 msgid "Take it out"
 msgstr "Odstrani"
-
-#: src/hrcek/collections/templates/collections/detail.html
-msgid "Nothing in this collection yet."
-msgstr "V tej zbirki še ni ničesar."
 
 #: src/hrcek/collections/templates/collections/form.html
 msgid "Edit this collection"
@@ -1223,12 +1212,13 @@ msgid "Collection deleted. Its entries are untouched."
 msgstr "Zbirka je izbrisana. Njeni vnosi ostajajo nedotaknjeni."
 
 #: src/hrcek/collections/views.py
-msgid "That entry cannot be added here."
-msgstr "Tega vnosa ni mogoče dodati sem."
-
-#: src/hrcek/collections/views.py
 msgid "Back on the list."
 msgstr "Nazaj na seznamu."
+
+#: src/hrcek/collections/views.py
+#, python-format
+msgid "“%(entry)s” taken out of “%(collection)s”."
+msgstr "»%(entry)s« odstranjeno iz »%(collection)s«."
 
 #: src/hrcek/collections/views.py
 msgid "Undone. It is back on the list."
@@ -1395,7 +1385,8 @@ msgstr "Glavni meni"
 msgid "Entries"
 msgstr "Vnosi"
 
-#: src/hrcek/core/templates/base.html
+#: src/hrcek/core/templates/base.html src/hrcek/entries/forms.py
+#: src/hrcek/entries/templates/entries/form.html
 msgid "Collections"
 msgstr "Zbirke"
 
@@ -1465,12 +1456,26 @@ msgid "Remove the picture"
 msgstr "Odstrani sliko"
 
 #: src/hrcek/entries/forms.py
+msgid "Collections that follow a label decide for themselves."
+msgstr "Zbirke, ki sledijo oznaki, se odločajo same."
+
+#: src/hrcek/entries/forms.py
 msgid "Give a file or an address, not both."
 msgstr "Navedite datoteko ali naslov, ne obojega."
 
 #: src/hrcek/entries/forms.py
 msgid "You already have a field with that name."
 msgstr "Polje s tem imenom že imate."
+
+#: src/hrcek/entries/in_collections.py
+#, python-format
+msgid "Added to “%(collection)s”."
+msgstr "Dodano v »%(collection)s«."
+
+#: src/hrcek/entries/in_collections.py
+#, python-format
+msgid "Taken out of “%(collection)s”."
+msgstr "Odstranjeno iz »%(collection)s«."
 
 #: src/hrcek/entries/labels.py
 msgid "Type a label to add."
@@ -1627,6 +1632,29 @@ msgstr "To polje mora biti eno od: %(options)s."
 msgid "Nothing saved yet."
 msgstr "Zaenkrat še ni nič shranjenega."
 
+#: src/hrcek/entries/templates/entries/_entry_collections.html
+msgid "In:"
+msgstr "V:"
+
+#: src/hrcek/entries/templates/entries/_entry_collections.html
+#, python-format
+msgid "Take “%(entry)s” out of “%(collection)s”"
+msgstr "Odstrani »%(entry)s« iz »%(collection)s«"
+
+#: src/hrcek/entries/templates/entries/_entry_collections.html
+msgid "+ Collection"
+msgstr "+ Zbirka"
+
+#: src/hrcek/entries/templates/entries/_entry_collections.html
+#: src/hrcek/entries/templates/entries/_entry_labels.html
+msgid "Cancel"
+msgstr "Prekliči"
+
+#: src/hrcek/entries/templates/entries/_entry_collections.html
+#, python-format
+msgid "Add to “%(collection)s”"
+msgstr "Dodaj v »%(collection)s«"
+
 #: src/hrcek/entries/templates/entries/_entry_labels.html
 #, python-format
 msgid "Remove label %(name)s"
@@ -1635,10 +1663,6 @@ msgstr "Odstrani oznako %(name)s"
 #: src/hrcek/entries/templates/entries/_entry_labels.html
 msgid "+ Label"
 msgstr "+ Oznaka"
-
-#: src/hrcek/entries/templates/entries/_entry_labels.html
-msgid "Cancel"
-msgstr "Prekliči"
 
 #: src/hrcek/entries/templates/entries/_entry_labels.html
 msgid "New label"
@@ -1738,6 +1762,15 @@ msgstr ""
 "href=\"%(fields_url)s\" target=\"_blank\" rel=\"noopener\">svoja polja</a>, "
 "ki se odprejo v novem zavihku. Novo polje se tu prikaže, ko ta obrazec "
 "naslednjič odprete."
+
+#: src/hrcek/entries/templates/entries/form.html
+#, python-format
+msgid ""
+"Also in <a href=\"%(url)s\" target=\"_blank\" rel=\"noopener\">%(name)s</a>, "
+"because it carries the label %(label)s."
+msgstr ""
+"Tudi v <a href=\"%(url)s\" target=\"_blank\" rel=\"noopener\">%(name)s</a>, "
+"ker ima oznako %(label)s."
 
 #: src/hrcek/entries/templates/entries/form.html
 msgid "Picture"
