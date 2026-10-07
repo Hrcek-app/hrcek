@@ -3,6 +3,7 @@ from django.urls import include, path
 
 from hrcek.accounts import views as account_views
 from hrcek.api import api
+from hrcek.core import views as core_views
 
 urlpatterns = [
     path("", account_views.landing, name="landing"),
@@ -17,4 +18,6 @@ urlpatterns = [
     # /collections/, so a shared link stays short.
     path("", include("hrcek.collections.shared_urls")),
     path("api/", api.urls),
+    # A superuser's way to see the error pages; a 404 for anyone else.
+    path("errors/<int:code>/", core_views.error_preview, name="error_preview"),
 ]

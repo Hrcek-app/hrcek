@@ -127,6 +127,15 @@
 }
 
 @layer components {
+  /* The hamster on the 404 and 500 pages: decoration above the
+     heading, never wider than a phone or than it was drawn. */
+  img.error-picture {
+    display: block;
+    inline-size: min(100%, 16rem);
+    block-size: auto;
+    margin-block-end: calc(var(--spacing) * 6);
+  }
+
   form p {
     margin-block: calc(var(--spacing) * 4);
   }

@@ -86,3 +86,27 @@ report.
 Unexpected exceptions are reported explicitly from the API's catch-all
 handler, because django-ninja handles them before Django's middleware
 would see them.
+
+## Error pages
+
+With `DEBUG` off, Django renders `core/templates/404.html` and
+`500.html` for pages; the API answers with its JSON errors instead.
+
+- **404** extends `base.html`. It is neutral about why: Hrček answers
+  404 for things that exist but are not yours, and the page must not
+  hint otherwise.
+- **500** stands alone. Django renders it with an empty context — no
+  request, no user, no CSRF token — and the fault may be the database
+  or a template, so it uses no navigation, forms or URL lookups. The
+  language active for the request still applies.
+
+A superuser can preview both at `/errors/404/` and `/errors/500/`;
+nothing links there, since only a developer can change the pages. The
+preview calls
+Django's own `page_not_found` and `server_error` handlers, so it shows
+exactly what a visitor gets, with the real status code, whatever
+`DEBUG` is. Anyone else gets the ordinary 404.
+
+`tests/core/error_urls.py` adds an address that always raises, which
+`tests/core/test_error_pages.py` uses to reach the 500 page the way a
+real fault does.

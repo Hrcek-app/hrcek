@@ -1,0 +1,17 @@
+{% extends "base.html" %}{% load i18n static %}
+{% block title %}{% trans "Page not found" %} · {% trans "Hrček" %}{% endblock %}
+{% block prelude %}
+  {# Decoration: the heading says what happened. #}
+  <img class="error-picture" src="{% static 'img/hrcek-404.png' %}" alt="" width="600" height="503">
+{% endblock %}
+{% block heading %}{% trans "Page not found" %}{% endblock %}
+{% block content %}
+  {# Neutral on purpose: Hrček answers 404 for what is not yours too, #}
+  {# and this page must not hint that anything exists. #}
+  <p>{% trans "There is nothing at this address. It may have moved or been deleted, or the link may be wrong." %}</p>
+  {% if user.is_authenticated %}
+    <p><a href="{% url 'entries:list' %}">{% trans "Back to your entries" %}</a></p>
+  {% else %}
+    <p><a href="{% url 'landing' %}">{% trans "Go to the start page" %}</a></p>
+  {% endif %}
+{% endblock %}

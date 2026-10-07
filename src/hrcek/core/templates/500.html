@@ -1,0 +1,43 @@
+{% load i18n static %}{% get_current_language as language %}<!doctype html>
+{% comment %}
+  Standalone, not an extension of base.html. Django renders this page
+  with an empty context: no request, no user, no CSRF token, and the
+  fault may lie in the database or a template. So it uses nothing that
+  needs any of those — no navigation, no forms, no URL lookups — only
+  the stylesheet, the theme, the picture and the words.
+{% endcomment %}
+<html lang="{{ language }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <script>
+    try {
+      const pin = localStorage.getItem("hrcek-theme");
+      if (pin === "light" || pin === "dark") {
+        document.documentElement.dataset.theme = pin;
+        document.querySelector('meta[name="color-scheme"]').content = pin;
+      }
+    } catch {}
+  </script>
+  <title>{% trans "Something went wrong" %} · {% trans "Hrček" %}</title>
+  <link rel="stylesheet" href="{% static 'css/hrcek.css' %}">
+  <link rel="icon" href="{% static 'img/favicon-32.png' %}" sizes="32x32" type="image/png">
+</head>
+<body class="bg-surface text-ink font-sans leading-relaxed min-h-screen">
+  <div class="px-4 py-10 sm:px-8 lg:px-12">
+    <header class="mb-10">
+      <a href="/" class="flex items-center gap-2 text-lg font-bold tracking-tight">
+        <img src="{% static 'img/apple-touch-icon.png' %}" alt="" width="32" height="32" class="size-8">
+        {% trans "Hrček" %}
+      </a>
+    </header>
+    <main class="max-w-2xl">
+      <img class="error-picture" src="{% static 'img/hrcek-500.png' %}" alt="" width="600" height="591">
+      <h1 class="text-2xl font-bold tracking-tight mb-6">{% trans "Something went wrong" %}</h1>
+      <p>{% trans "The fault is on our side, not yours. Please try again in a moment." %}</p>
+      <p><a href="/">{% trans "Go to the start page" %}</a></p>
+    </main>
+  </div>
+</body>
+</html>

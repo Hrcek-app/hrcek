@@ -496,6 +496,7 @@ msgid "Forgotten your password?"
 msgstr "Ste pozabili geslo?"
 
 #: src/hrcek/accounts/templates/accounts/message.html
+#: src/hrcek/core/templates/500.html
 msgid "Something went wrong"
 msgstr "Nekaj je šlo narobe"
 
@@ -1344,9 +1345,36 @@ msgstr "še ni bila izvožena"
 msgid "the API has changed since it was exported"
 msgstr "API se je od izvoza spremenil"
 
+#: src/hrcek/core/templates/404.html
+msgid "Page not found"
+msgstr "Strani ni mogoče najti"
+
+#: src/hrcek/core/templates/404.html src/hrcek/core/templates/500.html
 #: src/hrcek/core/templates/base.html
 msgid "Hrček"
 msgstr "Hrček"
+
+#: src/hrcek/core/templates/404.html
+msgid ""
+"There is nothing at this address. It may have moved or been deleted, or the "
+"link may be wrong."
+msgstr ""
+"Na tem naslovu ni ničesar. Morda je bilo premaknjeno ali izbrisano, morda pa "
+"je povezava napačna."
+
+#: src/hrcek/core/templates/404.html
+#: src/hrcek/entries/templates/entries/fields.html
+#: src/hrcek/entries/templates/entries/form.html
+msgid "Back to your entries"
+msgstr "Nazaj na vaše vnose"
+
+#: src/hrcek/core/templates/404.html src/hrcek/core/templates/500.html
+msgid "Go to the start page"
+msgstr "Na začetno stran"
+
+#: src/hrcek/core/templates/500.html
+msgid "The fault is on our side, not yours. Please try again in a moment."
+msgstr "Napaka je na naši strani, ne na vaši. Poskusite znova čez trenutek."
 
 #: src/hrcek/core/templates/base.html
 msgid "Main"
@@ -1612,11 +1640,6 @@ msgstr "Dodajanje polja"
 #: src/hrcek/entries/templates/entries/fields.html
 msgid "Add the field"
 msgstr "Dodaj polje"
-
-#: src/hrcek/entries/templates/entries/fields.html
-#: src/hrcek/entries/templates/entries/form.html
-msgid "Back to your entries"
-msgstr "Nazaj na vaše vnose"
 
 #: src/hrcek/entries/templates/entries/form.html
 msgid "Edit entry"

@@ -476,6 +476,7 @@ msgid "Forgotten your password?"
 msgstr ""
 
 #: src/hrcek/accounts/templates/accounts/message.html
+#: src/hrcek/core/templates/500.html
 msgid "Something went wrong"
 msgstr ""
 
@@ -1270,8 +1271,33 @@ msgstr ""
 msgid "the API has changed since it was exported"
 msgstr ""
 
+#: src/hrcek/core/templates/404.html
+msgid "Page not found"
+msgstr ""
+
+#: src/hrcek/core/templates/404.html src/hrcek/core/templates/500.html
 #: src/hrcek/core/templates/base.html
 msgid "Hrček"
+msgstr ""
+
+#: src/hrcek/core/templates/404.html
+msgid ""
+"There is nothing at this address. It may have moved or been deleted, or the "
+"link may be wrong."
+msgstr ""
+
+#: src/hrcek/core/templates/404.html
+#: src/hrcek/entries/templates/entries/fields.html
+#: src/hrcek/entries/templates/entries/form.html
+msgid "Back to your entries"
+msgstr ""
+
+#: src/hrcek/core/templates/404.html src/hrcek/core/templates/500.html
+msgid "Go to the start page"
+msgstr ""
+
+#: src/hrcek/core/templates/500.html
+msgid "The fault is on our side, not yours. Please try again in a moment."
 msgstr ""
 
 #: src/hrcek/core/templates/base.html
@@ -1529,11 +1555,6 @@ msgstr ""
 
 #: src/hrcek/entries/templates/entries/fields.html
 msgid "Add the field"
-msgstr ""
-
-#: src/hrcek/entries/templates/entries/fields.html
-#: src/hrcek/entries/templates/entries/form.html
-msgid "Back to your entries"
 msgstr ""
 
 #: src/hrcek/entries/templates/entries/form.html
