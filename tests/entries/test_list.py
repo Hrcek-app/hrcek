@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 from django.conf import settings
 from django.urls import reverse
-from django.utils import timezone
+from django.utils import formats, timezone, translation
 
 from hrcek.accounts.models import User
 from hrcek.collections.models import Collection
@@ -248,3 +248,65 @@ def test_filtering_ignores_capitals(client, nina):
     Tag.set_for(entry, ["Watches"])
     client.force_login(nina)
     assert client.get(reverse("entries:list"), {"tag": "watches"}).status_code == 200
+
+
+def test_each_entry_says_when_it_was_added(client, nina):
+    (entry,) = _entries(nina, 1)
+    client.force_login(nina)
+    body = client.get(reverse("entries:list")).content.decode()
+    assert "Added" in body
+    assert f'datetime="{entry.created_at.isoformat()}"' in body
+    month_day = formats.date_format(entry.created_at, "MONTH_DAY_FORMAT")
+    assert f">{month_day}</time>" in body
+    with translation.override("en"):
+        long_date = formats.date_format(entry.created_at, "l, j F Y")
+    assert f'title="{long_date}"' in body
+
+
+def test_an_older_entry_shows_its_year(client, nina):
+    """A date from a past year carries its year; one from this year
+    does not need it. Built from timezone.now() rather than a fixed
+    date, so the test keeps passing after the next new year."""
+    (entry,) = _entries(nina, 1)
+    Entry.objects.filter(pk=entry.pk).update(
+        created_at=entry.created_at.replace(year=entry.created_at.year - 1)
+    )
+    entry.refresh_from_db()
+    client.force_login(nina)
+    body = client.get(reverse("entries:list")).content.decode()
+    full_date = formats.date_format(entry.created_at, "DATE_FORMAT")
+    assert f">{full_date}</time>" in body
+
+
+def test_each_entry_offers_delete_with_a_way_back(client, nina):
+    (entry,) = _entries(nina, 1)
+    client.force_login(nina)
+    body = client.get(reverse("entries:list"), {"page": 1}).content.decode()
+    assert reverse("entries:delete", args=[entry.pk]) + "?next=" in body
+
+
+def test_an_entry_with_nothing_extra_still_has_all_four_rows(client, nina):
+    """entry-body and entry-labels render even when there is nothing
+    in them: later branches use them as the interface for an "In:"
+    line and the rest, so a card with no notes, no fields and no
+    labels still offers somewhere for those to go."""
+    _entries(nina, 1)
+    client.force_login(nina)
+    body = client.get(reverse("entries:list")).content.decode()
+    start = body.index("<article>")
+    article = body[start : body.index("</article>", start)]
+    for name in ("entry-head", "entry-body", "entry-labels", "entry-actions"):
+        assert f'<div class="{name}">' in article, name
+
+
+def test_an_empty_body_or_labels_row_reserves_no_space(client, nina):
+    """entry-body and entry-labels are genuinely empty — no stray
+    whitespace left between the template's {% if %} tags and the
+    div itself — when an entry has no notes, no fields and no tags.
+    A CSS rule hides a div that is :empty, so the card's flex column
+    does not add a gap either side of a row with nothing in it."""
+    _entries(nina, 1)
+    client.force_login(nina)
+    body = client.get(reverse("entries:list")).content.decode()
+    assert '<div class="entry-body"></div>' in body
+    assert '<div class="entry-labels"></div>' in body

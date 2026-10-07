@@ -422,6 +422,7 @@ msgstr ""
 
 #: src/hrcek/accounts/templates/accounts/clients.html
 #: src/hrcek/entries/templates/entries/fields.html
+#: src/hrcek/entries/templates/entries/list.html
 msgid "Delete"
 msgstr ""
 
@@ -1599,6 +1600,14 @@ msgstr ""
 
 #: src/hrcek/entries/templates/entries/list.html
 msgid "Your entries"
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/list.html
+msgid "l, j F Y"
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/list.html
+msgid "Added"
 msgstr ""
 
 #: src/hrcek/entries/templates/entries/list.html

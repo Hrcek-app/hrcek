@@ -442,6 +442,7 @@ msgstr "Nazadnje uporabljeno"
 
 #: src/hrcek/accounts/templates/accounts/clients.html
 #: src/hrcek/entries/templates/entries/fields.html
+#: src/hrcek/entries/templates/entries/list.html
 msgid "Delete"
 msgstr "Izbriši"
 
@@ -1690,6 +1691,14 @@ msgstr "Izbriši ta vnos"
 #: src/hrcek/entries/templates/entries/list.html
 msgid "Your entries"
 msgstr "Vaši vnosi"
+
+#: src/hrcek/entries/templates/entries/list.html
+msgid "l, j F Y"
+msgstr "l, j. F Y"
+
+#: src/hrcek/entries/templates/entries/list.html
+msgid "Added"
+msgstr "Dodano"
 
 #: src/hrcek/entries/templates/entries/list.html
 msgid "Nothing saved yet."

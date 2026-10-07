@@ -17,28 +17,34 @@
           {% for entry in page %}
             <li>
               <article>
-                <div class="entry-text">
+                <div class="entry-head">
                   <h2><a href="{{ entry.url }}">{{ entry.display_title }}</a></h2>
-                  {% if entry.notes %}<div class="notes">{{ entry.notes|linebreaks }}</div>{% endif %}
-                  {% if entry.field_values.all %}
+                  {% now "Y" as this_year %}{% trans "l, j F Y" as long_date %}
+                  <p class="added">{% trans "Added" %} <time datetime="{{ entry.created_at|date:'c' }}" title="{{ entry.created_at|date:long_date }}">{% if entry.created_at|date:"Y" == this_year %}{{ entry.created_at|date:"MONTH_DAY_FORMAT" }}{% else %}{{ entry.created_at|date:"DATE_FORMAT" }}{% endif %}</time></p>
+                </div>
+                <div class="entry-body">{% if entry.notes %}<div class="notes">{{ entry.notes|linebreaks }}</div>{% endif %}{% if entry.field_values.all %}
                     <dl>
                       {% for value in entry.field_values.all %}
                         <dt>{{ value.definition.name }}</dt>
                         <dd>{{ value.value }}</dd>
                       {% endfor %}
                     </dl>
-                  {% endif %}
-                  {% if entry.tags.all %}
+                  {% endif %}</div>
+                <div class="entry-labels">{% if entry.tags.all %}
                     <ul class="row">
                       {% for each in entry.tags.all %}
                         <li><a class="tag" href="{% url 'entries:list' %}?tag={{ each.name|urlencode }}">{{ each.name }}</a></li>
                       {% endfor %}
                     </ul>
-                  {% endif %}
-                  <p><a href="{% url 'entries:edit' entry.pk %}">{% trans "Edit" %}</a></p>
+                  {% endif %}</div>
+                <div class="entry-actions">
+                  <ul class="row">
+                    <li><a href="{% url 'entries:edit' entry.pk %}">{% trans "Edit" %}</a></li>
+                    <li><a href="{% url 'entries:delete' entry.pk %}?next={{ request.get_full_path|urlencode }}">{% trans "Delete" %}</a></li>
+                  </ul>
                 </div>
                 {% if entry.image %}
-                  <a href="{{ entry.url }}" tabindex="-1" aria-hidden="true">
+                  <a class="entry-thumb" href="{{ entry.url }}" tabindex="-1" aria-hidden="true">
                     <img class="thumb" src="{% url 'entries:image' entry.pk %}"
                          alt="" width="96" height="96" loading="lazy" decoding="async">
                   </a>

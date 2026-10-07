@@ -162,3 +162,39 @@ def test_messages_have_no_side_bar():
     css = _compiled_css()
     block = css.split(".messages", 1)[1].split("}", 1)[0]
     assert "border-inline-start" not in block
+
+
+def test_entries_no_longer_share_rows_across_cards():
+    """A subgrid made every li/article in a visual row share the same
+    rows, so a long title or long notes in one card pushed every
+    other card's body, labels and actions down to match. Cards no
+    longer share rows at all: each one sizes itself from its own
+    content."""
+    assert "subgrid" not in _source_css()
+    assert "subgrid" not in _compiled_css()
+
+
+def _rule(css, selector):
+    """The declaration block of the first `selector { ... }` in css."""
+    start = css.index(selector + "{") + len(selector) + 1
+    return css[start : css.index("}", start)]
+
+
+def test_entry_cards_are_a_flex_column():
+    """entries/list.html's card — identified by its entry-head, the
+    one child collections' single-.entry-text cards never have — is
+    a flex column, so the gap between head, body, labels and actions
+    never depends on a neighbouring card's title or notes."""
+    rule = _rule(_compiled_css(), "ul.entries article:has(>.entry-head)")
+    assert "display:flex" in rule
+    assert "flex-direction:column" in rule
+
+
+def test_entry_actions_are_pinned_to_the_card_bottom():
+    """Cards sharing a grid row are already stretched to the same
+    height by the grid's own default alignment; pushing the actions
+    row down with a plain auto margin is what lands every row's
+    Edit/Delete links on the same line, however tall the cards beside
+    it are."""
+    rule = _rule(_compiled_css(), "ul.entries article:has(>.entry-head)>.entry-actions")
+    assert "margin-block-start:auto" in rule
