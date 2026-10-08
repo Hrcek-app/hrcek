@@ -89,7 +89,7 @@ def test_the_giver_still_sees_it_with_undo(client, wishes, ana):
     client.force_login(ana)
     page = client.get(wishes.unlisted_url()).content.decode()
     assert "Watch" in page
-    assert "You got this." in page
+    assert '<p class="meta">You got this.</p>' in page
     assert _undo_url(wishes, entry) in page
 
 
@@ -123,6 +123,9 @@ def test_anonymous_visitors_are_invited_to_sign_in_but_get_no_buttons(client, wi
     page = client.get(wishes.unlisted_url()).content.decode()
     assert f"?next={wishes.unlisted_url()}" in page
     assert _got_it_url(wishes, entry) not in page
+    start = page.rindex("<p", 0, page.index("Signed-in Hrček users"))
+    end = page.index("</p>", start)
+    assert 'class="meta"' in page[start:end], "the invitation is explanatory text"
 
 
 def test_an_anonymous_post_goes_to_sign_in_and_back_to_the_page(client, wishes):

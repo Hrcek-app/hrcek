@@ -3,17 +3,15 @@
 {% block content %}
   <p>{% trans "A collection is a set of your entries with a name. You can choose what goes in it, or let it hold everything carrying one label." %}</p>
 
-  <ul class="row">
-    <li><a href="{% url 'collections:create' %}">{% trans "Make a collection" %}</a></li>
-  </ul>
+  <p class="mb-8"><a class="button" href="{% url 'collections:create' %}">{% trans "Make a collection" %}</a></p>
 
   {% if collections %}
     <ul class="stacked">
       {% for collection in collections %}
-        <li>
-          <a href="{% url 'collections:detail' collection.pk %}">{{ collection.name }}</a>
-          <span class="kind">({{ collection.get_kind_display }})</span>
-          {% if collection.description %}<p>{{ collection.description }}</p>{% endif %}
+        <li class="collection-item">
+          <h2><a href="{% url 'collections:detail' collection.pk %}">{{ collection.name }}</a></h2>
+          <p class="meta">{{ collection.get_kind_display|capfirst }} · {{ collection.get_visibility_display }}</p>
+          {% if collection.description %}<p class="content-lead">{{ collection.description }}</p>{% endif %}
         </li>
       {% endfor %}
     </ul>

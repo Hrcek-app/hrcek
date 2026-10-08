@@ -8,11 +8,11 @@
 {% block heading %}{{ collection.name }}{% endblock %}
 {% block content %}
   {# The description is as visible as the collection itself. #}
-  {% if collection.description %}<p>{{ collection.description }}</p>{% endif %}
+  {% if collection.description %}<p class="content-lead">{{ collection.description }}</p>{% endif %}
 
   {% if collection.is_wish_list and not user.is_authenticated %}
     {% url 'landing' as landing %}
-    <p class="kind">{% blocktrans with next=request.path|urlencode %}Signed-in Hrček users can mark what they have got. <a href="{{ landing }}?next={{ next }}">Sign in</a>{% endblocktrans %}</p>
+    <p class="meta">{% blocktrans with next=request.path|urlencode %}Signed-in Hrček users can mark what they have got. <a href="{{ landing }}?next={{ next }}">Sign in</a>{% endblocktrans %}</p>
   {% endif %}
 
   {% if entries %}
@@ -42,7 +42,7 @@
               {% endif %}
               {% if can_get %}
                 {% if entry.pk in mine %}
-                  <p class="kind">{% trans "You got this." %}</p>
+                  <p class="meta">{% trans "You got this." %}</p>
                   <form method="post" action="{% if collection.visibility == 'public' %}{% url 'shared:public_undo' collection.owner.namespace collection.slug entry.pk %}{% else %}{% url 'shared:unlisted_undo' collection.secret entry.pk %}{% endif %}">
                     {% csrf_token %}<button type="submit">{% trans "Undo" %}</button>
                   </form>

@@ -70,6 +70,12 @@ def test_an_unlisted_collection_answers_on_its_secret(client, collection):
     assert "Things I like." in response.text, "the description is always shown"
 
 
+def test_the_shared_description_is_a_distinct_content_block(client, collection):
+    _publish(collection)
+    body = client.get("/u/nina/watches/").text
+    assert '<p class="content-lead">Things I like.</p>' in body
+
+
 def test_an_unlisted_collection_is_not_at_a_public_address(client, collection):
     _unlist(collection)
     assert client.get("/u/nina/watches/").status_code == 404
