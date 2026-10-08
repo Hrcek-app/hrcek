@@ -14,6 +14,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_http_methods
 
+from hrcek.accounts import allowlist
 from hrcek.accounts.allowlist import is_signup_allowed
 from hrcek.accounts.errors import (
     CONFIRMATION_INVALID,
@@ -221,11 +222,20 @@ def confirm(request: HttpRequest, token: str) -> HttpResponse:
 
 # The landing page is the login page. redirect_authenticated_user sends
 # anyone already signed in to LOGIN_REDIRECT_URL instead.
-landing = LoginView.as_view(
-    template_name="accounts/landing.html",
-    authentication_form=ConfirmedUserAuthenticationForm,
-    redirect_authenticated_user=True,
-)
+class LandingView(LoginView):
+    template_name = "accounts/landing.html"
+    authentication_form = ConfirmedUserAuthenticationForm
+    redirect_authenticated_user = True
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        # Offered only when somebody could get through: a link to a
+        # form that refuses every visitor would be a dead end.
+        context["signup_open"] = allowlist.is_open()
+        return context
+
+
+landing = LandingView.as_view()
 
 
 @require_http_methods(["POST"])

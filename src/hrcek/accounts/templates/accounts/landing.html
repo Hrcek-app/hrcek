@@ -11,4 +11,7 @@
     <button type="submit">{% trans "Sign in" %}</button>
   </form>
   <p><a href="{% url 'accounts:password_reset' %}">{% trans "Forgotten your password?" %}</a></p>
+  {% if signup_open %}
+    <p><a href="{% url 'accounts:signup' %}">{% trans "No account yet? Sign up" %}</a></p>
+  {% endif %}
 {% endblock %}
