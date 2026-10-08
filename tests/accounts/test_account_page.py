@@ -1,3 +1,5 @@
+import re
+
 import pytest
 from django.urls import NoReverseMatch, reverse
 from django.utils import timezone
@@ -7,6 +9,13 @@ from hrcek.accounts.models import User
 pytestmark = pytest.mark.django_db
 
 PASSWORD = "a-long-enough-passphrase"
+
+
+def _section_tag(body, section_id):
+    """The opening <section> tag for one id, for a data-open assertion."""
+    match = re.search(rf'<section[^>]*\bid="{section_id}"[^>]*>', body)
+    assert match, f"no section with id={section_id!r} in the page"
+    return match.group(0)
 
 
 @pytest.fixture
@@ -96,3 +105,83 @@ def test_a_signed_in_visitor_at_the_root_goes_to_their_entries(client, person):
 def test_the_welcome_page_is_gone():
     with pytest.raises(NoReverseMatch):
         reverse("accounts:welcome")
+
+
+def test_the_account_page_has_three_sections(client, person):
+    client.force_login(person)
+    body = client.get(reverse("accounts:account")).content.decode()
+    assert "<div data-tabs" in body
+    assert _section_tag(body, "profile")
+    assert _section_tag(body, "sign-in")
+    assert _section_tag(body, "fields")
+    assert "Profile" in body
+    assert "Sign-in" in body
+    assert "Fields and clients" in body
+
+
+@pytest.mark.parametrize(
+    ("url_name", "data", "section"),
+    [
+        ("accounts:display_name", {"display_name": "Nina S"}, "profile"),
+        ("accounts:public_name", {"namespace": "ninaw"}, "profile"),
+        (
+            "accounts:email_change",
+            {"new_email": "nina2@example.com", "current_password": PASSWORD},
+            "sign-in",
+        ),
+        ("accounts:email_change_cancel", {}, "sign-in"),
+    ],
+)
+def test_each_form_returns_to_its_section(client, person, url_name, data, section):
+    client.force_login(person)
+    response = client.post(reverse(url_name), data)
+    assert response.status_code == 302
+    assert response["Location"] == reverse("accounts:account") + "?section=" + section
+
+
+def test_an_error_marks_its_section_open(client, person):
+    client.force_login(person)
+    response = client.post(
+        reverse("accounts:public_name"), {"namespace": "not a valid name!"}
+    )
+    assert response.status_code == 200
+    body = response.content.decode()
+    assert "data-open" in _section_tag(body, "profile")
+    assert "data-open" not in _section_tag(body, "sign-in")
+    assert "data-open" not in _section_tag(body, "fields")
+
+
+def test_the_duplicated_intro_text_is_gone(client, person):
+    client.force_login(person)
+    body = client.get(reverse("accounts:account")).content.decode()
+    # These sentences are the model fields' help_text, already shown
+    # beside each input; the template used to repeat them above the
+    # form.
+    assert "You can sign in with this instead of your email." not in body
+    assert "Your public name appears in the address of every public" not in body
+
+
+def test_a_section_query_parameter_opens_that_section(client, person):
+    client.force_login(person)
+    body = client.get(
+        reverse("accounts:account"), {"section": "sign-in"}
+    ).content.decode()
+    assert "data-open" in _section_tag(body, "sign-in")
+    assert "data-open" not in _section_tag(body, "profile")
+    assert "data-open" not in _section_tag(body, "fields")
+
+
+def test_an_unknown_section_query_parameter_is_ignored(client, person):
+    client.force_login(person)
+    body = client.get(
+        reverse("accounts:account"), {"section": "not-a-real-section"}
+    ).content.decode()
+    assert "data-open" not in _section_tag(body, "profile")
+    assert "data-open" not in _section_tag(body, "sign-in")
+    assert "data-open" not in _section_tag(body, "fields")
+
+
+def test_the_sign_in_section_has_an_email_address_heading(client, person):
+    client.force_login(person)
+    body = client.get(reverse("accounts:account")).content.decode()
+    assert re.search(r"<h3[^>]*>\s*Email address\s*</h3>", body)

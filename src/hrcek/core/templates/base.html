@@ -10,7 +10,7 @@
     a 422 is (a form rendered back with its errors). See
     docs/dev/javascript.md.
   {% endcomment %}
-  <meta name="htmx-config" content='{"noSwap":[204,304,404,"5xx"]}'>
+  <meta name="htmx-config" content='{"noSwap":[204,304,404,"5xx"],"defaultSettleDelay":0}'>
   {% comment %}
     Before the first paint, so nothing flashes: the class saying the
     page has JavaScript, which shows .js-only controls (see

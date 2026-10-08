@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any, cast
 
+from django import forms
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login
@@ -41,6 +42,7 @@ from hrcek.accounts.tokens import (
     read_email_change_token,
 )
 from hrcek.core.errors import ErrorCode
+from hrcek.core.htmx import is_htmx, vary_on_htmx
 
 
 def _error_page(request: HttpRequest, code: ErrorCode, hint: str = "") -> HttpResponse:
@@ -53,19 +55,28 @@ def _error_page(request: HttpRequest, code: ErrorCode, hint: str = "") -> HttpRe
     )
 
 
+# The three sections of the account hub, by id. A redirect from a
+# successful form names one in ?section=; anything else (nothing, or a
+# value nobody recognizes) is ignored rather than trusted blindly.
+ACCOUNT_SECTIONS = {"profile", "sign-in", "fields"}
+
+# The sections whose forms save in place: with htmx, each form's view
+# answers with its own section's content alone (docs/dev/accounts.md).
+SECTION_TEMPLATES = {
+    "profile": "accounts/_profile.html",
+    "sign-in": "accounts/_sign_in.html",
+}
+
+
 @login_required
 def account(request: HttpRequest) -> HttpResponse:
-    return render_account(request)
+    section = request.GET.get("section")
+    return render_account(
+        request, open_section=section if section in ACCOUNT_SECTIONS else None
+    )
 
 
-def render_account(request: HttpRequest, **overrides: Any) -> HttpResponse:
-    """Render the hub, letting one caller substitute a bound form.
-
-    Each form on the page posts to its own URL. When one fails
-    validation its view re-renders this page with its own form bound, so
-    the person sees a single page while each view keeps one
-    responsibility.
-    """
+def _account_context(request: HttpRequest, **overrides: Any) -> dict[str, Any]:
     # Imported here, not at module level: accounts must not depend on
     # collections when Django loads it, or the two apps import each
     # other in a circle.
@@ -83,7 +94,80 @@ def render_account(request: HttpRequest, **overrides: Any) -> HttpResponse:
         "email_change_form": EmailChangeForm(user),
     }
     context.update(overrides)
-    return render(request, "accounts/account.html", context)
+    return context
+
+
+def render_account(request: HttpRequest, **overrides: Any) -> HttpResponse:
+    """Render the hub, letting one caller substitute a bound form.
+
+    Each form on the page posts to its own URL. When one fails
+    validation its view re-renders this page with its own form bound, so
+    the person sees a single page while each view keeps one
+    responsibility.
+
+    Passing ``open_section="profile"`` (or ``"sign-in"``/``"fields"``)
+    marks that section of the page ``data-open``, so tabs.js opens the
+    tab holding the error instead of defaulting to the first one. A
+    successful form's own redirect carries the same name as
+    ``?section=`` on the plain GET, which the ``account`` view above
+    turns back into ``open_section`` — a query parameter rather than a
+    ``#fragment``, so the browser never jumps the viewport to the
+    section before the Django message above it has been seen.
+    """
+    return render(
+        request, "accounts/account.html", _account_context(request, **overrides)
+    )
+
+
+def _section_saved(
+    request: HttpRequest, section: str, message: str, focus: str
+) -> HttpResponse:
+    """Answer a successful form on the hub.
+
+    Without htmx: the message, and a redirect back to the section. With
+    htmx: the section's content alone, re-rendered with fresh forms,
+    carrying the message twice out of band — as #status's text, and as
+    the drained #messages list — and ``autofocus`` on the button named
+    by ``focus``, which htmx focuses once it has swapped the content in.
+    """
+    messages.success(request, message)
+    if not is_htmx(request):
+        return vary_on_htmx(
+            redirect(reverse("accounts:account") + "?section=" + section)
+        )
+    return vary_on_htmx(
+        render(
+            request,
+            SECTION_TEMPLATES[section],
+            _account_context(request, status=message, focus=focus),
+        )
+    )
+
+
+def _section_invalid(
+    request: HttpRequest, section: str, form_name: str, form: forms.BaseForm
+) -> HttpResponse:
+    """Answer a form on the hub that failed validation.
+
+    Without htmx: the whole page with this form bound and its section
+    open. With htmx: a 422 carrying the section's content alone, the
+    first field in error marked ``autofocus`` for htmx to focus.
+    """
+    if not is_htmx(request):
+        return vary_on_htmx(
+            render_account(request, open_section=section, **{form_name: form})
+        )
+    first = next((name for name in form.fields if name in form.errors), None)
+    if first is not None:
+        form.fields[first].widget.attrs["autofocus"] = True
+    return vary_on_htmx(
+        render(
+            request,
+            SECTION_TEMPLATES[section],
+            _account_context(request, **{form_name: form}),
+            status=422,
+        )
+    )
 
 
 @login_required
@@ -110,10 +194,13 @@ def render_clients(request: HttpRequest, **overrides: Any) -> HttpResponse:
 def public_name(request: HttpRequest) -> HttpResponse:
     form = PublicNameForm(request.POST, instance=cast("User", request.user))
     if not form.is_valid():
-        return render_account(request, public_name_form=form)
-    form.save()
-    messages.success(request, _("Your public name has been updated."))
-    return redirect("accounts:account")
+        return _section_invalid(request, "profile", "public_name_form", form)
+    user = form.save()
+    if user.namespace:
+        message = _("Your public name is now “%(name)s”.") % {"name": user.namespace}
+    else:
+        message = _("Your public name has been removed.")
+    return _section_saved(request, "profile", message, focus="public_name")
 
 
 @require_http_methods(["POST"])
@@ -121,10 +208,15 @@ def public_name(request: HttpRequest) -> HttpResponse:
 def display_name(request: HttpRequest) -> HttpResponse:
     form = DisplayNameForm(request.POST, instance=cast("User", request.user))
     if not form.is_valid():
-        return render_account(request, display_name_form=form)
-    form.save()
-    messages.success(request, _("Your display name has been updated."))
-    return redirect("accounts:account")
+        return _section_invalid(request, "profile", "display_name_form", form)
+    user = form.save()
+    if user.display_name:
+        message = _("Your display name is now “%(name)s”.") % {
+            "name": user.display_name
+        }
+    else:
+        message = _("Your display name has been removed.")
+    return _section_saved(request, "profile", message, focus="display_name")
 
 
 def invitation_accept(request: HttpRequest, token: str) -> HttpResponse:
@@ -244,7 +336,7 @@ def email_change(request: HttpRequest) -> HttpResponse:
     user = cast("User", request.user)
     form = EmailChangeForm(user, request.POST)
     if not form.is_valid():
-        return render_account(request, email_change_form=form)
+        return _section_invalid(request, "sign-in", "email_change_form", form)
 
     new_email = form.cleaned_data["new_email"]
     user.pending_email = new_email
@@ -273,15 +365,11 @@ def email_change(request: HttpRequest) -> HttpResponse:
             "account_url": absolute_url(reverse("accounts:account")),
         },
     )
-    messages.success(
-        request,
-        _(
-            "Check %(email)s for a confirmation link. Until you follow it, "
-            "your current address keeps working."
-        )
-        % {"email": new_email},
-    )
-    return redirect("accounts:account")
+    message = _(
+        "Check %(email)s for a confirmation link. Until you follow it, "
+        "your current address keeps working."
+    ) % {"email": new_email}
+    return _section_saved(request, "sign-in", message, focus="email_change")
 
 
 def email_change_confirm(request: HttpRequest, token: str) -> HttpResponse:
@@ -317,10 +405,17 @@ def email_change_confirm(request: HttpRequest, token: str) -> HttpResponse:
 @login_required
 def email_change_cancel(request: HttpRequest) -> HttpResponse:
     user = cast("User", request.user)
+    cancelled = user.pending_email
     user.pending_email = None
     user.save(update_fields=["pending_email"])
-    messages.success(request, _("The pending email change has been cancelled."))
-    return redirect("accounts:account")
+    if cancelled:
+        message = _("The change to %(email)s has been cancelled.") % {
+            "email": cancelled
+        }
+    else:
+        # Cancelled already, in another tab, say: nothing left to name.
+        message = _("The pending email change has been cancelled.")
+    return _section_saved(request, "sign-in", message, focus="email_change")
 
 
 @require_http_methods(["POST"])
