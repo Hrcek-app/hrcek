@@ -281,6 +281,52 @@
     gap: calc(var(--spacing) * 4);
   }
 
+  /* [data-tabs] > .tab-section (the account hub): stacked sections,
+     each after the first opened by a hairline and some room, so the
+     page reads cleanly with no JavaScript at all. tabs.js turns the
+     same markup into an ARIA tab set and marks the container .tabbed;
+     from then on only one section shows, right under the tablist's own
+     bottom edge, so the separator would be a second line under the
+     tabs. See docs/dev/javascript.md. */
+  [data-tabs]:not(.tabbed) > .tab-section + .tab-section {
+    margin-block-start: calc(var(--spacing) * 10);
+    padding-block-start: calc(var(--spacing) * 6);
+    border-block-start: 1px solid var(--color-edge);
+  }
+
+  /* The tab row tabs.js prepends. A plain row of buttons, the active
+     one underlined in the accent color; everything else about
+     "button" (fill, padding, radius) is reset here. */
+  [role="tablist"] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--spacing) * 6);
+    margin-block-end: calc(var(--spacing) * 8);
+    border-block-end: 1px solid var(--color-edge);
+  }
+  [role="tablist"] [role="tab"] {
+    padding: calc(var(--spacing) * 3) calc(var(--spacing) * 1);
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--color-muted);
+    background-color: transparent;
+    border-radius: 0;
+    border-block-end: 2px solid transparent;
+    margin-block-end: -1px;
+  }
+  [role="tablist"] [role="tab"]:hover {
+    color: var(--color-ink);
+    background-color: transparent;
+  }
+  [role="tablist"] [role="tab"][aria-selected="true"] {
+    color: var(--color-ink);
+    border-block-end-color: var(--color-accent);
+  }
+  [role="tablist"] [role="tab"]:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
   button,
   a.button {
     display: inline-block;

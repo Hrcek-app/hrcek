@@ -15,6 +15,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: src/hrcek/accounts/admin.py
+#: src/hrcek/accounts/templates/accounts/account.html
 msgid "Profile"
 msgstr ""
 
@@ -129,17 +130,14 @@ msgid "That email address is already in use."
 msgstr ""
 
 #: src/hrcek/accounts/forms.py
-#: src/hrcek/accounts/templates/accounts/account.html
 msgid "Display name"
 msgstr ""
 
 #: src/hrcek/accounts/forms.py
-#: src/hrcek/accounts/templates/accounts/account.html
 msgid "Optional. You can sign in with this instead of your email."
 msgstr ""
 
 #: src/hrcek/accounts/forms.py
-#: src/hrcek/accounts/templates/accounts/account.html
 msgid "Password"
 msgstr ""
 
@@ -152,7 +150,7 @@ msgid "The two passwords do not match."
 msgstr ""
 
 #: src/hrcek/accounts/forms.py
-#: src/hrcek/accounts/templates/accounts/account.html
+#: src/hrcek/accounts/templates/accounts/_sign_in.html
 msgid "Email address"
 msgstr ""
 
@@ -328,53 +326,55 @@ msgstr ""
 msgid "invitations"
 msgstr ""
 
-#: src/hrcek/accounts/templates/accounts/account.html
-#: src/hrcek/core/templates/base.html
-msgid "Your account"
-msgstr ""
-
-#: src/hrcek/accounts/templates/accounts/account.html
+#: src/hrcek/accounts/templates/accounts/_profile.html
 msgid "Save display name"
 msgstr ""
 
-#: src/hrcek/accounts/templates/accounts/account.html
-msgid "Public name"
-msgstr ""
-
-#: src/hrcek/accounts/templates/accounts/account.html
-msgid ""
-"Only needed if you make a collection public. Your public name appears in the "
-"address of every public collection you have, like /u/your-name/watches/."
-msgstr ""
-
-#: src/hrcek/accounts/templates/accounts/account.html
+#: src/hrcek/accounts/templates/accounts/_profile.html
 msgid ""
 "You have public collections. Changing your public name changes their "
 "addresses, and any link you have already shared will stop working."
 msgstr ""
 
-#: src/hrcek/accounts/templates/accounts/account.html
+#: src/hrcek/accounts/templates/accounts/_profile.html
 msgid "Save public name"
 msgstr ""
 
-#: src/hrcek/accounts/templates/accounts/account.html
+#: src/hrcek/accounts/templates/accounts/_sign_in.html
 #, python-format
 msgid ""
 "Waiting for confirmation at %(pending)s. Until you confirm it, this address "
 "keeps working."
 msgstr ""
 
-#: src/hrcek/accounts/templates/accounts/account.html
+#: src/hrcek/accounts/templates/accounts/_sign_in.html
 msgid "Cancel the change"
 msgstr ""
 
-#: src/hrcek/accounts/templates/accounts/account.html
+#: src/hrcek/accounts/templates/accounts/_sign_in.html
 msgid "Change my email address"
 msgstr ""
 
+#: src/hrcek/accounts/templates/accounts/_sign_in.html
+#: src/hrcek/accounts/templates/accounts/password_change.html
+msgid "Change your password"
+msgstr ""
+
 #: src/hrcek/accounts/templates/accounts/account.html
-#: src/hrcek/entries/templates/entries/form.html
-msgid "Fields"
+#: src/hrcek/core/templates/base.html
+msgid "Your account"
+msgstr ""
+
+#: src/hrcek/accounts/templates/accounts/account.html
+msgid "Account sections"
+msgstr ""
+
+#: src/hrcek/accounts/templates/accounts/account.html
+msgid "Sign-in"
+msgstr ""
+
+#: src/hrcek/accounts/templates/accounts/account.html
+msgid "Fields and clients"
 msgstr ""
 
 #: src/hrcek/accounts/templates/accounts/account.html
@@ -390,17 +390,17 @@ msgid "Your fields"
 msgstr ""
 
 #: src/hrcek/accounts/templates/accounts/account.html
-#: src/hrcek/accounts/templates/accounts/password_change.html
-msgid "Change your password"
-msgstr ""
-
-#: src/hrcek/accounts/templates/accounts/account.html
-#: src/hrcek/accounts/templates/accounts/clients.html
-msgid "Clients"
+msgid ""
+"A client is a script or another program that acts as you, authenticated with "
+"a token instead of your password."
 msgstr ""
 
 #: src/hrcek/accounts/templates/accounts/account.html
 msgid "Manage clients and their authorizations"
+msgstr ""
+
+#: src/hrcek/accounts/templates/accounts/clients.html
+msgid "Clients"
 msgstr ""
 
 #: src/hrcek/accounts/templates/accounts/clients.html
@@ -720,11 +720,21 @@ msgid ""
 msgstr ""
 
 #: src/hrcek/accounts/views.py
-msgid "Your public name has been updated."
+#, python-format
+msgid "Your public name is now “%(name)s”."
 msgstr ""
 
 #: src/hrcek/accounts/views.py
-msgid "Your display name has been updated."
+msgid "Your public name has been removed."
+msgstr ""
+
+#: src/hrcek/accounts/views.py
+#, python-format
+msgid "Your display name is now “%(name)s”."
+msgstr ""
+
+#: src/hrcek/accounts/views.py
+msgid "Your display name has been removed."
 msgstr ""
 
 #: src/hrcek/accounts/views.py
@@ -744,6 +754,11 @@ msgstr ""
 
 #: src/hrcek/accounts/views.py
 msgid "Ask for the change again from your account page."
+msgstr ""
+
+#: src/hrcek/accounts/views.py
+#, python-format
+msgid "The change to %(email)s has been cancelled."
 msgstr ""
 
 #: src/hrcek/accounts/views.py
@@ -1667,6 +1682,10 @@ msgstr ""
 #: src/hrcek/entries/templates/entries/form.html
 #: src/hrcek/entries/templates/entries/list.html
 msgid "Save something"
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/form.html
+msgid "Fields"
 msgstr ""
 
 #: src/hrcek/entries/templates/entries/form.html

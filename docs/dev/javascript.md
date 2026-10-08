@@ -4,7 +4,8 @@ Hrček's pages work without JavaScript. Every control is a real link or
 a real `<form>` that does its job on its own; scripts only make it
 quicker — fewer page loads, focus kept where it was, results read out.
 There is no Node, npm or build step: the few scripts are plain files
-under `src/hrcek/core/static/js/`, loaded with `defer` from `base.html`.
+under `src/hrcek/core/static/js/`, loaded with `defer` from `base.html`
+or from the page that needs them.
 
 ## Principles
 
@@ -252,7 +253,7 @@ Hrček's own 404 or 500 page inside a card or a form. `base.html` sets
 it once, for every page:
 
 ```html
-<meta name="htmx-config" content='{"noSwap":[204,304,404,"5xx"]}'>
+<meta name="htmx-config" content='{"noSwap":[204,304,404,"5xx"],"defaultSettleDelay":0}'>
 ```
 
 htmx compares each entry, as a string, with the exact status, then its
@@ -262,6 +263,17 @@ on purpose: a form that fails validation answers 422 with itself, its
 errors included, and that is the feedback. A control's own
 `hx-status:` for a code can still override the list for that code,
 but nothing here does.
+
+The same line turns off htmx's settle step (`defaultSettleDelay: 0`).
+When it is on, every element in the new content whose `id` matches one
+in the old content first gets the old element's attributes and value,
+and gets its own back a moment later, except the live value of a field
+that has focus by then. A form that comes back with errors puts focus
+on the first invalid field with `autofocus`, and Firefox sometimes
+applies it inside that moment: the field kept showing the previous
+attempt instead of what the user had just typed. Settling exists only
+for CSS transitions, and Hrček has none.
+`test_a_retyped_value_survives_focus_while_the_swap_settles` pins it.
 
 ## Saying a request failed: `js/htmx-errors.js`
 
@@ -309,7 +321,9 @@ it while still inert, which is the same as not writing it at all.
 
 A success, by contrast, is visually silent: the change on screen — a
 card gone, a label added — is the confirmation, and `#status` says it
-for screen readers.
+for screen readers. The account page's forms are the one exception
+([below](#forms-saved-in-place-inside-a-tab)): a saved form looks the
+same as before, so they show what was saved as well.
 
 ## Not sending two requests for one click: `hx-disable`
 
@@ -370,6 +384,109 @@ A view that needs the same thing for some other redirect —
 `htmx_redirect` itself, and queues with `messages.success` what its
 `#status` would have said, since the navigation replaces the page that
 text would have been written to.
+
+## Tabs: `js/tabs.js`
+
+A page section split into accessible tabs — the account hub's
+Profile, Sign-in, and Fields and clients — starts as three stacked
+`<section class="tab-section" id="…">` elements, each opening with an
+`<h2>`, inside one `<div data-tabs data-tabs-label="…">`. Without
+JavaScript they simply stack, each after the first opened by a
+hairline and some room; with it, `tabs.js` turns the same markup into
+a WAI-ARIA tab set.
+
+For every `[data-tabs]` with at least two `section[id]` children, the
+script:
+
+- builds a `role="tablist"` and a `role="tab"` button per section,
+  from each section's own `<h2>` (whose text becomes the tab's label;
+  the heading is then hidden with `sr-only` rather than removed, so it
+  still carries the section's accessible structure — it is just not
+  shown twice);
+- gives each section `role="tabpanel"` and `aria-labelledby` pointing
+  at its tab, and each tab `aria-controls` pointing at its section;
+- shows one panel and hides the rest with the `hidden` attribute,
+  marks the open tab with `aria-selected`, and keeps only that tab in
+  the page's tab order (roving `tabindex`: `0` on it, `-1` on the
+  others);
+- wires `ArrowLeft`/`ArrowRight`/`Home`/`End`, on the tablist, to move
+  focus and select, wrapping at both ends; a click on a tab selects it
+  without moving focus;
+- opens the section a server-side error marked `data-open`, or else
+  the one named by the page's `#hash`, or else the first — `data-open`
+  wins when both are present. The initial selection never touches the
+  URL: calling `history.replaceState` there, before the browser's own
+  scroll-to-fragment step has run, used to land a plain visit scrolled
+  past the heading. Switching tabs afterwards (a click, or
+  `ArrowLeft`/`ArrowRight`/`Home`/`End`) does update the hash, with
+  `history.replaceState` so it adds no history entry.
+
+`[data-tabs]` carries the tablist's accessible name as
+`data-tabs-label`, a string the template already translated, so
+`tabs.js` itself holds no user-facing text — strict-CSP-ready scripts
+never do.
+
+Once the tablist is built, the script adds the class `tabbed` to the
+`[data-tabs]` element. The hairline between stacked sections is styled
+only on `[data-tabs]:not(.tabbed)`: with the tabs in place, the open
+panel sits right under the tablist's own bottom border, and the
+section's separator would draw a second line beneath it. A browser
+test counts the borders between the tablist and the first form control
+— exactly one — and checks the stacked sections are still separated
+without JavaScript.
+
+A page with fewer than two sections is left alone: the script does
+nothing, and the stacked markup is the whole of it.
+
+## Forms saved in place inside a tab
+
+The account hub's forms (see
+[Accounts](accounts.md#the-pages)) save without a reload, and
+inside a tab set that takes one rule beyond the labels' pattern below:
+**swap the panel's content, never the panel.** `tabs.js` gave each
+`<section>` `role="tabpanel"`, `aria-labelledby`, a `tabindex` and
+`hidden`; markup from the server has none of them, so replacing the
+section would leave a panel that is no longer one. Each section
+therefore holds its `<h2>` (made `sr-only` by the script, and kept
+out of the swap for the same reason) and one wrapper,
+`<div class="tab-content" id="profile-content">`, which is its own
+template (`accounts/_profile.html`) the page includes and the view
+answers htmx with. The forms in it say:
+
+```html
+hx-post="…same URL…" hx-target="#profile-content" hx-swap="outerHTML"
+hx-disable="find button"
+```
+
+- **Success** is the section re-rendered with fresh forms, the saved
+  value in them. The view queues its Django message as usual and the
+  fragment carries `_status.html` (the same sentence) and
+  `_messages.html`, both with `oob=True`, so `#status` announces it
+  and `#messages` shows and drains it. `autofocus` goes on the button
+  just used, since the one that had focus was swapped away. This is
+  the one in-place success that is also shown, not only announced:
+  a saved form looks exactly as it did before the click, so there is
+  no change on screen to serve as the confirmation.
+- **Errors are 422s**, the section with the bound form and its field
+  errors, swapped like a success (a 422 is not in the `noSwap` list,
+  and `js/htmx-errors.js` leaves a swapped 4xx alone). `autofocus` goes
+  on the first field in error. A 404 or a 5xx is never swapped into
+  the section; `js/htmx-errors.js` shows and announces the failure
+  instead, and the section stays as it was.
+- **The tab stays selected and the URL is unchanged**: nothing outside
+  the wrapper is touched, and `hx-post` pushes no history.
+- **Without JavaScript nothing changes**: the same views redirect to
+  `?section=` on success and re-render the whole page, the section
+  marked `data-open`, on an error.
+
+**Why `autofocus` works more than once here.** The browser's own
+autofocus processing runs once per document — after the first
+`autofocus` element is connected, later ones are ignored until a full
+navigation, which is why `js/delete-focus.js` exists. But htmx does
+not rely on it: after every swap it looks for the first `[autofocus]`
+in the new content and calls `.focus()` on it itself. A browser test
+fails the same field twice in a row and checks it has focus both
+times.
 
 ## Forms changed in place: the entries' labels
 

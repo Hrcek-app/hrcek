@@ -100,8 +100,66 @@ that would make "unconfirmed" indistinguishable from "wrong password".
 **The account hub.** One page, but each form posts to its own URL rather
 than to a single handler branching on a hidden action field. A failing
 view re-renders the hub with its own form bound, through
-`render_account(request, **overrides)`. One page for the person, one
-responsibility per view.
+`render_account(request, **overrides)` (or, with htmx, only the form's
+own section; below). One page for the person, one responsibility per
+view.
+
+The hub is laid out as three sections — Profile (display name, public
+name), Sign-in (the email address, the email-change block, the link
+to change the password) and Fields and clients (a sentence and a link
+to each) — that `js/tabs.js` turns into tabs; see
+[JavaScript](javascript.md#tabs-jstabsjs).
+
+A successful form redirects to `accounts:account` with
+`?section=profile` or `?section=sign-in`, which the `account` view
+reads (against `ACCOUNT_SECTIONS`; anything else is ignored) and
+passes on as `open_section`. A view that re-renders the hub after a
+validation error does the same directly, with
+`render_account(..., open_section="profile")` (or `"sign-in"`). Either
+way the section comes back marked `data-open`, so the script opens it
+instead of defaulting to the first one — and because the redirect
+carries a query parameter rather than a `#fragment`, the browser never
+jumps the viewport to the section before the Django message above it
+(see [Styling](styling.md#flash-messages)) has been seen.
+
+**Saving in place.** With JavaScript, the four forms in Profile and
+Sign-in — display name, public name, email change and cancelling one —
+post with htmx and get back only their own section's content, so the
+tab they are on stays open and the page is not reloaded. Each section's
+content is its own template, `accounts/_profile.html` and
+`accounts/_sign_in.html` (`SECTION_TEMPLATES` maps a section to its
+template), which `account.html` includes inside the `<section>`, after
+the `<h2>`. Each is one `div.tab-content` with an id
+(`#profile-content`, `#sign-in-content`) the forms name as their
+`hx-target`, swapped `outerHTML`. The `<section>` itself is never
+swapped: tabs.js gave it `role="tabpanel"`, `aria-labelledby` and
+`hidden`, and a fresh copy from the server would have none of them.
+
+Two helpers keep every view to one line per outcome:
+
+- `_section_saved(request, section, message, focus)` queues the
+  message, then answers a plain request with the `?section=` redirect,
+  as before, and an htmx request with the section re-rendered with
+  fresh forms. That fragment carries the message twice, out of band:
+  as `#status`'s text, and in the drained `#messages` list, so it is
+  not shown again on the next page. `focus` names the button that gets
+  `autofocus`, the one the person just used (or, after a cancel, the
+  email change's button, the next thing in that section).
+- `_section_invalid(request, section, form_name, form)` answers a plain
+  request with the whole hub, the form bound and its section
+  `data-open`, as before, and an htmx request with a 422 carrying the
+  section with the form bound and `autofocus` on its first field in
+  error.
+
+Anything else that goes wrong — a 5xx, a dropped connection — is not
+swapped into the section; `js/htmx-errors.js` shows the generic error
+above the page and announces it (see
+[JavaScript](javascript.md#saying-a-request-failed-jshtmx-errorsjs)).
+
+Both pass the response through `vary_on_htmx`. The success messages
+name what changed — the new display or public name, the address the
+pending change was for — so two saves in a row announce two different
+sentences; see [JavaScript](javascript.md#forms-saved-in-place-inside-a-tab).
 
 ## Changing the email address
 
