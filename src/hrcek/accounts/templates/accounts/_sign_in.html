@@ -1,0 +1,29 @@
+{% load i18n %}{% comment %}
+  The Sign-in section's content: everything in <section id="sign-in">
+  but its heading. account.html includes it; with htmx, the email
+  change and cancel views answer with it alone, swapped outerHTML over
+  #sign-in-content — the same arrangement as _profile.html, which
+  explains `status` and `focus`.
+{% endcomment %}<div class="tab-content" id="sign-in-content">
+  <h3>{% trans "Email address" %}</h3>
+  <p>{{ user.email }}</p>
+  {% if user.pending_email %}
+    <p>{% blocktrans with pending=user.pending_email %}Waiting for confirmation at {{ pending }}. Until you confirm it, this address keeps working.{% endblocktrans %}</p>
+    <form method="post" action="{% url 'accounts:email_change_cancel' %}"
+          hx-post="{% url 'accounts:email_change_cancel' %}"
+          hx-target="#sign-in-content" hx-swap="outerHTML" hx-disable="find button">
+      {% csrf_token %}
+      <button type="submit">{% trans "Cancel the change" %}</button>
+    </form>
+  {% endif %}
+  <form method="post" action="{% url 'accounts:email_change' %}"
+        hx-post="{% url 'accounts:email_change' %}"
+        hx-target="#sign-in-content" hx-swap="outerHTML" hx-disable="find button">
+    {% csrf_token %}
+    {{ email_change_form.as_p }}
+    <button type="submit"{% if focus == "email_change" %} autofocus{% endif %}>{% trans "Change my email address" %}</button>
+  </form>
+
+  <p><a href="{% url 'accounts:password_change' %}">{% trans "Change your password" %}</a></p>
+  {% if status %}{% include "_status.html" with status=status oob=True %}{% include "_messages.html" with oob=True %}{% endif %}
+</div>

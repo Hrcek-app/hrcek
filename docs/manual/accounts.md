@@ -47,7 +47,17 @@ You can leave it empty, and any number of people can.
 ## Managing your account
 
 Once you are signed in, `/accounts/me/` is where everything about your
-account lives.
+account lives, in three parts: *Profile*, *Sign-in* and *Fields and
+clients*. With JavaScript they are tabs you switch between; without
+it, they are simply the sections of one long page, one after another.
+
+With JavaScript, saving a form there does not reload the page: the
+part you were working in is updated where it is, you stay on the same
+tab, and a note above the page says what was saved. If something needs
+fixing, the form says what, next to the field, and puts you in that
+field. If saving fails to go through altogether, an error above the
+page says "Something went wrong. Please check and try again.", and
+nothing is changed.
 
 **Display name.** Change it or clear it whenever you like. The rules are
 the same as when you first set one: no `@`, and capitals do not make it

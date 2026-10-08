@@ -1,48 +1,38 @@
-{% extends "base.html" %}{% load i18n %}
+{% extends "base.html" %}{% load i18n static %}
 {% block heading %}{% trans "Your account" %}{% endblock %}
+{% block head %}
+  <script src="{% static 'js/tabs.js' %}" defer></script>
+{% endblock %}
 {% block content %}
-  <h2>{% trans "Display name" %}</h2>
-  <p>{% trans "Optional. You can sign in with this instead of your email." %}</p>
-  <form method="post" action="{% url 'accounts:display_name' %}">
-    {% csrf_token %}
-    {{ display_name_form.as_p }}
-    <button type="submit">{% trans "Save display name" %}</button>
-  </form>
+  {% comment %}
+    Three sections, enhanced into a tab set by tabs.js when it runs;
+    without it they simply stack. See docs/dev/javascript.md. The
+    content of Profile and Sign-in is its own template, which the forms
+    in it get back alone, with htmx (docs/dev/accounts.md).
+  {% endcomment %}
+  <div data-tabs data-tabs-label="{% trans "Account sections" %}">
 
-  <h2>{% trans "Public name" %}</h2>
-  <p>{% trans "Only needed if you make a collection public. Your public name appears in the address of every public collection you have, like /u/your-name/watches/." %}</p>
-  {% if has_public_collections %}
-    <p><strong>{% trans "You have public collections. Changing your public name changes their addresses, and any link you have already shared will stop working." %}</strong></p>
-  {% endif %}
-  <form method="post" action="{% url 'accounts:public_name' %}">
-    {% csrf_token %}
-    {{ public_name_form.as_p }}
-    <button type="submit">{% trans "Save public name" %}</button>
-  </form>
+    <section class="tab-section" id="profile" aria-labelledby="profile-heading"{% if open_section == "profile" %} data-open{% endif %}>
+      <h2 id="profile-heading">{% trans "Profile" %}</h2>
 
-  <h2>{% trans "Email address" %}</h2>
-  <p>{{ user.email }}</p>
-  {% if user.pending_email %}
-    <p>{% blocktrans with pending=user.pending_email %}Waiting for confirmation at {{ pending }}. Until you confirm it, this address keeps working.{% endblocktrans %}</p>
-    <form method="post" action="{% url 'accounts:email_change_cancel' %}">
-      {% csrf_token %}
-      <button type="submit">{% trans "Cancel the change" %}</button>
-    </form>
-  {% endif %}
-  <form method="post" action="{% url 'accounts:email_change' %}">
-    {% csrf_token %}
-    {{ email_change_form.as_p }}
-    <button type="submit">{% trans "Change my email address" %}</button>
-  </form>
+      {% include "accounts/_profile.html" %}
+    </section>
 
-  <h2>{% trans "Fields" %}</h2>
-  <p>{% trans "The extra things you record about each entry, beyond its address, title and notes." %}</p>
-  <p><a href="{% url 'entries:fields' %}">{% trans "Your fields" %}</a></p>
+    <section class="tab-section" id="sign-in" aria-labelledby="sign-in-heading"{% if open_section == "sign-in" %} data-open{% endif %}>
+      <h2 id="sign-in-heading">{% trans "Sign-in" %}</h2>
 
-  <h2>{% trans "Password" %}</h2>
-  <p><a href="{% url 'accounts:password_change' %}">{% trans "Change your password" %}</a></p>
+      {% include "accounts/_sign_in.html" %}
+    </section>
 
-  <h2>{% trans "Clients" %}</h2>
-  <p><a href="{% url 'accounts:clients' %}">{% trans "Manage clients and their authorizations" %}</a></p>
+    <section class="tab-section" id="fields" aria-labelledby="fields-heading"{% if open_section == "fields" %} data-open{% endif %}>
+      <h2 id="fields-heading">{% trans "Fields and clients" %}</h2>
 
+      <p>{% trans "The extra things you record about each entry, beyond its address, title and notes." %}</p>
+      <p><a href="{% url 'entries:fields' %}">{% trans "Your fields" %}</a></p>
+
+      <p>{% trans "A client is a script or another program that acts as you, authenticated with a token instead of your password." %}</p>
+      <p><a href="{% url 'accounts:clients' %}">{% trans "Manage clients and their authorizations" %}</a></p>
+    </section>
+
+  </div>
 {% endblock %}

@@ -1,0 +1,30 @@
+{% load i18n %}{% comment %}
+  The Profile section's content: everything in <section id="profile">
+  but its heading. account.html includes it; with htmx, the display-
+  and public-name views answer with it alone, swapped outerHTML over
+  #profile-content — never over the <section>, whose role, labelling
+  and hidden state belong to tabs.js. `status` is only ever set by
+  those views, so it also guards the out-of-band #status and drained
+  #messages; `focus` names the button that takes focus after a save.
+  See docs/dev/accounts.md and docs/dev/javascript.md.
+{% endcomment %}<div class="tab-content" id="profile-content">
+  <form method="post" action="{% url 'accounts:display_name' %}"
+        hx-post="{% url 'accounts:display_name' %}"
+        hx-target="#profile-content" hx-swap="outerHTML" hx-disable="find button">
+    {% csrf_token %}
+    {{ display_name_form.as_p }}
+    <button type="submit"{% if focus == "display_name" %} autofocus{% endif %}>{% trans "Save display name" %}</button>
+  </form>
+
+  {% if has_public_collections %}
+    <p><strong>{% trans "You have public collections. Changing your public name changes their addresses, and any link you have already shared will stop working." %}</strong></p>
+  {% endif %}
+  <form method="post" action="{% url 'accounts:public_name' %}"
+        hx-post="{% url 'accounts:public_name' %}"
+        hx-target="#profile-content" hx-swap="outerHTML" hx-disable="find button">
+    {% csrf_token %}
+    {{ public_name_form.as_p }}
+    <button type="submit"{% if focus == "public_name" %} autofocus{% endif %}>{% trans "Save public name" %}</button>
+  </form>
+  {% if status %}{% include "_status.html" with status=status oob=True %}{% include "_messages.html" with oob=True %}{% endif %}
+</div>
