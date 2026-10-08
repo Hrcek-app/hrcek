@@ -112,7 +112,8 @@ every other card's labels and actions down to match. It no longer is.
 ## Flash messages
 
 Django's messages are rendered in exactly one place: `base.html`,
-right after the `<h1>` and before `{% block content %}`. No template
+right after the heading row (the `<h1>` and any `heading_aside`
+content) and before `{% block content %}`. No template
 has its own `{% if messages %}` block any more; a page that needs one
 gets it for free by extending `base.html`. Each message is an
 `<li class="{{ message.tags }}">` inside a single
@@ -179,6 +180,49 @@ browser without JavaScript never shows a control that does nothing.
 It is announced as "Dark theme" with `aria-pressed`, and shows the sun
 in light and the moon in dark.
 
+## A heading with a link beside it
+
+`base.html` wraps the page's only `<h1>` in `div.heading-row`, together
+with a second, optional block:
+
+```django
+<div class="heading-row mb-6">
+  <h1 class="text-2xl font-bold tracking-tight">
+    {% block heading %}{% trans "Hrček" %}{% endblock %}
+  </h1>
+  {% block heading_aside %}{% endblock %}
+</div>
+```
+
+A page that wants a link beside its title — `collections/detail.html`'s
+*Edit*, right of the collection's name on a wide screen and below it
+on a phone — fills `heading_aside`, not `heading`:
+
+```django
+{% block heading %}{{ collection.name }}{% endblock %}
+{% block heading_aside %}
+  <a class="button secondary" href="...">{% trans "Edit" %}</a>
+{% endblock %}
+```
+
+Edit must sit beside the `<h1>`, never inside it: a link inside a
+heading becomes part of its accessible name, so a screen reader would
+read the collection's name and "Edit" as one heading. Putting Edit
+inside `{% block heading %}` was tried and rejected for exactly this
+reason — `heading_aside` exists so a page never has to choose between
+one heading with a link folded into it and a second heading element
+(invalid: two headings reading as one page title).
+
+`heading_aside` is empty on every other page, which still renders
+`div.heading-row` around a lone `<h1>` — one structure for every page,
+not a second one only for pages with an aside. `.heading-row` is
+`display: flex; flex-wrap: wrap; justify-content: space-between;
+align-items: baseline`; with one child this changes nothing visible,
+and with two it is what puts Edit at the far end of the row on a wide
+screen and wraps it below the title once the row runs out of room.
+`.button` styling (below) gives the link its own size and weight, so
+it does not inherit the heading's large bold type.
+
 ## Markup Django generates
 
 Most forms render with `{{ form.as_p }}`, and Django also emits
@@ -208,6 +252,25 @@ same block defines the small vocabulary templates use for structure:
 | `actions` | A form's submit button and its way out, side by side |
 | `danger-zone` | A section after a form holding something that cannot be undone, set well apart |
 | `theme-toggle` | The icon button in the header that switches themes |
+| `button` on an `<a>` | A link styled like `<button>` (add `secondary` too for the secondary look) |
+| `heading-row` | Wraps a heading's text and a link beside it; see above |
+| `collection-item` | One collection on its list: hairline, generous padding |
+| `content-lead` | A block of somebody's own writing: larger, full ink, a little space above and below |
+| `meta` | A sentence the interface says about something, not content: smaller, muted |
+
+### Content versus interface text
+
+`content-lead` and `meta` are the two ends of one distinction: a
+collection's description is somebody's own writing, so it keeps full
+`text-lg` type in `--color-ink`; the sentences the interface adds
+around it — which feed matches its visibility, how entries get in, a
+wish list's note to a visitor or what it did for its owner — carry
+`meta` instead, dropping to `text-sm` in `--color-muted`. The same pair
+appears on a collection's own page, its list, and the page it is
+shared through, so the two read as one small vocabulary rather than
+three per-page rules. Reach for `content-lead` on anything a person
+wrote, and `meta` on anything the page is explaining about itself;
+nothing else should invent its own shade of muted text.
 
 Checkbox rows get their own treatment. Django renders the label
 before the input, and the global `label { display: block }` would drop

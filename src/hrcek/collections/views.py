@@ -60,6 +60,28 @@ def collection_create(request: HttpRequest) -> HttpResponse:
     return redirect("collections:detail", pk=collection.pk)
 
 
+def _feed_url(collection: Collection) -> str:
+    """The feed address to offer on the collection's own page.
+
+    Once a collection is shared, there is one feed address for it —
+    the one everybody else would use — and that is what this offers
+    and what the Atom <link> in <head> points at too, so the two
+    never name different addresses. Only a private collection, which
+    has no shared address at all, falls back to the owner's own feed.
+    """
+    if collection.visibility == Collection.UNLISTED:
+        return reverse("shared:unlisted_feed", kwargs={"secret": collection.secret})
+    if collection.visibility == Collection.PUBLIC:
+        return reverse(
+            "shared:public_feed",
+            kwargs={
+                "namespace": collection.owner.namespace,
+                "slug": collection.slug,
+            },
+        )
+    return reverse("collections:feed", args=[collection.pk])
+
+
 @login_required
 def collection_detail(request: HttpRequest, pk: int) -> HttpResponse:
     owner = cast("User", request.user)
@@ -72,6 +94,7 @@ def collection_detail(request: HttpRequest, pk: int) -> HttpResponse:
         "collections/detail.html",
         {
             "collection": collection,
+            "feed_url": _feed_url(collection),
             "entries": collection.entries().prefetch_related("tags"),
             "reveal": reveal,
             # Only handed to the template when asked for, so a slip

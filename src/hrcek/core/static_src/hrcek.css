@@ -267,17 +267,36 @@
     margin-block-start: calc(var(--spacing) * 1);
   }
 
-  button {
+  /* The row base.html wraps around every page's h1 and its
+     heading_aside block: on a collection's own page, the name and its
+     Edit link, side by side where there is room and stacked where
+     there is not. Edit sits beside the h1, not inside it, so it never
+     joins the heading's accessible name; the page still has a single
+     h1. */
+  .heading-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: calc(var(--spacing) * 4);
+  }
+
+  button,
+  a.button {
+    display: inline-block;
     padding: calc(var(--spacing) * 2) calc(var(--spacing) * 4);
     font-size: var(--text-base);
     font-weight: 600;
     color: var(--color-accent-ink);
     background-color: var(--color-accent);
     border-radius: var(--radius-md);
+    text-decoration: none;
     cursor: pointer;
   }
-  button:hover {
+  button:hover,
+  a.button:hover {
     background-color: color-mix(in oklab, var(--color-accent) 88%, var(--color-ink));
+    text-decoration: none;
   }
 
   /* The theme toggle: an icon, not a call to action. It shows the
@@ -339,13 +358,16 @@
   }
 
   /* The way out of a form or a dialog: a button, but not the one the
-     form is for. */
-  button.secondary {
+     form is for. The same look does for Edit beside a heading, which
+     is a link rather than a button but otherwise exactly this. */
+  button.secondary,
+  a.button.secondary {
     color: var(--color-ink);
     background-color: transparent;
     border: 1px solid var(--color-edge);
   }
-  button.secondary:hover {
+  button.secondary:hover,
+  a.button.secondary:hover {
     background-color: color-mix(in oklab, var(--color-edge) 50%, transparent);
   }
 
@@ -391,6 +413,28 @@
   }
   ul.stacked > li + li {
     margin-block-start: calc(var(--spacing) * 4);
+  }
+
+  /* A collection on its list: a clear boundary around each one
+     (hairline plus generous padding), tight spacing between what is
+     inside it. The hairline alone separates one from the next, so
+     the plain list gap above does not also apply here. */
+  ul.stacked > li.collection-item {
+    padding-block: calc(var(--spacing) * 6);
+    border-block-start: 1px solid var(--color-edge);
+  }
+  ul.stacked > li.collection-item + li.collection-item {
+    margin-block-start: 0;
+  }
+  .collection-item > * {
+    margin-block: 0;
+  }
+  .collection-item > * + * {
+    margin-block-start: calc(var(--spacing) * 2);
+  }
+  .collection-item h2 {
+    font-size: var(--text-lg);
+    font-weight: 600;
   }
 
   /* The entries themselves: separated by hairlines, not boxes. They
@@ -711,6 +755,27 @@
   }
 
   .kind {
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+
+  /* A collection's description: somebody's own writing, set apart
+     from the explanatory text (.meta, below) around it. Larger than
+     body text, in full ink rather than muted, with a little room to
+     breathe above and below. Used on a collection's own page, its
+     list, and the page it is shared through. */
+  .content-lead {
+    margin-block: calc(var(--spacing) * 4);
+    font-size: var(--text-lg);
+    color: var(--color-ink);
+  }
+
+  /* Explanatory sentences the interface says about a collection,
+     rather than anything a person wrote: visibility and its feed,
+     how entries get in, a wish list's note to a visitor or what it
+     did for its owner. Smaller and muted, so it reads as chrome next
+     to a description's .content-lead. */
+  .meta {
     font-size: var(--text-sm);
     color: var(--color-muted);
   }
