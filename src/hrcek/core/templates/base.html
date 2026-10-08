@@ -85,7 +85,19 @@
     {% endcomment %}
     <main class="{% block width %}max-w-2xl{% endblock %}">
       {% block prelude %}{% endblock %}
-      <h1 class="text-2xl font-bold tracking-tight mb-6">{% block heading %}{% trans "Hrček" %}{% endblock %}</h1>
+      {% comment %}
+        A page that wants a link beside its title — Edit, on a
+        collection's own page — fills heading_aside. It always sits
+        here, next to the h1 rather than inside it: a link inside
+        the heading would join its text to the heading's accessible
+        name. Wrapping both in one flex row, even when heading_aside
+        is empty, keeps this one structure for every page rather
+        than a second one for pages that need the aside.
+      {% endcomment %}
+      <div class="heading-row mb-6">
+        <h1 class="text-2xl font-bold tracking-tight">{% block heading %}{% trans "Hrček" %}{% endblock %}</h1>
+        {% block heading_aside %}{% endblock %}
+      </div>
       {% include "_messages.html" %}
       {% block content %}{% endblock %}
     </main>

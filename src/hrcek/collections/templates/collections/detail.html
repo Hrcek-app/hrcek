@@ -2,21 +2,27 @@
 {% block width %}{% endblock %}
 {% block head %}
   <link rel="alternate" type="application/atom+xml"
-        title="{{ collection.name }}" href="{% url 'collections:feed' collection.pk %}">
+        title="{{ collection.name }}" href="{{ feed_url }}">
 {% endblock %}
 {% block heading %}{{ collection.name }}{% endblock %}
+{% block heading_aside %}
+  <a class="button secondary" href="{% url 'collections:edit' collection.pk %}">{% trans "Edit" %}</a>
+{% endblock %}
 {% block content %}
-  {% if collection.description %}<p>{{ collection.description }}</p>{% endif %}
+  {% if collection.description %}<p class="content-lead">{{ collection.description }}</p>{% endif %}
 
   {% if collection.visibility == 'private' %}
-    <p>{% trans "Private. Only you can see this collection; there is no address to share." %}</p>
+    <p class="meta">{% trans "Private. Only you can see this collection; there is no address to share." %}
+      {% blocktrans %}It also has a <a href="{{ feed_url }}">feed</a>.{% endblocktrans %}</p>
   {% elif collection.visibility == 'unlisted' %}
-    <p>{% trans "Anyone with this link can see this collection:" %}
-      <a href="{{ collection.unlisted_url }}">{{ collection.unlisted_url }}</a></p>
-    <p>{% trans "The link is hard to guess, but it is not a password: whoever you send it to can pass it on." %}</p>
+    <p class="meta">{% trans "Anyone with this link can see this collection:" %}
+      <a href="{{ collection.unlisted_url }}">{{ collection.unlisted_url }}</a>
+      {% blocktrans %}It also has a <a href="{{ feed_url }}">feed</a>.{% endblocktrans %}</p>
+    <p class="meta">{% trans "The link is hard to guess, but it is not a password: whoever you send it to can pass it on." %}</p>
   {% else %}
-    <p>{% trans "Public. Anyone can see this collection at:" %}
-      <a href="{{ collection.public_url }}">{{ collection.public_url }}</a></p>
+    <p class="meta">{% trans "Public. Anyone can see this collection at:" %}
+      <a href="{{ collection.public_url }}">{{ collection.public_url }}</a>
+      {% blocktrans %}It also has a <a href="{{ feed_url }}">feed</a>.{% endblocktrans %}</p>
   {% endif %}
 
   {% if collection.is_wish_list %}
@@ -41,16 +47,10 @@
     {% endif %}
   {% endif %}
 
-  <ul class="row">
-    <li><a href="{% url 'collections:edit' collection.pk %}">{% trans "Edit" %}</a></li>
-    <li><a href="{% url 'collections:list' %}">{% trans "Your collections" %}</a></li>
-    <li><a href="{% url 'collections:feed' collection.pk %}">{% trans "Feed" %}</a></li>
-  </ul>
-
   {% if collection.kind == 'label' %}
-    <p>{% blocktrans with label=collection.label.name %}This collection holds every entry labelled {{ label }}. Label an entry and it appears here; remove the label and it goes. There is nothing to add by hand.{% endblocktrans %}</p>
+    <p class="meta">{% blocktrans with label=collection.label.name %}This collection holds every entry labelled {{ label }}. Label an entry and it appears here; remove the label and it goes. There is nothing to add by hand.{% endblocktrans %}</p>
   {% else %}
-    <p>{% trans "Tick this collection on an entry's own edit page to put it here." %}</p>
+    <p class="meta">{% trans "Tick this collection on an entry's own edit page to put it here." %}</p>
   {% endif %}
 
   {% comment %}

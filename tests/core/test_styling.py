@@ -190,6 +190,25 @@ def test_entry_cards_are_a_flex_column():
     assert "flex-direction:column" in rule
 
 
+def test_content_lead_reads_larger_in_full_ink():
+    """A collection's description (.content-lead) is set apart from
+    the explanatory text (.meta) around it: larger and in full ink,
+    with room to breathe above and below."""
+    rule = _rule(_compiled_css(), ".content-lead")
+    assert "font-size:var(--text-lg)" in rule
+    assert "color:var(--color-ink)" in rule
+    assert "margin-block" in rule
+
+
+def test_meta_text_is_small_and_muted():
+    """Explanatory sentences the interface says about a collection —
+    visibility and its feed, how entries get in, a wish list's note —
+    read smaller and muted, apart from the description above."""
+    rule = _rule(_compiled_css(), ".meta")
+    assert "font-size:var(--text-sm)" in rule
+    assert "color:var(--color-muted)" in rule
+
+
 def test_entry_actions_are_pinned_to_the_card_bottom():
     """Cards sharing a grid row are already stretched to the same
     height by the grid's own default alignment; pushing the actions
