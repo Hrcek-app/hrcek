@@ -8,6 +8,7 @@ from typing import Any
 
 from django.utils.translation import gettext_lazy as _
 
+from hrcek.core import site_root
 from hrcek.core.telemetry import configure_sentry
 from hrcek.settings.env import (
     env_bool,
@@ -165,6 +166,11 @@ MAILERS: dict[str, dict[str, Any]] = {
 STATIC_URL = "static/"
 # Filled by collectstatic when the image is built.
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# Files served at the site root, such as /robots.txt. Only production
+# runs WhiteNoise (see prod.py), so dev answers /robots.txt with a 404.
+WHITENOISE_ROOT = site_root.DIRECTORY
+WHITENOISE_ADD_HEADERS_FUNCTION = site_root.add_headers
 
 # Where rendered image copies are cached. The database holds the real
 # thing; everything under here can be deleted and will be written again
