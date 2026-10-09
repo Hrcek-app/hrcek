@@ -105,7 +105,8 @@ name, or a visibility that does not match the address is a **404**,
 never a 403 — a 403 tells a stranger that something exists.
 
 Unlisted pages send `X-Robots-Tag: noindex, nofollow`. Public pages do
-not: they are meant to be found.
+not: they are meant to be found. `robots.txt` also keeps crawlers out
+of `/c/`; see [deployment](deployment.md#files-at-the-site-root).
 
 ### The secret
 

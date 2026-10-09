@@ -68,6 +68,9 @@ not to index these pages.
 address is made from your public name and the collection's name, like
 `/u/your-name/watches/`.
 
+Search engines are asked to stay out of everything else in Hrček: your
+entries, your private collections and your account.
+
 You need a public name before you can make anything public. Set one on
 your account page. **If you change it later, every public address
 changes with it, and links you have already shared stop working.** The

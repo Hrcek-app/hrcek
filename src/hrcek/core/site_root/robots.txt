@@ -1,0 +1,13 @@
+# Hrček keeps most of what it holds behind a sign-in. Only the front
+# page and public collections (/u/) are meant to be found.
+
+User-agent: *
+Disallow: /accounts/
+Disallow: /admin/
+Disallow: /api/
+Disallow: /c/
+Disallow: /collections/
+Disallow: /entries/
+Disallow: /errors/
+Disallow: /healthz
+Disallow: /i18n/

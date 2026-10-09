@@ -122,6 +122,35 @@ family-scale service is unlikely to face. The proxy does it for
 nothing. Caddy has `rate_limit`; with neither, `fail2ban` watching the
 access log does the same job.
 
+## Files at the site root
+
+`/robots.txt` is a plain file in `src/hrcek/core/site_root/`. Anything
+else that must sit at the root of the site goes in the same folder.
+WhiteNoise serves it before the request reaches sessions, the database
+or any view, and answers a repeat visit with `304 Not Modified`.
+`WHITENOISE_ROOT` and `WHITENOISE_ADD_HEADERS_FUNCTION` in `base.py`
+point at the folder and let browsers and proxies keep its files for a
+day; WhiteNoise's own default for them is a minute. The proxy needs no
+setup of its own for these files.
+
+Only production runs WhiteNoise, so `runserver` answers `/robots.txt`
+with a 404.
+
+`robots.txt` keeps crawlers out of everything that is not public: the
+admin, accounts, entries, private collections, collections shared by
+link (`/c/`), the API, the error previews, the language switch and
+`/healthz`. It leaves open only the front page and public collections
+(`/u/`).
+
+Blocking `/c/` has a cost. Those pages also send
+`X-Robots-Tag: noindex`, which a crawler kept out never reads. A search
+engine that finds a `/c/` link elsewhere may still list the bare
+address, though not the page's content.
+
+A new top-level address must be added to `robots.txt` or declared
+crawlable in `tests/core/test_robots.py`; that test fails until
+somebody chooses.
+
 ## With Docker
 
 ### The image
