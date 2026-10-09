@@ -3,7 +3,11 @@
 {% block heading %}{% trans "Your entries" %}{% endblock %}
 {% block content %}
   <ul class="row">
-    <li><a href="{% url 'entries:create' %}">{% trans "Save something" %}</a></li>
+    {% comment %}
+      Where focus lands after a delete leaves nothing else to focus:
+      see js/delete-focus.js.
+    {% endcomment %}
+    <li><a href="{% url 'entries:create' %}" data-focus-after-delete-fallback>{% trans "Save something" %}</a></li>
   </ul>
 
   {% comment %}
@@ -13,12 +17,12 @@
   <div class="lg:grid lg:grid-cols-[minmax(0,1fr)_14rem] lg:gap-12">
     <div>
       {% if page %}
-        <ul class="entries">
+        <ul class="entries" id="entries-list">
           {% for entry in page %}
             <li>
               <article>
                 <div class="entry-head">
-                  <h2><a href="{{ entry.url }}">{{ entry.display_title }}</a></h2>
+                  <h2><a href="{{ entry.url }}" data-focus-after-delete>{{ entry.display_title }}</a></h2>
                   {% now "Y" as this_year %}{% trans "l, j F Y" as long_date %}
                   <p class="added">{% trans "Added" %} <time datetime="{{ entry.created_at|date:'c' }}" title="{{ entry.created_at|date:long_date }}">{% if entry.created_at|date:"Y" == this_year %}{{ entry.created_at|date:"MONTH_DAY_FORMAT" }}{% else %}{{ entry.created_at|date:"DATE_FORMAT" }}{% endif %}</time></p>
                 </div>
@@ -40,8 +44,37 @@
                 <div class="entry-actions">
                   <ul class="row">
                     <li><a href="{% url 'entries:edit' entry.pk %}">{% trans "Edit" %}</a></li>
-                    <li><a href="{% url 'entries:delete' entry.pk %}?next={{ request.get_full_path|urlencode }}">{% trans "Delete" %}</a></li>
+                    <li><a href="{% url 'entries:delete' entry.pk %}?next={{ request.get_full_path|urlencode }}" data-confirm-dialog="delete-{{ entry.pk }}">{% trans "Delete" %}</a></li>
                   </ul>
+                  {% comment %}
+                    The confirmation page's form, for confirm-dialog.js to
+                    open in place. Closed it takes no room; open it sits in
+                    the top layer, so it never joins the entry's grid.
+                    hx-post enhances the same action: on success the "delete"
+                    swap removes this li (dialog included) outright, ignoring
+                    whatever the response body says about it, while the
+                    out-of-band fragments in that body still land wherever
+                    their own ids match. js/delete-focus.js then moves focus
+                    somewhere sensible. hx-status:4xx/5xx turn that swap off
+                    for a failed request — the row survives, and
+                    js/htmx-errors.js says so. hx-disable keeps a double
+                    click from sending two requests while one is in flight.
+                  {% endcomment %}
+                  <dialog id="delete-{{ entry.pk }}" aria-labelledby="delete-{{ entry.pk }}-title">
+                    <h2 id="delete-{{ entry.pk }}-title">{% trans "Delete this entry?" %}</h2>
+                    <p>{{ entry.display_title }}</p>
+                    <form method="post" action="{% url 'entries:delete' entry.pk %}"
+                          hx-post="{% url 'entries:delete' entry.pk %}"
+                          hx-target="closest li" hx-swap="delete"
+                          hx-status:4xx="swap:none" hx-status:5xx="swap:none"
+                          hx-disable="findAll button">
+                      {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+                      <div class="actions">
+                        <button type="submit" class="danger">{% trans "Yes, delete it" %}</button>
+                        <button type="button" class="secondary" data-dialog-cancel autofocus>{% trans "Keep it" %}</button>
+                      </div>
+                    </form>
+                  </dialog>
                 </div>
                 {% if entry.image %}
                   <a class="entry-thumb" href="{{ entry.url }}" tabindex="-1" aria-hidden="true">
@@ -54,7 +87,7 @@
           {% endfor %}
         </ul>
       {% else %}
-        <p>{% trans "Nothing saved yet." %}</p>
+        {% include "entries/_empty_list.html" %}
       {% endif %}
 
       {% if page.has_other_pages %}
@@ -72,20 +105,6 @@
       {% endif %}
     </div>
 
-    {% if tags %}
-      <aside class="my-8 border-t border-edge pt-6 lg:sticky lg:top-8 lg:self-start">
-        <h2 id="tags-heading" class="mt-0">{% trans "Tags" %}</h2>
-        <nav aria-labelledby="tags-heading">
-          <ul class="row">
-            {% for each in tags %}
-              <li><a href="?tag={{ each.name|urlencode }}"{% if tag and each.name|lower == tag|lower %} aria-current="true"{% endif %}>{{ each.name }}</a></li>
-            {% endfor %}
-            {% if tag %}
-              <li><a href="{% url 'entries:list' %}">{% trans "All entries" %}</a></li>
-            {% endif %}
-          </ul>
-        </nav>
-      </aside>
-    {% endif %}
+    {% include "entries/_tags_sidebar.html" %}
   </div>
 {% endblock %}

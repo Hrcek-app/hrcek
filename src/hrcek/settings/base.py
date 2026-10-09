@@ -52,6 +52,10 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "hrcek.core.middleware.HealthCheckMiddleware",
     "hrcek.core.middleware.RequestIDMiddleware",
+    # Must wrap (come before) CsrfViewMiddleware and
+    # AuthenticationMiddleware: it rewrites what *they* answer with for
+    # an htmx request, so it has to be outside them in the chain.
+    "hrcek.core.middleware.HtmxSignInRedirectMiddleware",
     "django.middleware.security.SecurityMiddleware",
     # Session must precede authentication and locale; CSRF must precede
     # authentication.

@@ -13,6 +13,8 @@ process, no queue.
 - [Collections](collections.md) — sets of entries, by hand or by label
 - [Images](images.md) — how a picture is stored, capped and cached
 - [Styling](styling.md) — Tailwind, design tokens, light and dark
+- [JavaScript](javascript.md) — htmx, the status region, dialogs; what
+  works without it
 - [Error codes](error-codes.md) — the registry and how to extend it
 - [Internationalisation](i18n.md) — translating strings
 - [Debugging and telemetry](debugging-and-telemetry.md) — logs, the

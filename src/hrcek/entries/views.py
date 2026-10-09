@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import cast
+from urllib.parse import parse_qs, urlsplit
 
 from django.conf import settings
 from django.contrib import messages
@@ -17,13 +18,16 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import gettext as _
+from django.utils.translation import ngettext
 
 from hrcek.accounts.models import User
+from hrcek.collections.models import Collection
 from hrcek.collections.services import (
     already_got_on,
     emptied_label_collections,
     label_wish_lists_holding,
 )
+from hrcek.core.htmx import htmx_redirect, is_htmx, vary_on_htmx
 from hrcek.core.navigation import safe_next
 from hrcek.entries import imaging
 from hrcek.entries.forms import EntryForm, FieldDefinitionForm
@@ -69,14 +73,19 @@ def _save(
     return entry
 
 
-def _say_if_emptied(request: HttpRequest, owner: User, carried: set[int]) -> None:
+def _say_if_emptied(
+    request: HttpRequest, owner: User, carried: set[int]
+) -> list[Collection]:
     """Tell the owner which label collections this change left empty.
 
     The collection is kept: deleting it is the owner's call, so the
     notice links to its delete page rather than asking first, which
-    would cost anything typed or chosen on the form.
+    would cost anything typed or chosen on the form. Returns what it
+    queued, for a caller that also wants a brief, link-free mention
+    somewhere a link has no business being (an aria-live region, say).
     """
-    for collection in emptied_label_collections(owner, carried):
+    emptied = list(emptied_label_collections(owner, carried))
+    for collection in emptied:
         messages.info(
             request,
             format_html(
@@ -87,6 +96,7 @@ def _say_if_emptied(request: HttpRequest, owner: User, carried: set[int]) -> Non
                 _("Delete it"),
             ),
         )
+    return emptied
 
 
 def _say_if_already_got(
@@ -183,6 +193,22 @@ def entry_edit(request: HttpRequest, pk: int) -> HttpResponse:
     return redirect("entries:list")
 
 
+def _tag_from(location: str) -> str:
+    """The `tag` query parameter, read the same way `still_there` does."""
+    return parse_qs(urlsplit(location).query).get("tag", [""])[0].strip()
+
+
+def _is_now_empty(owner: User, tag: str) -> bool:
+    """Whether the filtered list a delete was started from is now empty.
+
+    No tag at all means the whole account, which is the same question.
+    """
+    entries = Entry.objects.filter(owner=owner)
+    if tag:
+        entries = entries.filter(tags__name__iexact=tag)
+    return not entries.exists()
+
+
 @login_required
 def entry_delete(request: HttpRequest, pk: int) -> HttpResponse:
     owner = cast("User", request.user)
@@ -196,13 +222,54 @@ def entry_delete(request: HttpRequest, pk: int) -> HttpResponse:
             {"entry": entry, "next": safe_next(request, default)},
         )
 
+    title = entry.display_title
     carried = _tag_ids([entry])
     entry.delete()
     # Deleting the entry can leave tags with nothing on them.
     Tag.prune_orphans(owner)
+    target = safe_next(request, default)
+    redirected = still_there(target, owner)
+
+    if is_htmx(request):
+        status = _("Deleted “%(title)s”.") % {"title": title}
+        if redirected != target:
+            # The filtered list the delete was started from is gone —
+            # its label pruned, same as `still_there` found for the
+            # plain path — so a fragment has nowhere sensible to land.
+            # A full navigation, same as without JS; the confirmation
+            # and the emptied-collection notice, if any, wait for the
+            # page it lands on to render the ordinary way.
+            messages.success(request, status)
+            _say_if_emptied(request, owner, carried)
+            return vary_on_htmx(htmx_redirect(redirected))
+
+        emptied = _say_if_emptied(request, owner, carried)
+        if emptied:
+            status += " " + ngettext(
+                "%(count)d label collection now has nothing in it.",
+                "%(count)d label collections now have nothing in it.",
+                len(emptied),
+            ) % {"count": len(emptied)}
+
+        context = {
+            "status": status,
+            "empty": _is_now_empty(owner, _tag_from(target)),
+        }
+        surviving = set(Tag.objects.filter(pk__in=carried).values_list("pk", flat=True))
+        context["refresh_tags"] = bool(carried - surviving)
+        if context["refresh_tags"]:
+            # A pruned label (one carried here that did not survive the
+            # prune above) leaves the sidebar rendered on page load
+            # offering a tag page that is now a 404; this refreshes it.
+            context["tags"] = Tag.in_use(owner)
+            context["tag"] = _tag_from(target)
+
+        response = render(request, "entries/_delete_result.html", context)
+        return vary_on_htmx(response)
+
     messages.success(request, _("Deleted."))
     _say_if_emptied(request, owner, carried)
-    return redirect(still_there(safe_next(request, default), owner))
+    return redirect(redirected)
 
 
 @login_required

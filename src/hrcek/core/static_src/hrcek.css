@@ -307,6 +307,40 @@
     background-color: color-mix(in oklab, var(--color-danger) 88%, var(--color-ink));
   }
 
+  /* The way out of a form or a dialog: a button, but not the one the
+     form is for. */
+  button.secondary {
+    color: var(--color-ink);
+    background-color: transparent;
+    border: 1px solid var(--color-edge);
+  }
+  button.secondary:hover {
+    background-color: color-mix(in oklab, var(--color-edge) 50%, transparent);
+  }
+
+  /* A question asked in place (confirm-dialog.js): the confirmation
+     page's form, raised over the page it was asked from. */
+  dialog {
+    inline-size: min(calc(100% - 2rem), var(--container-md));
+    margin: auto;
+    padding: calc(var(--spacing) * 6);
+    color: var(--color-ink);
+    background-color: var(--color-raised);
+    border: 1px solid var(--color-edge);
+    border-radius: var(--radius-lg);
+  }
+  /* The page behind fades towards its own background rather than
+     darkening: a veil of ink would lighten a dark page instead. */
+  dialog::backdrop {
+    background-color: color-mix(in oklab, var(--color-surface) 75%, transparent);
+  }
+  main dialog h2 {
+    margin-block-start: 0;
+  }
+  dialog form .actions {
+    margin-block-start: calc(var(--spacing) * 6);
+  }
+
   /* Lists that read as a row rather than a stack. Still lists: the
      markup carries the structure, the styling only changes how it
      looks. */
@@ -453,6 +487,15 @@
     display: none;
   }
 
+  /* The "Tags" sidebar (entries/_tags_sidebar.html) is always
+     rendered, even with nothing in `tags`, so an out-of-band delete
+     fragment has a stable id to land on; this keeps an empty one from
+     showing its border and padding, same as before a tag existed to
+     put here at all. */
+  #tags-sidebar:empty {
+    display: none;
+  }
+
   /* A tag pill. On your own pages it is a link to the entries carrying
      it; on a shared page it is plain text in the same shape. */
   .tag {
@@ -517,6 +560,9 @@
 
   ul.messages {
     @apply mb-6 grid list-none gap-2 p-0 text-sm;
+  }
+  ul.messages:empty {
+    display: none;
   }
   ul.messages > li {
     @apply rounded-md px-4 py-3;

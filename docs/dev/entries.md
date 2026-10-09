@@ -225,6 +225,82 @@ list view's own rule — is no longer in `Tag.in_use(owner)`, in which
 case it returns the plain list. `entry_delete` passes its `safe_next`
 target through it after `Tag.prune_orphans`.
 
+With JavaScript, the link opens a `<dialog>` instead of the page: each
+entry's `entry-actions` holds a closed dialog with the confirmation
+page's POST form (the same action and hidden `next`), and
+`js/confirm-dialog.js` opens it — see
+[JavaScript](javascript.md#confirmation-dialogs-jsconfirm-dialogjs).
+Living inside `entry-actions` keeps it out of the four-row grid.
+Focus opens on "Keep it" (`autofocus`), so Enter alone never deletes.
+
+**Deleting in place.** The same form also carries `hx-post` (the same
+URL as its `action`), `hx-target="closest li"`, `hx-swap="delete"`,
+`hx-status:4xx`/`hx-status:5xx` (both `"swap:none"`, so a failed
+request leaves the row alone instead of deleting it anyway — the
+page-wide `noSwap` list covers only 404 and the 5xx, and a "delete"
+swap must not run on any failure) and
+`hx-disable="findAll button"` (so a double click, or Enter held a
+moment too long, cannot send a second request while the first is
+still in flight). Confirming removes the entry's whole `<li>` —
+dialog included — with no page load. `hx-swap="delete"` discards the
+response body for its own target entirely, so what `entry_delete`
+answers with is carried entirely as out-of-band fragments; see
+[JavaScript](javascript.md) for `hx-status`, `hx-disable`,
+`js/htmx-errors.js` (what a failed request says) and
+`hrcek.core.htmx.htmx_redirect` (used below).
+
+A successful delete can go one of two ways:
+
+- **The filtered list it was started from is gone.** `still_there`
+  (below) already knows this: the `tag` the delete's `next` carries no
+  longer names anything `Tag.in_use(owner)` has, because this delete
+  pruned it. There is no sensible fragment to send — the page the
+  owner is looking at has nothing left to be about — so
+  `entry_delete` answers with `htmx_redirect(still_there(...))`
+  instead: a real navigation to the plain list, the same place
+  JavaScript-off lands. The `#status` text would be lost with the
+  page it was written to, so the same "Deleted "%(title)s"." is
+  queued with `messages.success` instead, and the page landed on
+  shows it.
+- **Otherwise, it answers in place**, rendering
+  `entries/_delete_result.html`, entirely out-of-band fragments: an
+  `#status` announcing `"Deleted "%(title)s"."`, plus a brief,
+  link-free mention when this delete emptied a label collection (see
+  below); `entries/_empty_list.html`, replacing the (by then empty)
+  `ul#entries-list`, when the owner's current tag — or the whole
+  account, with none — now carries nothing; `entries/_tags_sidebar.html`,
+  when pruning a label this delete emptied was not the one filtering
+  the page (so the page itself stays, but the sidebar rendered on load
+  would otherwise go on offering a link to a tag page that is now a
+  404); `_messages.html`, always, so a message this request queued
+  does not wait for a later page (next).
+
+`js/delete-focus.js` then moves focus: on `htmx:before:swap`, while
+the removed `<li>` and its siblings are both still in the document, it
+reads the main task's target and remembers the first
+`[data-focus-after-delete]` in the next `<li>`, or the previous one, or
+the page's `[data-focus-after-delete-fallback]` ("Save something",
+always rendered) — then applies it once removal has actually happened,
+on `htmx:after:swap`. It has to be two events: while the dialog is
+still open and modal, everything outside it is inert and cannot be
+focused yet.
+
+**The emptied-collection notice** (`_say_if_emptied`, which now
+returns what it queued) carries a link, which has no business sitting
+in the visually-hidden `#status` region — so the in-place path's
+`#status` text only mentions it briefly, by count
+(`ngettext`, "%(count)d label collection(s) now have nothing in it."),
+while the notice itself, with its link, rides the `_messages.html`
+out-of-band swap above, drained from the request's queue rather than
+left for later. The redirect path does not do this: a real navigation
+follows, which renders `{{ messages }}` itself the ordinary way, so
+the notice is left queued exactly as it is without JavaScript.
+
+**An expired session or a failed CSRF check**, on any htmx request —
+not just this one — is a job for
+`hrcek.core.middleware.HtmxSignInRedirectMiddleware`, documented in
+[JavaScript](javascript.md) alongside `htmx_redirect` itself.
+
 ## safe_next: returning somewhere without being an open redirect
 
 `hrcek.core.navigation.safe_next(request, default)` reads `next` from
