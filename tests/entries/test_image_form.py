@@ -174,9 +174,10 @@ def test_the_thumbnail_link_is_not_a_second_tab_stop(client, nina, entry):
     EntryImage.attach(entry, _png())
     client.force_login(nina)
     body = " ".join(client.get(reverse("entries:list")).text.split())
-    assert '<a href="https://example.com/watch" tabindex="-1" aria-hidden="true">' in (
-        body
-    )
+    assert (
+        '<a class="entry-thumb" href="https://example.com/watch" '
+        'tabindex="-1" aria-hidden="true">'
+    ) in body
 
 
 def _picture_group(body):

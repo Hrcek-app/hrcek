@@ -165,6 +165,80 @@ Links on the form that lead elsewhere but are part of filling it in,
 like the one to your fields, open in a new tab instead, so following
 them loses nothing.
 
+## The entries list
+
+Each `<article>` in `entries/list.html` always renders the same four
+direct `<div>` children, in order, whether or not they have anything
+in them: `entry-head` (title and the date added), `entry-body` (notes
+and fields), `entry-labels` (tags) and `entry-actions` (Edit and
+Delete). An entry's optional picture is a fifth, sibling element,
+`a.entry-thumb`.
+
+Always rendering all four, even empty, is what gives later branches
+somewhere to put a new row (an "In:" line, say) without touching the
+template everywhere else. Each `<article>` is a flex column (selector:
+`ul.entries article:has(> .entry-head)`, in `static_src/hrcek.css`),
+so the gap between head, body, labels and actions depends only on
+that card's own content, never on a neighbour's title or notes. A
+card used to share rows with the rest of its grid row through
+`grid-template-rows: subgrid`; that made one entry's long notes push
+every other card's body, labels and actions down to match, and it is
+gone. What still makes every row's "Edit"/"Delete" land on the same
+line is simpler: the grid's own default alignment already stretches
+every `<li>` in a visual row to the tallest one, and `.entry-actions`
+is pushed to the bottom of that stretched height with a plain
+`margin-block-start: auto`.
+
+`entry-body` and `entry-labels` hold only conditional content, so the
+template glues each one's opening tag straight to its first
+`{% if %}` and its last `{% endif %}` straight to the closing tag,
+with no whitespace in between. An entry with no notes, no fields and
+no tags therefore renders `<div class="entry-body"></div>`, genuinely
+empty rather than full of blank lines, and a `:empty` rule in
+`static_src/hrcek.css` hides it, so that row adds no gap either side
+of itself in the flex column.
+
+An entry's optional picture, `a.entry-thumb`, is taken out of the
+flex column with `position: absolute` and pinned to the top end,
+beside the title and date rather than spanning rows, so a picture
+never forces the card taller than its own text would.
+
+**The date added.** `<time datetime="…">` carries the exact instant,
+machine-readable; what a person sees is `MONTH_DAY_FORMAT` ("7 Oct")
+for something added this year and `DATE_FORMAT` ("7 Oct 2024") once it
+is not, compared by `{% now "Y" %}` against the entry's own year so the
+page does not need the server's "today" passed in separately. The
+`title` attribute is the tooltip: the full day name and date, in the
+translatable format string `"l, j F Y"` (Slovenian: `"l, j. F Y"`).
+
+**Deleting from the list.** Each entry's Delete link carries
+`?next=` set to the current page's own address (including `?page=`
+and `?tag=`), so confirming the delete, or choosing "Keep it", returns
+to the same page — including page 2 of a label-filtered list. See
+`safe_next` below for how that address is checked.
+
+One exception: deleting the last entry carrying the filtered label
+prunes that label, and the list gives a label nothing carries no page.
+`hrcek.entries.navigation.still_there(back, owner)` returns `back`
+unless its `tag` value — stripped and matched case-insensitively, the
+list view's own rule — is no longer in `Tag.in_use(owner)`, in which
+case it returns the plain list. `entry_delete` passes its `safe_next`
+target through it after `Tag.prune_orphans`.
+
+## safe_next: returning somewhere without being an open redirect
+
+`hrcek.core.navigation.safe_next(request, default)` reads `next` from
+POST then GET, and returns it only if
+`django.utils.http.url_has_allowed_host_and_scheme` says it names a
+relative, same-host address; anything else, including a missing
+`next`, falls back to `default`. `entries:delete` uses it both for the
+confirmation page's hidden field and "Keep it" link, and for where the
+POST redirects to once the entry is gone.
+
+It is deliberately generic rather than entries-specific — later
+features that offer a "come back here" link (adding or removing a
+label, for instance) reuse the same function rather than growing their
+own copy of the same host check.
 
 [The API guide](api.md) is the client-facing contract. What follows is
 why it is shaped that way.

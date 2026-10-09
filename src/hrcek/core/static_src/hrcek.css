@@ -344,21 +344,30 @@
     margin-block: calc(var(--spacing) * 6);
   }
   /* In columns, every entry opens with its hairline: which one comes
-     first in a row depends on the window, not on the list. */
+     first in a row depends on the window, not on the list. Grid's own
+     default alignment (align-items: stretch) already makes every
+     <li> in a visual row as tall as the tallest one; min-inline-size
+     lets a long, unbroken title wrap instead of widening the column. */
   ul.entries > li {
     padding-block: calc(var(--spacing) * 6);
     border-block-start: 1px solid var(--color-edge);
+    min-inline-size: 0;
   }
-  /* An entry is its text, and beside it, if there is one, a small
-     square of its picture. The text always starts at the same edge,
-     so entries with and without pictures line up. */
+  /* An entry (collections/shared.html, collections/detail.html) in
+     its plain shape: a single .entry-text column, with its picture,
+     when there is one, beside it. entries/list.html's card overrides
+     this below — it is never both a single .entry-text div and a
+     card with an entry-head, so the two rules never fight. */
   ul.entries article {
-    display: flex;
-    align-items: flex-start;
-    gap: calc(var(--spacing) * 4);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: calc(var(--spacing) * 4);
+    row-gap: calc(var(--spacing) * 2);
+  }
+  ul.entries article > div {
+    grid-column: 1;
   }
   ul.entries .entry-text {
-    flex: 1;
     min-inline-size: 0;
   }
   /* The same gap between every part of an entry, whichever parts it
@@ -399,6 +408,49 @@
   ul.entries article dt {
     font-weight: 600;
     color: var(--color-muted);
+  }
+  p.added {
+    @apply text-xs text-muted;
+  }
+
+  /* entries/list.html's card: head, body, labels, actions, in a flex
+     column instead of the grid above, so the gap between them never
+     depends on a neighbour's title or notes. `block-size: 100%` fills
+     the height the outer grid already stretched the <li> to (see
+     `ul.entries > li` above), and pushing .entry-actions down with a
+     plain auto margin is what lands every row's Edit/Delete links on
+     the same line regardless of how tall the cards beside it are.
+     The picture, when there is one, is taken out of flow and pinned
+     to the top end instead of spanning rows, so it never forces the
+     card taller than its own text would make it. */
+  ul.entries article:has(> .entry-head) {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    min-inline-size: 0;
+    block-size: 100%;
+    row-gap: calc(var(--spacing) * 3);
+  }
+  ul.entries article:has(> .entry-head) > .entry-actions {
+    margin-block-start: auto;
+  }
+  ul.entries article:has(> .entry-thumb) {
+    padding-inline-end: calc(6rem + var(--spacing) * 4);
+  }
+  ul.entries article > .entry-thumb {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-end: 0;
+  }
+  /* entry-body and entry-labels are always rendered — see entries.md
+     — so a card with no notes, no fields and no tags does not lose
+     its row from the flex column. The template glues each one's
+     opening tag straight to its first `{% if %}` and its last
+     `{% endif %}` straight to the closing tag, with no whitespace
+     between, so a div with everything false renders genuinely empty
+     and this rule can take it fully out of the flow. */
+  ul.entries article > div:empty {
+    display: none;
   }
 
   /* A tag pill. On your own pages it is a link to the entries carrying

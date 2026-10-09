@@ -121,10 +121,26 @@ entry simply has no value for it; they are all optional.
 Deleting a field **deletes its value from every entry**, and cannot be
 undone. The page tells you how many entries that is before you confirm.
 
+## When an entry was added
+
+Every entry in your list shows when you saved it: "Added 7 Oct" for
+something from this year, or "Added 7 Oct 2024" once a year has gone
+by. Hover it (or, on a phone, press and hold) to see the full day and
+date.
+
 ## Editing and deleting
 
-Every entry has an "Edit" link. On the edit page, **Save** keeps your
-changes and **Back to your entries** beside it leaves without saving.
+Every entry has an "Edit" link, and beside it a "Delete" link, so you
+do not have to open an entry to remove it. Delete asks you to confirm
+first, and **cannot be undone** — there is no trash to recover from.
+Confirming, or choosing "Keep it" instead, takes you back to wherever
+you were looking — page 2, or a label's filtered list — rather than
+to the top of your entries. If you deleted the last entry with the
+label you were looking at, that label is gone too, so you land on all
+your entries instead.
+
+On the edit page, **Save** keeps your changes and **Back to your
+entries** beside it leaves without saving.
 
 Hrček does not let changes slip away unnoticed. If you have typed
 something into the form for saving or editing an entry and try to leave
@@ -133,9 +149,8 @@ browser asks whether you really want to leave. The same goes for a form
 Hrček has sent back to you with a problem to fix: what you typed there
 is not saved yet either.
 
-**Delete this entry** is set apart at the very bottom of the page, in
-red, so it is not hit on the way to saving. Deleting asks first, and
-**cannot be undone** — there is no trash to recover from.
+**Delete this entry** on the edit page itself is set apart at the very
+bottom, in red, so it is not hit on the way to saving.
 
 ## Entries and scripts
 
