@@ -125,7 +125,7 @@ including the same template in its fragment, with the text and the
 `oob` flag:
 
 ```django
-{% include "_status.html" with status=_("Label removed.") oob=True %}
+{% include "_status.html" with status=message oob=True %}
 ```
 
 `oob` adds `hx-swap-oob="innerHTML"`. htmx finds the page's region by
@@ -144,6 +144,13 @@ the life of the page and only its text may change. A browser test marks
 the node before an htmx change and checks the mark is still there
 after.
 
+**Say something different each time.** Even updated in place, the same
+sentence twice in a row may be read only once. Name what changed —
+"Label “watch” added.", not "Label added." — so consecutive results
+differ, and so the message stands on its own when it appears as a
+Django message on a page without JavaScript. That page uses the same
+text.
+
 The text, like every other, is translatable. Do not add a second
 region for scripts to write to, and do not put `hx-swap-oob` on the one
 in `base.html`.
@@ -157,6 +164,11 @@ notice the change queued — a collection it emptied, say
 `js/htmx-errors.js` writing a visible error into it when a request
 fails. What an in-place change did is `#status`'s job, not this
 list's.
+
+**Later enhancements** (a dialog that confirms in place, say) announce
+their result the same way: the view's htmx answer includes
+`_status.html` with `oob=True` and a sentence naming what was done,
+and never ships a region of its own.
 
 ## Confirmation dialogs: `js/confirm-dialog.js`
 
@@ -357,6 +369,65 @@ A view that needs the same thing for some other redirect —
 `htmx_redirect` itself, and queues with `messages.success` what its
 `#status` would have said, since the navigation replaces the page that
 text would have been written to.
+
+## Forms changed in place: the entries' labels
+
+The labels on the entries list are the first forms htmx submits (see
+[Entries](entries.md#labels-on-the-list)). Each is an ordinary
+`<form method="post" action="…">` with `{% csrf_token %}` and a hidden
+`next`, plus:
+
+```html
+hx-post="…same URL…" hx-target="#labels-12" hx-swap="outerHTML"
+```
+
+The attributes sit on the form itself: in htmx 4 nothing is inherited
+unless it says so. The CSRF token travels twice — as form data and in
+the `X-CSRFToken` header from `<body>` — and a browser test removes the
+form's token to prove the header alone gets through.
+
+- **The fragment is its own small template** (`entries/_entry_labels.html`),
+  the whole page also `{% include %}`s inside its loop, so the markup
+  exists once. It carries the status line with `oob=True`, naming the
+  label added or removed, `_messages.html` with `oob=True` alongside it
+  (draining whatever a collection-emptied or already-got notice queued,
+  same as `_delete_result.html`), and — only when adding or removing
+  changed what `Tag.in_use` offers — `entries/_tags_sidebar.html` with
+  `oob=True` too, same as a delete that prunes a label.
+- **Errors are 422s.** htmx 4 swaps a 422 like any other response, so
+  the fragment with the error beside the input simply replaces the old
+  one. A 404 or a 5xx is never swapped
+  ([Error pages are never swapped in](#error-pages-are-never-swapped-in)):
+  the labels stay as they were and `js/htmx-errors.js` shows the
+  failure.
+- **A pruned filter is a full navigation, not a fragment.** Removing the
+  only entry a filtered list is showing leaves nothing sensible to swap
+  in place — same question `entry_delete` asks when its own delete
+  prunes the label a filtered page was started from — so the view
+  answers with `htmx_redirect` to `still_there`'s plain-list answer
+  instead, with the status queued as a message for the page it lands
+  on, exactly as that delete does.
+- **Focus is set by the server, with `autofocus`.** htmx focuses the
+  first `[autofocus]` in swapped content, so the fragment says where
+  focus belongs: in the add input after an add or an error, on the
+  "+ Label" summary after a removal. No script needed.
+- **`outerHTML`, not `outerMorph`.** Morphing keeps a form control's
+  current value, which is right for a half-typed form and wrong here:
+  the label just added would stay in the box.
+
+**"+ Label" becomes "Cancel" while it is open: `js/label-add.js`.**
+The summary holds two spans, `.label-add-text` ("+ Label") and
+`.label-cancel-text` ("× Cancel"); `details.label-add[open] >
+summary` in `static_src/hrcek.css` shows one and hides the other with
+`display: none`, which also takes the hidden one out of the
+accessible name — so the summary is announced as "+ Label" closed and
+plainly "Cancel" open, the "×" itself marked `aria-hidden` so it never
+joins that name. Clicking either way is `<details>`'s own native
+behaviour, nothing to enhance; the one thing it does not do by itself
+is close on Escape, which `js/label-add.js` adds with one delegated
+`keydown` listener on `document` — closing the nearest open
+`details.label-add` and focusing its own summary — so a fragment
+swapped in later by an add or a remove works without re-binding.
 
 ## Adding an enhancement
 

@@ -880,7 +880,7 @@ msgstr ""
 msgid "kind"
 msgstr ""
 
-#: src/hrcek/collections/models.py
+#: src/hrcek/collections/models.py src/hrcek/entries/models.py
 msgid "label"
 msgstr ""
 
@@ -1365,7 +1365,7 @@ msgstr ""
 
 #: src/hrcek/entries/forms.py
 #: src/hrcek/entries/templates/entries/_tags_sidebar.html
-msgid "Tags"
+msgid "Labels"
 msgstr ""
 
 #: src/hrcek/entries/forms.py
@@ -1396,12 +1396,42 @@ msgstr ""
 msgid "You already have a field with that name."
 msgstr ""
 
-#: src/hrcek/entries/models.py
-msgid "tag"
+#: src/hrcek/entries/labels.py
+msgid "Type a label to add."
+msgstr ""
+
+#: src/hrcek/entries/labels.py
+#, python-format
+msgid ""
+"A label can be at most %(limit)d characters long; that one has %(length)d."
+msgstr ""
+
+#: src/hrcek/entries/labels.py
+#, python-format
+msgid "Label “%(name)s” removed."
+msgstr ""
+
+#: src/hrcek/entries/labels.py
+#, python-format
+msgid "Label %(names)s added."
+msgid_plural "Labels %(names)s added."
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/hrcek/entries/labels.py
+#, python-format
+msgid "This entry already has the label %(names)s."
+msgid_plural "This entry already has the labels %(names)s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/hrcek/entries/labels.py
+#, python-format
+msgid "“%(name)s”"
 msgstr ""
 
 #: src/hrcek/entries/models.py
-msgid "tags"
+msgid "labels"
 msgstr ""
 
 #: src/hrcek/entries/models.py
@@ -1515,6 +1545,27 @@ msgstr ""
 
 #: src/hrcek/entries/templates/entries/_empty_list.html
 msgid "Nothing saved yet."
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/_entry_labels.html
+#, python-format
+msgid "Remove label %(name)s"
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/_entry_labels.html
+msgid "+ Label"
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/_entry_labels.html
+msgid "Cancel"
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/_entry_labels.html
+msgid "New label"
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/_entry_labels.html
+msgid "Add"
 msgstr ""
 
 #: src/hrcek/entries/templates/entries/_tags_sidebar.html

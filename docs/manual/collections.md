@@ -19,7 +19,7 @@ the label off the last entry carrying it, or delete that entry, and
 Hrček tells you the collection has nothing in it now, with a link to
 delete it if you no longer want it. Otherwise it waits, empty, and fills
 again the moment you use the label again. Its link, if you shared one,
-keeps working. The label itself leaves your list of tags in the
+keeps working. The label itself leaves your list of labels in the
 meantime, because nothing carries it.
 
 **Which kind it is cannot be changed afterwards.** Switching would

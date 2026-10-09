@@ -194,7 +194,9 @@ curl -X POST https://hrcek.example.com/api/entries/ \
 ```
 
 Only `url` is required. Everything else defaults to empty, so a minimal
-client can post a bare link and nothing else. Anything added in a later
+client can post a bare link and nothing else. `tags` holds the entry's
+labels — the web pages call them labels; the API, the code and the
+database keep the older name `tags`. Anything added in a later
 version will have a default too, so a client that does not know about it
 keeps working.
 

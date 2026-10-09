@@ -1,7 +1,7 @@
 # Entries
 
 The `hrcek.entries` app holds what Hrček is actually for: an `Entry`
-belonging to one person, with tags.
+belonging to one person, with labels.
 
 ## Ownership
 
@@ -49,6 +49,12 @@ the web form has a `URLField` in front of it, the API has nothing, and
 the shared path is where the rule belongs.
 
 ## Tags
+
+**A tag is what people see as a label.** Every page, message and form
+says "label"; the model (`Tag`, verbose name "label"), the API field
+`tags`, the `?tag=` parameter, the `.tag` CSS class and the code keep
+the older name. Renaming those would break API clients and bookmarked
+filters for no gain to anybody reading the page.
 
 Parsed from one comma-separated field, trimmed, empties dropped,
 deduplicated ignoring case, keeping the first spelling seen. Created on
@@ -170,9 +176,9 @@ them loses nothing.
 Each `<article>` in `entries/list.html` always renders the same four
 direct `<div>` children, in order, whether or not they have anything
 in them: `entry-head` (title and the date added), `entry-body` (notes
-and fields), `entry-labels` (tags) and `entry-actions` (Edit and
-Delete). An entry's optional picture is a fifth, sibling element,
-`a.entry-thumb`.
+and fields), `entry-labels` (the chips, and the "+ Label" form) and
+`entry-actions` (Edit and Delete). An entry's optional picture is a
+fifth, sibling element, `a.entry-thumb`.
 
 Always rendering all four, even empty, is what gives later branches
 somewhere to put a new row (an "In:" line, say) without touching the
@@ -189,14 +195,16 @@ every `<li>` in a visual row to the tallest one, and `.entry-actions`
 is pushed to the bottom of that stretched height with a plain
 `margin-block-start: auto`.
 
-`entry-body` and `entry-labels` hold only conditional content, so the
-template glues each one's opening tag straight to its first
-`{% if %}` and its last `{% endif %}` straight to the closing tag,
-with no whitespace in between. An entry with no notes, no fields and
-no tags therefore renders `<div class="entry-body"></div>`, genuinely
-empty rather than full of blank lines, and a `:empty` rule in
-`static_src/hrcek.css` hides it, so that row adds no gap either side
-of itself in the flex column.
+`entry-body` holds only conditional content, so the template glues its
+opening tag straight to its first `{% if %}` and its last `{% endif %}`
+straight to the closing tag, with no whitespace in between. An entry
+with no notes and no fields therefore renders
+`<div class="entry-body"></div>`, genuinely empty rather than full of
+blank lines, and a `:empty` rule in `static_src/hrcek.css` hides it, so
+that row adds no gap either side of itself in the flex column.
+`entry-labels` no longer qualifies: see [Labels on the
+list](#labels-on-the-list) for why it always carries at least the
+"+ Label" control and an `id`.
 
 An entry's optional picture, `a.entry-thumb`, is taken out of the
 flex column with `position: absolute` and pinned to the top end,
@@ -300,6 +308,100 @@ the notice is left queued exactly as it is without JavaScript.
 not just this one — is a job for
 `hrcek.core.middleware.HtmxSignInRedirectMiddleware`, documented in
 [JavaScript](javascript.md) alongside `htmx_redirect` itself.
+
+## Labels on the list
+
+`entries/labels.py` lets somebody add and remove an entry's labels from
+the list itself. Two views, `entries:label_add` (`<pk>/labels/add/`)
+and `entries:label_remove` (`<pk>/labels/remove/`), POST only, each
+taking `name` and `next`. Each answers a plain form post and an htmx
+request, following [JavaScript](javascript.md#adding-an-enhancement):
+
+- **Without htmx** it redirects to `safe_next` with a Django message
+  naming the labels — "Label “watch” added.", "Labels “a”, “b”
+  added.", "This entry already has the label “watch”.", "Label “watch”
+  removed." — or saying what was wrong. The htmx answer puts the same
+  sentence in the status region.
+- **With htmx** it renders `entries/_entry_labels.html` — the small
+  template the full page `{% include %}`s inside its loop — with the
+  status line swapped out of band, and `vary_on_htmx`. A refused label
+  is a **422** carrying the same fragment, with the error beside the
+  input (`aria-invalid`, `aria-describedby`) and the typed text kept;
+  htmx 4 swaps a 422 like any other response. A 404 or a 5xx is never
+  swapped (the page-wide `noSwap` list, see
+  [JavaScript](javascript.md#error-pages-are-never-swapped-in)): the
+  labels stay as they were, and `js/htmx-errors.js` shows the failure
+  at the top of the page.
+
+The template is the whole `div.entry-labels`, with
+`id="labels-<pk>"`: it stays the article's third child, which the grid
+above relies on, and each form targets its own entry's div, so a swap
+never touches another entry's labels. It is always rendered, even with
+no label yet, because the **+ Label** form lives inside it — there is
+no longer an empty state for this row (see [the entries
+list](#the-entries-list)).
+
+**Adding** goes through the same rules as the edit form: the existing
+names and the new ones are joined and run through `Tag.parse_names`,
+which keeps the first spelling it meets, so `Watch` added to an entry
+carrying `watch` changes nothing; then `Tag.set_for`, which reuses the
+owner's existing label case-insensitively. Several labels may be typed
+at once, separated by commas, so the 50-character limit
+(`Tag.NAME_MAX_LENGTH`) is checked per label in `LabelForm.clean_name`
+rather than as the input's `maxlength`; one label too long refuses the
+lot. **Removing** matches the name ignoring case, then `Tag.set_for`
+prunes the label if nothing else carries it (and keeps it if a
+collection follows it).
+
+Both views say what the edit form says about collections:
+`_say_if_emptied` after a removal, `_say_if_already_got` after an add.
+Those notices are Django messages in both paths. Without htmx they
+wait for the redirect's own page load, same as anywhere else; with
+htmx, `_answer`'s fragment includes `_messages.html` with `oob=True`
+whenever it answers in place (nested inside `entries/_entry_labels.html`
+next to `#status`, same as `_delete_result.html` does), which drains
+the request's queue by iterating `messages` the same way the page
+itself does — so the notice is announced now, in place, and is gone
+from whatever page the owner looks at next.
+
+**Where `next` lands.** Removing the label a filtered list is showing
+from the last entry carrying it would send a no-JavaScript visitor back
+to a 404: `still_there` (see [the entries list](#the-entries-list))
+swaps such a `next` for the plain list. With htmx the same prune
+leaves no fragment to answer with either — `_answer` compares
+`still_there`'s answer against the plain `safe_next` target and, if
+they differ, answers with `htmx_redirect` instead of the fragment: a
+real navigation to the plain list, with the status sentence queued as
+a `messages.success` for that page to show, exactly what `entry_delete` does
+when its own delete prunes the label a filtered page was started from
+(see [the entries list](#the-entries-list)). Without this a JavaScript
+page stays on the now-dead `?tag=` address — the entry still listed,
+reloading it a 404 — because an in-place swap of just this entry's
+labels has no way to also navigate the rest of the page away. Only
+`label_remove` can prune a label this way; `label_add` runs the same
+check (it costs nothing extra) but can never trigger it, since adding
+never removes a tag from `Tag.in_use`.
+
+**Focus.** After an htmx add, the fragment comes back with the
+`<details>` open and `autofocus` on an empty input, so the next label
+can be typed straight away. After a removal the chip and its button are
+gone, so `autofocus` goes on the entry's own **+ Label** summary rather
+than letting focus fall to the top of the page. The swap is
+`outerHTML`: htmx 4's `outerMorph` keeps the input's typed value across
+the swap, which would leave the added label sitting in the box. While
+open, that same summary reads **Cancel** and closes the `<details>`
+on a click or on Escape — CSS and `js/label-add.js`, not this view;
+see [JavaScript](javascript.md#forms-changed-in-place-the-entries-labels).
+
+**The sidebar.** Adding a label nobody had yet, or removing the last
+entry carrying one, changes what `Tag.in_use(owner)` offers — the
+same question [the entries list](#the-entries-list) asks of a delete
+that prunes a label. Both views compare it before and after their own
+change and, when it differs, append `entries/_tags_sidebar.html` to the
+fragment with `tags=Tag.in_use(owner)`, `tag` from the current filter
+(the same `?tag=` the fragment's own `next` carries) and `oob=True`, so
+the sidebar never shows a label that just dropped off it, or goes on
+not showing one just typed, until the next full page load.
 
 ## safe_next: returning somewhere without being an open redirect
 
