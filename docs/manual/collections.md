@@ -52,6 +52,11 @@ The way back from the form — *Back to your collections* while making
 one, *Back to the collection* while editing — opens in a new tab, so
 what you have typed stays where it is.
 
+*Collections* lists each one's name, its kind and who can see it —
+for example *Chosen by hand · Private* — and its description, if it
+has one. Follow the name to open it, where *Edit* sits beside the
+title.
+
 ## Order
 
 Newest first. A collection you fill by hand orders by when you added
@@ -151,7 +156,8 @@ goes back to being yours alone straight away.
 
 Every collection page has a feed, at the same address with `feed/` on
 the end. Put that address into any feed reader and new entries appear
-there as you add them.
+there as you add them. The address is given on the collection's own
+page, in the same sentence that says who can see it.
 
 A feed is exactly as private as its page. Your private collection's
 feed is yours alone and needs you to be signed in, so most readers

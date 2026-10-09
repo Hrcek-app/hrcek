@@ -994,8 +994,18 @@ msgid "Keep it"
 msgstr ""
 
 #: src/hrcek/collections/templates/collections/detail.html
+#: src/hrcek/entries/templates/entries/list.html
+msgid "Edit"
+msgstr ""
+
+#: src/hrcek/collections/templates/collections/detail.html
 msgid ""
 "Private. Only you can see this collection; there is no address to share."
+msgstr ""
+
+#: src/hrcek/collections/templates/collections/detail.html
+#, python-format
+msgid "It also has a <a href=\"%(feed_url)s\">feed</a>."
 msgstr ""
 
 #: src/hrcek/collections/templates/collections/detail.html
@@ -1028,20 +1038,6 @@ msgstr ""
 
 #: src/hrcek/collections/templates/collections/detail.html
 msgid "Put it back on the list"
-msgstr ""
-
-#: src/hrcek/collections/templates/collections/detail.html
-#: src/hrcek/entries/templates/entries/list.html
-msgid "Edit"
-msgstr ""
-
-#: src/hrcek/collections/templates/collections/detail.html
-#: src/hrcek/collections/templates/collections/list.html
-msgid "Your collections"
-msgstr ""
-
-#: src/hrcek/collections/templates/collections/detail.html
-msgid "Feed"
 msgstr ""
 
 #: src/hrcek/collections/templates/collections/detail.html
@@ -1108,6 +1104,10 @@ msgstr ""
 
 #: src/hrcek/collections/templates/collections/form.html
 msgid "Delete this collection"
+msgstr ""
+
+#: src/hrcek/collections/templates/collections/list.html
+msgid "Your collections"
 msgstr ""
 
 #: src/hrcek/collections/templates/collections/list.html

@@ -1045,9 +1045,19 @@ msgid "Keep it"
 msgstr "Obdrži"
 
 #: src/hrcek/collections/templates/collections/detail.html
+#: src/hrcek/entries/templates/entries/list.html
+msgid "Edit"
+msgstr "Uredi"
+
+#: src/hrcek/collections/templates/collections/detail.html
 msgid ""
 "Private. Only you can see this collection; there is no address to share."
 msgstr "Zasebno. To zbirko vidite samo vi; naslova za deljenje ni."
+
+#: src/hrcek/collections/templates/collections/detail.html
+#, python-format
+msgid "It also has a <a href=\"%(feed_url)s\">feed</a>."
+msgstr "Ima tudi <a href=\"%(feed_url)s\">vir</a>."
 
 #: src/hrcek/collections/templates/collections/detail.html
 msgid "Anyone with this link can see this collection:"
@@ -1082,20 +1092,6 @@ msgstr "To je nekdo že priskrbel za »%(name)s«."
 #: src/hrcek/collections/templates/collections/detail.html
 msgid "Put it back on the list"
 msgstr "Vrni na seznam"
-
-#: src/hrcek/collections/templates/collections/detail.html
-#: src/hrcek/entries/templates/entries/list.html
-msgid "Edit"
-msgstr "Uredi"
-
-#: src/hrcek/collections/templates/collections/detail.html
-#: src/hrcek/collections/templates/collections/list.html
-msgid "Your collections"
-msgstr "Vaše zbirke"
-
-#: src/hrcek/collections/templates/collections/detail.html
-msgid "Feed"
-msgstr "Vir"
 
 #: src/hrcek/collections/templates/collections/detail.html
 #, python-format
@@ -1169,6 +1165,10 @@ msgstr "Nazaj na vaše zbirke"
 #: src/hrcek/collections/templates/collections/form.html
 msgid "Delete this collection"
 msgstr "Izbriši to zbirko"
+
+#: src/hrcek/collections/templates/collections/list.html
+msgid "Your collections"
+msgstr "Vaše zbirke"
 
 #: src/hrcek/collections/templates/collections/list.html
 msgid ""

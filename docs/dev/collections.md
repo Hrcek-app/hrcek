@@ -304,3 +304,17 @@ actually emits. Both are defined.
 
 Each page advertises its feed with a `<link rel="alternate">` in the
 head, through the `head` block added to `base.html`.
+
+### One address, not two
+
+`views._feed_url(collection)` is the single place that picks which
+feed address `collections/detail.html` offers: the owner's own feed
+(`collections:feed`) for a private collection, otherwise the same
+shared address (`shared:unlisted_feed` or `shared:public_feed`) that
+the page's visibility sentence already shows. The `<link
+rel="alternate">` in `<head>` and the prose link in the visibility
+sentence both read `feed_url` from the context, so there is one
+address to keep in step with the page, not two that could drift
+apart. `collections/shared.html` already worked this way — its own
+`feed_url` is built in `_shared_context` — so the owner's page now
+follows the same rule.
