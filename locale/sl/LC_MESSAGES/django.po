@@ -16,6 +16,7 @@ msgstr ""
 "n%100==4 ? 2 : 3);\n"
 
 #: src/hrcek/accounts/admin.py
+#: src/hrcek/accounts/templates/accounts/account.html
 msgid "Profile"
 msgstr "Profil"
 
@@ -135,17 +136,14 @@ msgid "That email address is already in use."
 msgstr "Ta e-poštni naslov je že v uporabi."
 
 #: src/hrcek/accounts/forms.py
-#: src/hrcek/accounts/templates/accounts/account.html
 msgid "Display name"
 msgstr "Prikazno ime"
 
 #: src/hrcek/accounts/forms.py
-#: src/hrcek/accounts/templates/accounts/account.html
 msgid "Optional. You can sign in with this instead of your email."
 msgstr "Neobvezno. S tem se lahko prijavite namesto z e-poštnim naslovom."
 
 #: src/hrcek/accounts/forms.py
-#: src/hrcek/accounts/templates/accounts/account.html
 msgid "Password"
 msgstr "Geslo"
 
@@ -158,7 +156,7 @@ msgid "The two passwords do not match."
 msgstr "Gesli se ne ujemata."
 
 #: src/hrcek/accounts/forms.py
-#: src/hrcek/accounts/templates/accounts/account.html
+#: src/hrcek/accounts/templates/accounts/_sign_in.html
 msgid "Email address"
 msgstr "E-poštni naslov"
 
@@ -338,28 +336,11 @@ msgstr "povabilo"
 msgid "invitations"
 msgstr "povabila"
 
-#: src/hrcek/accounts/templates/accounts/account.html
-#: src/hrcek/core/templates/base.html
-msgid "Your account"
-msgstr "Vaš račun"
-
-#: src/hrcek/accounts/templates/accounts/account.html
+#: src/hrcek/accounts/templates/accounts/_profile.html
 msgid "Save display name"
 msgstr "Shrani prikazno ime"
 
-#: src/hrcek/accounts/templates/accounts/account.html
-msgid "Public name"
-msgstr "Javno ime"
-
-#: src/hrcek/accounts/templates/accounts/account.html
-msgid ""
-"Only needed if you make a collection public. Your public name appears in the "
-"address of every public collection you have, like /u/your-name/watches/."
-msgstr ""
-"Potrebno le, če zbirko objavite. Vaše javno ime se pojavi v naslovu vsake "
-"vaše javne zbirke, na primer /u/vase-ime/ure/."
-
-#: src/hrcek/accounts/templates/accounts/account.html
+#: src/hrcek/accounts/templates/accounts/_profile.html
 msgid ""
 "You have public collections. Changing your public name changes their "
 "addresses, and any link you have already shared will stop working."
@@ -367,11 +348,11 @@ msgstr ""
 "Imate javne zbirke. Sprememba javnega imena spremeni njihove naslove in vse "
 "že deljene povezave bodo nehale delovati."
 
-#: src/hrcek/accounts/templates/accounts/account.html
+#: src/hrcek/accounts/templates/accounts/_profile.html
 msgid "Save public name"
 msgstr "Shrani javno ime"
 
-#: src/hrcek/accounts/templates/accounts/account.html
+#: src/hrcek/accounts/templates/accounts/_sign_in.html
 #, python-format
 msgid ""
 "Waiting for confirmation at %(pending)s. Until you confirm it, this address "
@@ -380,18 +361,35 @@ msgstr ""
 "Čakamo na potrditev na %(pending)s. Dokler je ne potrdite, ta naslov še "
 "naprej deluje."
 
-#: src/hrcek/accounts/templates/accounts/account.html
+#: src/hrcek/accounts/templates/accounts/_sign_in.html
 msgid "Cancel the change"
 msgstr "Prekliči spremembo"
 
-#: src/hrcek/accounts/templates/accounts/account.html
+#: src/hrcek/accounts/templates/accounts/_sign_in.html
 msgid "Change my email address"
 msgstr "Spremeni moj e-poštni naslov"
 
+#: src/hrcek/accounts/templates/accounts/_sign_in.html
+#: src/hrcek/accounts/templates/accounts/password_change.html
+msgid "Change your password"
+msgstr "Spremenite geslo"
+
 #: src/hrcek/accounts/templates/accounts/account.html
-#: src/hrcek/entries/templates/entries/form.html
-msgid "Fields"
-msgstr "Polja"
+#: src/hrcek/core/templates/base.html
+msgid "Your account"
+msgstr "Vaš račun"
+
+#: src/hrcek/accounts/templates/accounts/account.html
+msgid "Account sections"
+msgstr "Razdelki računa"
+
+#: src/hrcek/accounts/templates/accounts/account.html
+msgid "Sign-in"
+msgstr "Prijava"
+
+#: src/hrcek/accounts/templates/accounts/account.html
+msgid "Fields and clients"
+msgstr "Polja in odjemalci"
 
 #: src/hrcek/accounts/templates/accounts/account.html
 msgid ""
@@ -408,18 +406,20 @@ msgid "Your fields"
 msgstr "Vaša polja"
 
 #: src/hrcek/accounts/templates/accounts/account.html
-#: src/hrcek/accounts/templates/accounts/password_change.html
-msgid "Change your password"
-msgstr "Spremenite geslo"
-
-#: src/hrcek/accounts/templates/accounts/account.html
-#: src/hrcek/accounts/templates/accounts/clients.html
-msgid "Clients"
-msgstr "Odjemalci"
+msgid ""
+"A client is a script or another program that acts as you, authenticated with "
+"a token instead of your password."
+msgstr ""
+"Odjemalec je skript ali drug program, ki deluje v vašem imenu in se namesto "
+"z geslom prijavi z žetonom."
 
 #: src/hrcek/accounts/templates/accounts/account.html
 msgid "Manage clients and their authorizations"
 msgstr "Upravljajte odjemalce in njihova pooblastila"
+
+#: src/hrcek/accounts/templates/accounts/clients.html
+msgid "Clients"
+msgstr "Odjemalci"
 
 #: src/hrcek/accounts/templates/accounts/clients.html
 msgid ""
@@ -757,12 +757,22 @@ msgstr ""
 "dolgo največ 50 znakov."
 
 #: src/hrcek/accounts/views.py
-msgid "Your public name has been updated."
-msgstr "Vaše javno ime je posodobljeno."
+#, python-format
+msgid "Your public name is now “%(name)s”."
+msgstr "Vaše javno ime je zdaj »%(name)s«."
 
 #: src/hrcek/accounts/views.py
-msgid "Your display name has been updated."
-msgstr "Prikazno ime je posodobljeno."
+msgid "Your public name has been removed."
+msgstr "Vaše javno ime je odstranjeno."
+
+#: src/hrcek/accounts/views.py
+#, python-format
+msgid "Your display name is now “%(name)s”."
+msgstr "Vaše prikazno ime je zdaj »%(name)s«."
+
+#: src/hrcek/accounts/views.py
+msgid "Your display name has been removed."
+msgstr "Vaše prikazno ime je odstranjeno."
 
 #: src/hrcek/accounts/views.py
 msgid "Ask whoever invited you to send a new invitation."
@@ -784,6 +794,11 @@ msgstr ""
 #: src/hrcek/accounts/views.py
 msgid "Ask for the change again from your account page."
 msgstr "Spremembo znova zahtevajte na strani svojega računa."
+
+#: src/hrcek/accounts/views.py
+#, python-format
+msgid "The change to %(email)s has been cancelled."
+msgstr "Sprememba naslova v %(email)s je preklicana."
 
 #: src/hrcek/accounts/views.py
 msgid "The pending email change has been cancelled."
@@ -1756,6 +1771,10 @@ msgstr "Uredi vnos"
 #: src/hrcek/entries/templates/entries/list.html
 msgid "Save something"
 msgstr "Shrani nekaj"
+
+#: src/hrcek/entries/templates/entries/form.html
+msgid "Fields"
+msgstr "Polja"
 
 #: src/hrcek/entries/templates/entries/form.html
 #, python-format
