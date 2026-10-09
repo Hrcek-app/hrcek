@@ -402,6 +402,7 @@ msgstr ""
 "zapiskov."
 
 #: src/hrcek/accounts/templates/accounts/account.html
+#: src/hrcek/collections/forms.py
 #: src/hrcek/entries/templates/entries/fields.html
 msgid "Your fields"
 msgstr "Vaša polja"
@@ -826,6 +827,24 @@ msgid "Only whoever got this can undo it."
 msgstr "Razveljaviti je mogoče le z računom, s katerim je bilo označeno."
 
 #: src/hrcek/collections/forms.py
+#: src/hrcek/collections/templates/collections/detail.html
+msgid "Wish list"
+msgstr "Seznam želja"
+
+#: src/hrcek/collections/forms.py
+msgid "Notes"
+msgstr "Opombe"
+
+#: src/hrcek/collections/forms.py
+msgid "Pictures"
+msgstr "Slike"
+
+#: src/hrcek/collections/forms.py src/hrcek/entries/forms.py
+#: src/hrcek/entries/templates/entries/_tags_sidebar.html
+msgid "Labels"
+msgstr "Oznake"
+
+#: src/hrcek/collections/forms.py
 msgid "Optional. Anyone who can see this collection sees its description too."
 msgstr "Neobvezno. Kdor vidi to zbirko, vidi tudi njen opis."
 
@@ -868,25 +887,10 @@ msgstr ""
 
 #: src/hrcek/collections/forms.py
 msgid ""
-"Shown to everyone who can see the page. Anything you leave unticked stays "
-"private."
-msgstr ""
-"Prikazano vsem, ki vidijo stran. Kar pustite neoznačeno, ostane zasebno."
-
-#: src/hrcek/collections/forms.py
-msgid ""
 "A picture you show here can be opened by anyone who can see this page, even "
 "outside it."
 msgstr ""
 "Sliko, ki jo pokažete tu, lahko odpre vsak, ki vidi to stran, tudi zunaj nje."
-
-#: src/hrcek/collections/forms.py
-msgid ""
-"Only the fields you tick are shown. The address and the title of each entry "
-"are always shown."
-msgstr ""
-"Prikazana so le polja, ki jih označite. Naslov in ime vsakega vnosa sta "
-"vedno prikazana."
 
 #: src/hrcek/collections/forms.py
 msgid ""
@@ -1062,10 +1066,6 @@ msgid "Public. Anyone can see this collection at:"
 msgstr "Javno. Kdor koli lahko vidi to zbirko na:"
 
 #: src/hrcek/collections/templates/collections/detail.html
-msgid "Wish list"
-msgstr "Seznam želja"
-
-#: src/hrcek/collections/templates/collections/detail.html
 msgid "Hide what has been got"
 msgstr "Skrij, kar je že priskrbljeno"
 
@@ -1142,13 +1142,21 @@ msgstr ""
 "zbiranja ustvarite novo zbirko."
 
 #: src/hrcek/collections/templates/collections/form.html
+msgid "Show"
+msgstr "Prikaži"
+
+#: src/hrcek/collections/templates/collections/form.html
+msgid ""
+"Anything you leave unticked stays private. The address and title of each "
+"entry are always shown."
+msgstr ""
+"Kar pustite neoznačeno, ostane zasebno. Naslov in ime vsakega vnosa sta "
+"vedno prikazana."
+
+#: src/hrcek/collections/templates/collections/form.html
 #: src/hrcek/entries/templates/entries/form.html
 msgid "Save"
 msgstr "Shrani"
-
-#: src/hrcek/collections/templates/collections/form.html
-msgid "Delete this collection"
-msgstr "Izbriši to zbirko"
 
 #: src/hrcek/collections/templates/collections/form.html
 msgid "Back to the collection"
@@ -1157,6 +1165,10 @@ msgstr "Nazaj na zbirko"
 #: src/hrcek/collections/templates/collections/form.html
 msgid "Back to your collections"
 msgstr "Nazaj na vaše zbirke"
+
+#: src/hrcek/collections/templates/collections/form.html
+msgid "Delete this collection"
+msgstr "Izbriši to zbirko"
 
 #: src/hrcek/collections/templates/collections/list.html
 msgid ""
@@ -1429,11 +1441,6 @@ msgstr "Ta naslov kaže nekam, kamor Hrček ne gre."
 #: src/hrcek/entries/errors.py
 msgid "That image could not be fetched."
 msgstr "Te slike ni bilo mogoče prenesti."
-
-#: src/hrcek/entries/forms.py
-#: src/hrcek/entries/templates/entries/_tags_sidebar.html
-msgid "Labels"
-msgstr "Oznake"
 
 #: src/hrcek/entries/forms.py
 msgid "Separated by commas."

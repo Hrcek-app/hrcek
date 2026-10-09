@@ -48,6 +48,10 @@ Choose the kind first. Picking *everything with a label* asks which
 label to follow; picking *chosen by hand* does not ask, because there
 is no label to name.
 
+The way back from the form — *Back to your collections* while making
+one, *Back to the collection* while editing — opens in a new tab, so
+what you have typed stays where it is.
+
 ## Order
 
 Newest first. A collection you fill by hand orders by when you added
@@ -133,9 +137,10 @@ everybody again. Turning it back on brings the marks back as they were.
 ## What visitors see
 
 The collection's name and description are always shown, and so are the
-address and title of every entry in it. Everything else starts hidden,
-and you turn on what you want: notes, labels, pictures, and each of
-your own fields separately.
+address and title of every entry in it. Everything else starts hidden.
+On the collection's own form, under **Show**, tick what you want
+visible: notes, pictures, labels, and each of your own fields
+separately. Anything you leave unticked stays private.
 
 **A picture you show can be opened by anyone who can see the page, on
 its own address, outside the page.** That is what publishing a picture
