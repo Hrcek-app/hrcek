@@ -2,10 +2,6 @@
 {% block width %}{% endblock %}
 {% block heading %}{% trans "Your entries" %}{% endblock %}
 {% block content %}
-  {% if messages %}
-    <ul class="messages">{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul>
-  {% endif %}
-
   <ul class="row">
     <li><a href="{% url 'entries:create' %}">{% trans "Save something" %}</a></li>
   </ul>

@@ -1,10 +1,6 @@
 {% extends "base.html" %}{% load i18n %}
 {% block heading %}{% trans "Your collections" %}{% endblock %}
 {% block content %}
-  {% if messages %}
-    <ul class="messages">{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul>
-  {% endif %}
-
   <p>{% trans "A collection is a set of your entries with a name. You can choose what goes in it, or let it hold everything carrying one label." %}</p>
 
   <ul class="row">
