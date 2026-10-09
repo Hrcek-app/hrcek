@@ -952,6 +952,10 @@ msgstr ""
 msgid "got its"
 msgstr ""
 
+#: src/hrcek/collections/templates/collections/_empty.html
+msgid "Nothing in this collection yet."
+msgstr ""
+
 #: src/hrcek/collections/templates/collections/confirm_delete.html
 msgid "Delete this collection?"
 msgstr ""
@@ -1045,19 +1049,7 @@ msgid ""
 msgstr ""
 
 #: src/hrcek/collections/templates/collections/detail.html
-msgid "Add an entry"
-msgstr ""
-
-#: src/hrcek/collections/templates/collections/detail.html
-msgid "Entry"
-msgstr ""
-
-#: src/hrcek/collections/templates/collections/detail.html
-msgid "Add it"
-msgstr ""
-
-#: src/hrcek/collections/templates/collections/detail.html
-msgid "Every entry you have is already in this collection."
+msgid "Tick this collection on an entry's own edit page to put it here."
 msgstr ""
 
 #: src/hrcek/collections/templates/collections/detail.html
@@ -1070,10 +1062,6 @@ msgstr ""
 
 #: src/hrcek/collections/templates/collections/detail.html
 msgid "Take it out"
-msgstr ""
-
-#: src/hrcek/collections/templates/collections/detail.html
-msgid "Nothing in this collection yet."
 msgstr ""
 
 #: src/hrcek/collections/templates/collections/form.html
@@ -1159,11 +1147,12 @@ msgid "Collection deleted. Its entries are untouched."
 msgstr ""
 
 #: src/hrcek/collections/views.py
-msgid "That entry cannot be added here."
+msgid "Back on the list."
 msgstr ""
 
 #: src/hrcek/collections/views.py
-msgid "Back on the list."
+#, python-format
+msgid "“%(entry)s” taken out of “%(collection)s”."
 msgstr ""
 
 #: src/hrcek/collections/views.py
@@ -1319,7 +1308,8 @@ msgstr ""
 msgid "Entries"
 msgstr ""
 
-#: src/hrcek/core/templates/base.html
+#: src/hrcek/core/templates/base.html src/hrcek/entries/forms.py
+#: src/hrcek/entries/templates/entries/form.html
 msgid "Collections"
 msgstr ""
 
@@ -1389,11 +1379,25 @@ msgid "Remove the picture"
 msgstr ""
 
 #: src/hrcek/entries/forms.py
+msgid "Collections that follow a label decide for themselves."
+msgstr ""
+
+#: src/hrcek/entries/forms.py
 msgid "Give a file or an address, not both."
 msgstr ""
 
 #: src/hrcek/entries/forms.py
 msgid "You already have a field with that name."
+msgstr ""
+
+#: src/hrcek/entries/in_collections.py
+#, python-format
+msgid "Added to “%(collection)s”."
+msgstr ""
+
+#: src/hrcek/entries/in_collections.py
+#, python-format
+msgid "Taken out of “%(collection)s”."
 msgstr ""
 
 #: src/hrcek/entries/labels.py
@@ -1547,6 +1551,29 @@ msgstr ""
 msgid "Nothing saved yet."
 msgstr ""
 
+#: src/hrcek/entries/templates/entries/_entry_collections.html
+msgid "In:"
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/_entry_collections.html
+#, python-format
+msgid "Take “%(entry)s” out of “%(collection)s”"
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/_entry_collections.html
+msgid "+ Collection"
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/_entry_collections.html
+#: src/hrcek/entries/templates/entries/_entry_labels.html
+msgid "Cancel"
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/_entry_collections.html
+#, python-format
+msgid "Add to “%(collection)s”"
+msgstr ""
+
 #: src/hrcek/entries/templates/entries/_entry_labels.html
 #, python-format
 msgid "Remove label %(name)s"
@@ -1554,10 +1581,6 @@ msgstr ""
 
 #: src/hrcek/entries/templates/entries/_entry_labels.html
 msgid "+ Label"
-msgstr ""
-
-#: src/hrcek/entries/templates/entries/_entry_labels.html
-msgid "Cancel"
 msgstr ""
 
 #: src/hrcek/entries/templates/entries/_entry_labels.html
@@ -1645,6 +1668,13 @@ msgid ""
 "href=\"%(fields_url)s\" target=\"_blank\" rel=\"noopener\">your fields</a>, "
 "which opens in a new tab. A new field shows up here the next time you open "
 "this form."
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/form.html
+#, python-format
+msgid ""
+"Also in <a href=\"%(url)s\" target=\"_blank\" rel=\"noopener\">%(name)s</a>, "
+"because it carries the label %(label)s."
 msgstr ""
 
 #: src/hrcek/entries/templates/entries/form.html

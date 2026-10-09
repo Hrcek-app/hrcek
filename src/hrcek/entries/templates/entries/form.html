@@ -29,6 +29,39 @@
     </fieldset>
 
     {% comment %}
+      Only hand-picked collections are offered: form.collections is
+      scoped to the owner's manual ones. A label collection decides its
+      own membership, so it is only named here, never tickable, with a
+      link that opens in a new tab so following it never loses what is
+      typed above.
+
+      Nothing to tick and nothing to name: no fieldset at all, rather
+      than one with an empty checkbox group inside it. With only label
+      collections to name, the checkbox group (and its help text) is
+      left out too, since there is still nothing to tick — unless the
+      submission itself named a choice that was refused (somebody
+      else's collection, or one that existed in an earlier tab and
+      has since gone): that error must never be swallowed along with
+      an otherwise-empty group, so errors on the field keep it shown.
+    {% endcomment %}
+    {% if form.collections.field.queryset or form.collections.errors or label_collections %}
+      <fieldset{% if form.collections.field.queryset or form.collections.errors %} aria-describedby="{{ form.collections.aria_describedby }}"{% endif %}>
+        <legend>{% trans "Collections" %}</legend>
+        {% if form.collections.field.queryset or form.collections.errors %}
+          {{ form.collections.errors }}
+          {{ form.collections }}
+          {% if form.collections.help_text %}
+            <p class="text-sm text-muted" id="{{ form.collections.auto_id }}_helptext">{{ form.collections.help_text }}</p>
+          {% endif %}
+        {% endif %}
+        {% for label_collection in label_collections %}
+          {% url 'collections:detail' label_collection.pk as label_collection_url %}
+          <p class="text-sm text-muted">{% blocktrans with name=label_collection.name label=label_collection.label.name url=label_collection_url %}Also in <a href="{{ url }}" target="_blank" rel="noopener">{{ name }}</a>, because it carries the label {{ label }}.{% endblocktrans %}</p>
+        {% endfor %}
+      </fieldset>
+    {% endif %}
+
+    {% comment %}
       Everything about the picture in one place: the picture itself,
       the box that removes it right beneath, then where a new one
       comes from.

@@ -36,8 +36,9 @@ under `src/hrcek/core/static/js/`, loaded with `defer` from `base.html`.
   - no `<script>` in a fragment, no inline event handlers, and no new
     inline scripts — a script is a file in `static/js/`.
 
-  Two inline scripts predate this: the theme pin in the `<head>` of
-  `base.html` and `500.html` (which must run before first paint), and
+  Two inline scripts predate this: the one in the `<head>` of
+  `base.html` and `500.html` (the theme pin, and in `base.html` the
+  `js` class below, both of which must run before first paint), and
   the kind/label toggle in `collections/form.html`. A CSP would carry
   the first one's hash; the second should move to a file first.
 
@@ -415,19 +416,81 @@ form's token to prove the header alone gets through.
   current value, which is right for a half-typed form and wrong here:
   the label just added would stay in the box.
 
-**"+ Label" becomes "Cancel" while it is open: `js/label-add.js`.**
-The summary holds two spans, `.label-add-text` ("+ Label") and
-`.label-cancel-text` ("× Cancel"); `details.label-add[open] >
+**"+ Label" becomes "Cancel" while it is open: `js/add-pill.js`.**
+The summary holds two spans, `.add-pill-text` ("+ Label") and
+`.add-pill-cancel-text` ("× Cancel"); `details.add-pill[open] >
 summary` in `static_src/hrcek.css` shows one and hides the other with
 `display: none`, which also takes the hidden one out of the
 accessible name — so the summary is announced as "+ Label" closed and
 plainly "Cancel" open, the "×" itself marked `aria-hidden` so it never
 joins that name. Clicking either way is `<details>`'s own native
 behaviour, nothing to enhance; the one thing it does not do by itself
-is close on Escape, which `js/label-add.js` adds with one delegated
+is close on Escape, which `js/add-pill.js` adds with one delegated
 `keydown` listener on `document` — closing the nearest open
-`details.label-add` and focusing its own summary — so a fragment
-swapped in later by an add or a remove works without re-binding.
+`details.add-pill` and focusing its own summary — so a fragment
+swapped in later by an add or a remove works without re-binding. The
+entries' "+ Collection" is the same pattern: any `details.add-pill`
+with those two spans gets it.
+
+## Forms changed in place: the entries' collections
+
+The "In:" line on the entries list (see
+[Entries](entries.md#adding-and-taking-out-from-the-list)) is the
+labels' pattern again: its own small template,
+`entries/_entry_collections.html`, swapped `outerHTML` over
+`#collections-<pk>`, carrying `#status` and `_messages.html` with
+`oob=True`, and `autofocus` saying where focus goes. One difference:
+the forms declare `hx-status:4xx="swap:none"` and
+`hx-status:5xx="swap:none"`. They have no validation error of their
+own to show — the only 4xx is a 404 for a collection that is gone or
+was never the owner's — so a refusal leaves the line as it was and
+`js/htmx-errors.js` shows and announces it, as it does for a failed
+delete.
+
+### Controls for JavaScript only: `.js-only`
+
+The rule is that every feature works without JavaScript *somewhere*,
+not that every control does. "+ Collection" has no plain version on
+the list — the entry's edit form is the way without JavaScript — so it
+should not be drawn when it cannot work. The inline script in the
+`<head>` of `base.html` puts a `js` class on `<html>`, and
+`html:not(.js) .js-only { display: none; }` keeps anything marked
+`.js-only` out of sight without it.
+
+**Before first paint, not deferred.** A deferred script runs only
+after every deferred script before it has downloaded — htmx first,
+some 37 KB — so the page would be drawn without the class, then every
+pill would pop in and push its card taller. Set inline, the class is
+there before anything is drawn, and nothing moves when htmx arrives; a
+browser test holds the htmx download back to prove it.
+
+A class on the root, rather than a `hidden` attribute each control's
+script removes, also means a fragment swapped in later is visible the
+moment it lands — no re-processing, and no race with the `autofocus`
+htmx gives it after the swap.
+
+**A row holding only JavaScript controls goes too.** An entry in no
+collection yet has a collections line holding nothing but the pill, so
+the line itself is `.js-only` then, and
+`html:not(.js) ul.entries article > .entry-body:not(:has(> :not(.js-only)))`
+hides an `entry-body` with nothing else in it, the same as an empty
+one — otherwise it would leave a blank row in the card without
+JavaScript.
+
+## Removing a row in place on a collection's page
+
+"Take it out" on `collections/detail.html` is the entries list's
+Delete without the dialog: `hx-post` on the same form,
+`hx-target="closest li"`, `hx-swap="delete"`, `hx-status:4xx`/`5xx`
+`"swap:none"` and `hx-disable`. `collections/_remove_result.html` answers with
+everything out of band — `#status` naming the entry, the drained
+`#messages`, and `collections/_empty.html` (the page's own empty
+state, `id="collection-entries"`, swapped over the list's `ul`) when
+that was the last entry. `js/delete-focus.js` moves focus to the next
+row's title link, else the previous one's, else the "In this
+collection" heading (`tabindex="-1"`,
+`data-focus-after-delete-fallback`), which sits right above the empty
+state.
 
 ## Adding an enhancement
 

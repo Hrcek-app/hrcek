@@ -12,11 +12,15 @@
   {% endcomment %}
   <meta name="htmx-config" content='{"noSwap":[204,304,404,"5xx"]}'>
   {% comment %}
-    A theme somebody pinned with the header toggle, applied before the
-    first paint. Inline and blocking on purpose: deferred, the page
-    would flash in the system theme first. See static/js/theme.js.
+    Before the first paint, so nothing flashes: the class saying the
+    page has JavaScript, which shows .js-only controls (see
+    docs/dev/javascript.md), and a theme somebody pinned with the header
+    toggle. Inline and blocking on purpose: deferred, both would wait
+    for htmx to download and the page would change after it is drawn.
+    See static/js/theme.js.
   {% endcomment %}
   <script>
+    document.documentElement.classList.add("js");
     try {
       const pin = localStorage.getItem("hrcek-theme");
       if (pin === "light" || pin === "dark") {
@@ -34,7 +38,7 @@
   <script src="{% static 'js/confirm-dialog.js' %}" defer></script>
   <script src="{% static 'js/delete-focus.js' %}" defer></script>
   <script src="{% static 'js/htmx-errors.js' %}" defer></script>
-  <script src="{% static 'js/label-add.js' %}" defer></script>
+  <script src="{% static 'js/add-pill.js' %}" defer></script>
   {% block head %}{% endblock %}
 </head>
 {% comment %}

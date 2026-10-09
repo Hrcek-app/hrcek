@@ -6,8 +6,18 @@ to, or anything else that belongs together.
 
 ## Two kinds, chosen once
 
-**Chosen by hand.** You pick the entries, one at a time, from the
-collection's page.
+**Chosen by hand.** You tick this collection on each entry's own
+edit page, under **Collections** — as many entries as you like, one
+at a time — or use **+ Collection** under the entry in your entries
+list (see [Saving things](entries.md#adding-to-collections-from-the-list)).
+To take an entry out, untick it there, use the **×** beside the
+collection's name in your entries list, or press **Take it out** on
+the collection's own page. With JavaScript on, that last one removes
+the entry from the page at once, without reloading it — the entry
+disappearing is the confirmation, and screen readers announce it;
+take out the last one and the page says the collection is empty. If
+it fails to go through, an error at the top of the page says so and
+the entry stays.
 
 **Everything with a label.** You name one of your labels, and the
 collection holds every entry carrying it — including entries you save

@@ -1,5 +1,5 @@
 import pytest
-from django.urls import reverse
+from django.urls import NoReverseMatch, reverse
 from django.utils import timezone
 
 from hrcek.accounts.models import User
@@ -112,39 +112,28 @@ def test_somebody_elses_collection_is_a_404(signed_in):
     )
 
 
-def test_an_entry_can_be_added_and_removed(signed_in, nina):
+def test_an_entry_can_be_removed(signed_in, nina):
     collection = Collection.objects.create(owner=nina, name="Watches")
     entry = Entry.objects.create(owner=nina, url="https://example.com/1")
-
-    signed_in.post(
-        reverse("collections:add_entry", args=[collection.pk]), {"entry": entry.pk}
-    )
-    assert list(collection.entries()) == [entry]
+    CollectionEntry.objects.create(collection=collection, entry=entry)
 
     signed_in.post(reverse("collections:remove_entry", args=[collection.pk, entry.pk]))
     assert collection.entries().count() == 0
 
 
-def test_adding_somebody_elses_entry_is_refused(signed_in, nina):
-    marko = _person("marko@example.com")
+def test_a_collection_page_has_no_add_form(signed_in, nina):
+    """Entries join a manual collection from the entry's own edit page
+    now, not from here, so the collection page offers no form for it."""
     collection = Collection.objects.create(owner=nina, name="Watches")
-    theirs = Entry.objects.create(owner=marko, url="https://example.com/1")
-    response = signed_in.post(
-        reverse("collections:add_entry", args=[collection.pk]), {"entry": theirs.pk}
-    )
-    assert response.status_code == 404
-    assert CollectionEntry.objects.count() == 0
+    body = signed_in.get(reverse("collections:detail", args=[collection.pk])).text
+    assert "<select" not in body
+    assert "Add an entry" not in body
 
 
-def test_an_entry_already_in_it_is_not_offered_again(signed_in, nina):
+def test_the_add_entry_address_is_gone(signed_in, nina):
     collection = Collection.objects.create(owner=nina, name="Watches")
-    entry = Entry.objects.create(
-        owner=nina, url="https://example.com/1", title="Already here"
-    )
-    CollectionEntry.objects.create(collection=collection, entry=entry)
-
-    page = signed_in.get(reverse("collections:detail", args=[collection.pk]))
-    assert page.text.count("Already here") == 1, "listed once, not offered again"
+    with pytest.raises(NoReverseMatch):
+        reverse("collections:add_entry", args=[collection.pk])
 
 
 def test_a_collection_can_be_deleted_without_touching_its_entries(signed_in, nina):

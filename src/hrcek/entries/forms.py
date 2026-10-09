@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from django.utils.translation import gettext_lazy as _
 
 from hrcek.accounts.models import User
+from hrcek.collections.models import Collection
 from hrcek.core.errors import HrcekError
 from hrcek.entries import fetching, imaging
 from hrcek.entries.models import Entry, FieldDefinition, FieldValue, Tag
@@ -49,6 +50,23 @@ class EntryForm(forms.ModelForm):
         self.picture_source = ""
         if self.instance.pk:
             self.initial["tags"] = ", ".join(t.name for t in self.instance.tags.all())
+
+        # Only this person's own hand-picked collections are offered.
+        # Limiting the queryset is what makes a crafted POST naming
+        # another owner's collection, or a by-label one, a plain
+        # invalid-choice error rather than something add_entry has to
+        # refuse.
+        self.fields["collections"] = forms.ModelMultipleChoiceField(
+            label=_("Collections"),
+            queryset=Collection.objects.filter(owner=owner, kind=Collection.MANUAL),
+            widget=forms.CheckboxSelectMultiple,
+            required=False,
+            help_text=_("Collections that follow a label decide for themselves."),
+        )
+        if self.instance.pk:
+            self.fields["collections"].initial = Collection.objects.filter(
+                owner=owner, kind=Collection.MANUAL, memberships__entry=self.instance
+            )
 
         # One input per field this person has defined. The form is built
         # from their rows, so a name they do not own cannot be submitted.

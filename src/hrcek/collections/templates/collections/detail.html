@@ -50,33 +50,21 @@
   {% if collection.kind == 'label' %}
     <p>{% blocktrans with label=collection.label.name %}This collection holds every entry labelled {{ label }}. Label an entry and it appears here; remove the label and it goes. There is nothing to add by hand.{% endblocktrans %}</p>
   {% else %}
-    <h2>{% trans "Add an entry" %}</h2>
-    {% if candidates %}
-      <form method="post" action="{% url 'collections:add_entry' collection.pk %}">
-        {% csrf_token %}
-        <p>
-          <label for="id_entry">{% trans "Entry" %}</label>
-          <select name="entry" id="id_entry">
-            {% for entry in candidates %}
-              <option value="{{ entry.pk }}">{{ entry.display_title }}</option>
-            {% endfor %}
-          </select>
-        </p>
-        <button type="submit">{% trans "Add it" %}</button>
-      </form>
-    {% else %}
-      <p>{% trans "Every entry you have is already in this collection." %}</p>
-    {% endif %}
+    <p>{% trans "Tick this collection on an entry's own edit page to put it here." %}</p>
   {% endif %}
 
-  <h2>{% trans "In this collection" %}</h2>
+  {% comment %}
+    The heading is where focus lands when "Take it out" removes the last
+    row, leaving nothing else to focus: see js/delete-focus.js.
+  {% endcomment %}
+  <h2 tabindex="-1" data-focus-after-delete-fallback>{% trans "In this collection" %}</h2>
   {% if entries %}
-    <ul class="entries">
+    <ul class="entries" id="collection-entries">
       {% for entry in entries %}
         <li>
           <article>
             <div class="entry-text">
-              <h2><a href="{{ entry.url }}">{{ entry.display_title }}</a></h2>
+              <h2><a href="{{ entry.url }}" data-focus-after-delete>{{ entry.display_title }}</a></h2>
               {% if entry.notes %}<div class="notes">{{ entry.notes|linebreaks }}</div>{% endif %}
               {% if entry.tags.all %}
                 <ul class="row">
@@ -91,7 +79,20 @@
                 </form>
               {% endif %}
               {% if collection.kind == 'manual' %}
-                <form method="post" action="{% url 'collections:remove_entry' collection.pk entry.pk %}">
+                {% comment %}
+                  hx-post enhances the same action, as the entries list's
+                  Delete does: on success the "delete" swap removes this
+                  row, and what the answer carries lands out of band
+                  (collections/_remove_result.html); js/delete-focus.js
+                  moves focus to the next row, the previous one, or the
+                  heading above. A failed request swaps nothing, and
+                  js/htmx-errors.js says so.
+                {% endcomment %}
+                <form method="post" action="{% url 'collections:remove_entry' collection.pk entry.pk %}"
+                      hx-post="{% url 'collections:remove_entry' collection.pk entry.pk %}"
+                      hx-target="closest li" hx-swap="delete"
+                      hx-status:4xx="swap:none" hx-status:5xx="swap:none"
+                      hx-disable="find button">
                   {% csrf_token %}
                   <button type="submit" class="danger">{% trans "Take it out" %}</button>
                 </form>
@@ -102,6 +103,6 @@
       {% endfor %}
     </ul>
   {% else %}
-    <p>{% trans "Nothing in this collection yet." %}</p>
+    {% include "collections/_empty.html" %}
   {% endif %}
 {% endblock %}
