@@ -589,10 +589,10 @@
   ul.entries article:has(> .entry-head) > .entry-actions {
     margin-block-start: auto;
   }
-  ul.entries article:has(> .entry-thumb) {
+  ul.entries article:has(> .entry-head):has(> .entry-thumb) {
     padding-inline-end: calc(6rem + var(--spacing) * 4);
   }
-  ul.entries article > .entry-thumb {
+  ul.entries article:has(> .entry-head) > .entry-thumb {
     position: absolute;
     inset-block-start: 0;
     inset-inline-end: 0;
@@ -606,6 +606,215 @@
      and this rule can take it fully out of the flow. */
   ul.entries article > div:empty {
     display: none;
+  }
+
+  /* The two views of a list of entries (core/listing.py), chosen by a
+     class on ul.entries. Each view only overrides the plain shapes
+     above, so the htmx fragments that replace parts of an entry fit
+     either one unchanged. */
+
+  /* List: one wide row per entry, its picture small at the start.
+     The column for pictures is kept only when some entry on the page
+     has one, so a page of entries without pictures loses no width,
+     and titles line up whether a row has a picture or not. */
+  ul.entries.view-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  ul.entries.view-list > li {
+    padding-block: calc(var(--spacing) * 5);
+  }
+  ul.entries.view-list > li:last-child {
+    border-block-end: 1px solid var(--color-edge);
+  }
+  ul.entries.view-list img.thumb {
+    inline-size: 4rem;
+    block-size: 4rem;
+  }
+  /* collections/detail.html and shared.html: picture, then text. */
+  ul.entries.view-list:has(.entry-thumb) article:not(:has(> .entry-head)) {
+    grid-template-columns: 4rem minmax(0, 1fr);
+  }
+  ul.entries.view-list:has(.entry-thumb) article > .entry-text {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  ul.entries.view-list article:not(:has(> .entry-head)) > .entry-thumb {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  /* entries/list.html: the card's column of rows, with the picture
+     pinned to the start instead of the end. From 48rem the labels and
+     the Edit and Delete links move to a column of their own at the
+     end, so a row uses the width rather than growing tall. */
+  ul.entries.view-list article:has(> .entry-head) {
+    padding-inline-end: 0;
+  }
+  ul.entries.view-list:has(.entry-thumb) article:has(> .entry-head) {
+    padding-inline-start: calc(4rem + var(--spacing) * 4);
+  }
+  ul.entries.view-list article:has(> .entry-head) > .entry-thumb {
+    inset-inline-start: 0;
+    inset-inline-end: auto;
+  }
+  @media (width >= 48rem) {
+    ul.entries.view-list article:has(> .entry-head) {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(12rem, 20rem);
+      grid-template-areas:
+        "head labels"
+        "body actions";
+      align-items: start;
+      column-gap: calc(var(--spacing) * 8);
+      row-gap: calc(var(--spacing) * 2);
+    }
+    ul.entries.view-list article > .entry-head {
+      grid-area: head;
+    }
+    ul.entries.view-list article > .entry-body {
+      grid-area: body;
+    }
+    ul.entries.view-list article > .entry-labels {
+      grid-area: labels;
+    }
+    ul.entries.view-list article > .entry-labels > ul.row {
+      justify-content: flex-end;
+    }
+    ul.entries.view-list article:has(> .entry-head) > .entry-actions {
+      grid-area: actions;
+      justify-self: end;
+      margin-block-start: 0;
+    }
+  }
+
+  /* Cards: the picture leads, across the card's whole width, with a
+     drawn frame standing in when an entry has none, so every card in
+     a row has the same shape. No hairlines: the pictures already set
+     the cards apart. */
+  ul.entries.view-cards {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+    column-gap: calc(var(--spacing) * 6);
+  }
+  ul.entries.view-cards > li {
+    padding-block: calc(var(--spacing) * 4);
+    border-block-start: 0;
+  }
+  ul.entries.view-cards article {
+    display: flex;
+    flex-direction: column;
+    row-gap: calc(var(--spacing) * 3);
+    block-size: 100%;
+  }
+  ul.entries.view-cards article:has(> .entry-thumb) {
+    padding-inline-end: 0;
+  }
+  ul.entries.view-cards article > .entry-thumb,
+  ul.entries.view-cards article:has(> .entry-head) > .entry-thumb {
+    order: -1;
+    position: static;
+    display: block;
+    inline-size: 100%;
+    max-inline-size: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border: 1px solid var(--color-edge);
+    border-radius: var(--radius-lg);
+    background-color: color-mix(in oklab, var(--color-edge) 45%, var(--color-surface));
+  }
+  ul.entries.view-cards img.thumb {
+    inline-size: 100%;
+    block-size: 100%;
+    border: 0;
+    border-radius: 0;
+  }
+  ul.entries.view-cards .entry-thumb.placeholder {
+    display: grid;
+    place-items: center;
+    color: color-mix(in oklab, var(--color-muted) 55%, var(--color-surface));
+  }
+  ul.entries.view-cards .entry-thumb.placeholder svg {
+    inline-size: 40%;
+    max-inline-size: 6rem;
+    block-size: auto;
+  }
+  ul.entries.view-cards .entry-text {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  /* A wish list's Got it, Undo or Put it back, and Take it out, sit at
+     the foot of every card, level across a row. */
+  ul.entries.view-cards
+    .entry-text
+    > :is(form, p:has(> .got)):not(:is(form, p:has(> .got)) ~ *) {
+    margin-block-start: auto;
+  }
+
+  /* Something on a wish list that has been got, in either view: its
+     picture greys out. The words beside it ("Got", "You got this.")
+     say so too, for anybody who cannot see the picture. */
+  ul.entries li.is-got img.thumb,
+  ul.entries li.is-got .entry-thumb.placeholder svg {
+    filter: grayscale(1);
+    opacity: 0.55;
+  }
+
+  /* The row above a list of entries: what you can do on the left,
+     the view switch on the right, wrapping on a phone. */
+  .list-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: calc(var(--spacing) * 3) calc(var(--spacing) * 6);
+  }
+  .list-toolbar:has(> h2) {
+    margin-block: calc(var(--spacing) * 8) calc(var(--spacing) * 2);
+  }
+  main .list-toolbar > h2 {
+    margin-block: 0;
+  }
+  .list-toolbar-end {
+    justify-content: flex-end;
+  }
+
+  /* The view switch (core/templates/_view_switch.html): List and
+     Cards in one outline, the one shown filled. Buttons on the
+     entries page, links on a collection's; both look the same. */
+  .view-switch {
+    display: inline-flex;
+    border: 1px solid var(--color-edge);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+  .view-switch > button,
+  main .view-switch > a {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(var(--spacing) * 1.5);
+    padding: calc(var(--spacing) * 1.5) calc(var(--spacing) * 3);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-muted);
+    background-color: transparent;
+    border-radius: 0;
+    text-decoration: none;
+  }
+  .view-switch > * + * {
+    border-inline-start: 1px solid var(--color-edge);
+  }
+  .view-switch > button:hover,
+  main .view-switch > a:hover {
+    color: var(--color-ink);
+    background-color: color-mix(in oklab, var(--color-edge) 50%, transparent);
+  }
+  .view-switch > [aria-pressed="true"],
+  main .view-switch > [aria-current] {
+    color: var(--color-ink);
+    background-color: color-mix(in oklab, var(--color-accent) 14%, var(--color-surface));
+  }
+  .view-switch > :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: -2px;
   }
 
   /* The "Tags" sidebar (entries/_tags_sidebar.html) is always

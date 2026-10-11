@@ -241,6 +241,10 @@ msgid "email confirmed at"
 msgstr "e-pošta potrjena ob"
 
 #: src/hrcek/accounts/models.py
+msgid "entry view"
+msgstr "pogled vnosov"
+
+#: src/hrcek/accounts/models.py
 msgid "active"
 msgstr "aktiven"
 
@@ -846,6 +850,10 @@ msgstr "Razveljaviti je mogoče le z računom, s katerim je bilo označeno."
 msgid "Wish list"
 msgstr "Seznam želja"
 
+#: src/hrcek/collections/forms.py src/hrcek/core/templates/_view_switch.html
+msgid "Show entries as"
+msgstr "Prikaži vnose kot"
+
 #: src/hrcek/collections/forms.py
 msgid "Notes"
 msgstr "Opombe"
@@ -902,6 +910,16 @@ msgstr ""
 
 #: src/hrcek/collections/forms.py
 msgid ""
+"A list puts each entry on one wide row, with a small picture if it has one. "
+"Cards lead with a large picture. This is what everybody who opens the "
+"collection sees first; anyone can switch while they look."
+msgstr ""
+"Seznam postavi vsak vnos v eno široko vrstico, z majhno sliko, če jo ima. "
+"Kartice začnejo z veliko sliko. To vsak, ki zbirko odpre, vidi najprej; med "
+"ogledom lahko kdorkoli preklopi."
+
+#: src/hrcek/collections/forms.py
+msgid ""
 "A picture you show here can be opened by anyone who can see this page, even "
 "outside it."
 msgstr ""
@@ -911,6 +929,13 @@ msgstr ""
 msgid ""
 "Choose a public name on your account page before making a collection public."
 msgstr "Preden zbirko objavite, si na strani računa izberite javno ime."
+
+#: src/hrcek/collections/forms.py
+msgid ""
+"Cards show each entry's picture. Tick Pictures under Show, or choose List."
+msgstr ""
+"Kartice pokažejo sliko vsakega vnosa. Pod Prikaži odkljukajte Slike ali "
+"izberite Seznam."
 
 #: src/hrcek/collections/forms.py
 msgid "Choose the label this collection follows."
@@ -983,6 +1008,10 @@ msgstr "vidna polja"
 #: src/hrcek/collections/models.py
 msgid "wish list"
 msgstr "seznam želja"
+
+#: src/hrcek/collections/models.py
+msgid "view"
+msgstr "pogled"
 
 #: src/hrcek/collections/models.py src/hrcek/entries/models.py
 msgid "changed at"
@@ -1125,6 +1154,13 @@ msgstr ""
 #: src/hrcek/collections/templates/collections/detail.html
 msgid "In this collection"
 msgstr "V tej zbirki"
+
+#: src/hrcek/collections/templates/collections/detail.html
+#, python-format
+msgid ""
+"This collection opens as %(shown)s. To change that, edit the collection."
+msgstr ""
+"Zbirka se odpre kot %(shown)s. Če želite to spremeniti, uredite zbirko."
 
 #: src/hrcek/collections/templates/collections/detail.html
 msgid "Got"
@@ -1274,6 +1310,14 @@ msgstr "Poslani podatki niso veljavni."
 #: src/hrcek/core/errors.py
 msgid "The requested resource does not exist."
 msgstr "Zahtevani vir ne obstaja."
+
+#: src/hrcek/core/listing.py src/hrcek/core/templates/_view_switch.html
+msgid "List"
+msgstr "Seznam"
+
+#: src/hrcek/core/listing.py src/hrcek/core/templates/_view_switch.html
+msgid "Cards"
+msgstr "Kartice"
 
 #: src/hrcek/core/management/commands/compile_translations.py
 msgid "The compiled catalogues are up to date."

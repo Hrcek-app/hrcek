@@ -1,4 +1,4 @@
-<!-- translated from en/collections.md at 52444df722ae -->
+<!-- translated from en/collections.md at 9b3029fec15a -->
 # Zbirke
 
 Zbirka je poimenovan nabor vaših vnosov. Z njo zberete ure, o katerih
@@ -150,6 +150,28 @@ vsako vaše polje posebej. Kar pustite neodkljukano, ostane zasebno.
 **Sliko, ki jo pokažete, lahko vsak, ki vidi stran, odpre na njenem
 lastnem naslovu, zunaj strani.** To pomeni objaviti sliko. Izklopite
 sliko ali zbirko naredite zasebno in slika je takoj spet samo vaša.
+
+## Kako je prikazana
+
+Zbirka je prikazana kot **Seznam** ali kot **Kartice**, tako kot
+[vaši vnosi](entries.md#dva-načina-prikaza-vnosov). Izberete pod
+**Prikaži vnose kot** na obrazcu zbirke. Nova zbirka je seznam.
+
+Ta izbira je tisto, kar vsak, ki zbirko odpre, vidi najprej: vi in
+vsak, s komer jo delite. Med pogledoma lahko preklopi kdorkoli, s
+stikalom nad vnosi, a samo, dokler ostane na strani. Naslednjič se
+zbirka spet odpre tako, kot ste izbrali vi, vaša izbira na strani z
+vnosi pa je nikoli ne spremeni.
+
+Kartice so zgrajene okoli slik, zato je deljena zbirka lahko prikazana
+kot kartice le, če pod **Prikaži** odkljukate tudi **Slike**. Če to
+pozabite, Hrček to pove na obrazcu. Deljena zbirka, ki slike skriva, je
+vedno prikazana kot seznam, brez stikala.
+
+Seznami želja delujejo v obeh pogledih enako. Kdor je pritisnil *Imam*,
+vidi isto opombo in gumb *Razveljavi* v obeh, na vaši strani pa je,
+ko se odločite pogledati, kaj je že priskrbljeno, slika take stvari
+posivela.
 
 ## Viri
 

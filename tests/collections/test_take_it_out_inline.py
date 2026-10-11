@@ -119,7 +119,7 @@ def test_the_page_enhances_take_it_out(client, collection):
     assert 'hx-swap="delete"' in form
     assert 'hx-status:4xx="swap:none"' in form
     assert 'hx-status:5xx="swap:none"' in form
-    assert '<ul class="entries" id="collection-entries">' in body
+    assert '<ul class="entries view-list" id="collection-entries">' in body
     assert "data-focus-after-delete" in body
     assert "data-focus-after-delete-fallback" in body
 

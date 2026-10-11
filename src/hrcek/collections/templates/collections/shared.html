@@ -15,10 +15,13 @@
     <p class="meta">{% blocktrans with next=request.path|urlencode %}Signed-in Hrček users can mark what they have got. <a href="{{ landing }}?next={{ next }}">Sign in</a>{% endblocktrans %}</p>
   {% endif %}
 
+  {% if entries and view_links %}
+    <div class="list-toolbar list-toolbar-end">{% include "_view_switch.html" with links=view_links %}</div>
+  {% endif %}
   {% if entries %}
-    <ul class="entries">
+    <ul class="entries view-{{ view }}">
       {% for entry in entries %}
-        <li>
+        <li{% if entry.pk in mine %} class="is-got"{% endif %}>
           <article>
             <div class="entry-text">
               <h2><a href="{{ entry.url }}">{{ entry.display_title }}</a></h2>
@@ -53,12 +56,7 @@
                 {% endif %}
               {% endif %}
             </div>
-            {% if collection.show_images and entry.image %}
-              <a href="{{ entry.url }}" tabindex="-1" aria-hidden="true">
-                <img class="thumb" src="{% url 'entries:image' entry.pk %}"
-                     alt="" width="96" height="96" loading="lazy" decoding="async">
-              </a>
-            {% endif %}
+            {% include "_entry_picture.html" with show=collection.show_images %}
           </article>
         </li>
       {% endfor %}

@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 
 from hrcek.accounts.models import User
 from hrcek.collections.models import Collection
+from hrcek.core.listing import CARDS
 from hrcek.entries.models import FieldDefinition, Tag
 
 
@@ -20,16 +21,19 @@ class CollectionForm(forms.ModelForm):
             "label",
             "visibility",
             "is_wish_list",
+            "view",
             "show_notes",
             "show_tags",
             "show_images",
             "visible_fields",
         )
         widgets: ClassVar[dict[str, Any]] = {
+            "view": forms.RadioSelect,
             "visible_fields": forms.CheckboxSelectMultiple,
         }
         labels: ClassVar[dict[str, Any]] = {
             "is_wish_list": _("Wish list"),
+            "view": _("Show entries as"),
             "show_notes": _("Notes"),
             "show_images": _("Pictures"),
             "show_tags": _("Labels"),
@@ -64,6 +68,12 @@ class CollectionForm(forms.ModelForm):
                 "everybody else, and you keep seeing the whole list, so "
                 "you are still surprised."
             ),
+            "view": _(
+                "A list puts each entry on one wide row, with a small "
+                "picture if it has one. Cards lead with a large picture. "
+                "This is what everybody who opens the collection sees "
+                "first; anyone can switch while they look."
+            ),
             "show_images": _(
                 "A picture you show here can be opened by anyone who can "
                 "see this page, even outside it."
@@ -91,6 +101,9 @@ class CollectionForm(forms.ModelForm):
         # Not required, and absent means private: a submission that
         # somehow omits it must never publish anything by accident.
         self.fields["visibility"].required = False
+        # Not required either: a submission without it keeps the view
+        # the collection has (a new one's is the list).
+        self.fields["view"].required = False
         # The box sits before its label on these; a colon would point
         # at nothing. Text inputs and selects keep Django's default.
         for checkbox_field in (
@@ -111,6 +124,8 @@ class CollectionForm(forms.ModelForm):
         cleaned = super().clean() or {}
         if not cleaned.get("visibility"):
             cleaned["visibility"] = Collection.PRIVATE
+        if not cleaned.get("view"):
+            cleaned["view"] = self.instance.view
         if cleaned.get("visibility") == Collection.PUBLIC and not self.owner.namespace:
             # A public address needs a public name to put in it.
             self.add_error(
@@ -118,6 +133,20 @@ class CollectionForm(forms.ModelForm):
                 _(
                     "Choose a public name on your account page before "
                     "making a collection public."
+                ),
+            )
+        if (
+            cleaned.get("view") == CARDS
+            and cleaned.get("visibility") != Collection.PRIVATE
+            and not cleaned.get("show_images")
+        ):
+            # Cards are built around the picture; shared without one,
+            # every card would be a placeholder.
+            self.add_error(
+                "view",
+                _(
+                    "Cards show each entry's picture. Tick Pictures under "
+                    "Show, or choose List."
                 ),
             )
         if "kind" not in self.fields:

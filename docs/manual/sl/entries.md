@@ -1,4 +1,4 @@
-<!-- translated from en/entries.md at 7cffeb4cf2aa -->
+<!-- translated from en/entries.md at 89b0a04fb720 -->
 # Shranjevanje
 
 Vnos je ena stvar, ki jo želite obdržati: stran, ki jo nameravate
@@ -145,11 +145,11 @@ ali prilepite naslov slike na spletu — eno ali drugo, ne obojega.
 Prilepite naslov same slike, ne strani, na kateri je. Hrček si shrani
 svojo kopijo, zato slika ostane, tudi če jo izvirna stran umakne.
 
-Slika se pokaže kot majhen kvadrat ob vnosu na vašem seznamu. Ko
-urejate vnos, ki jo ima, jo obrazec pokaže pod **Slika**. Če jo želite
-zamenjati, pod njo dodajte drugo; če se je želite znebiti, odkljukajte
-**Odstrani sliko** tik pod sliko in shranite. Sprememba naslova vnosa
-ali zapiskov slike nikoli ne zmoti.
+V pogledu Seznam se slika pokaže kot majhen kvadrat ob vnosu, v pogledu
+Kartice pa zapolni vrh kartice. Ko urejate vnos, ki jo ima, jo obrazec
+pokaže pod **Slika**. Če jo želite zamenjati, pod njo dodajte drugo; če
+se je želite znebiti, odkljukajte **Odstrani sliko** tik pod sliko in
+shranite. Sprememba naslova vnosa ali zapiskov slike nikoli ne zmoti.
 
 Slike so zasebne, kot vse drugo tukaj: prikazane so vam in nikomur
 drugemu, naslov slike pa ni uporaben nikomur, ki ni prijavljen kot vi.
@@ -159,6 +159,24 @@ ni slika ali se naslov ne naloži, Hrček to pove na obrazcu in ne shrani
 ničesar. Nekateri naslovi so zavrnjeni namenoma — tisti, ki kažejo
 nazaj na računalnik, na katerem teče Hrček, ali v vaše domače omrežje —
 ker orodje za zaznamke tam nima česa iskati.
+
+## Dva načina prikaza vnosov
+
+Vnosi so lahko prikazani kot **Seznam** ali kot **Kartice**. Stikalo je
+nad vnosi, na desni.
+
+- **Seznam** postavi vsak vnos v eno široko vrstico, z majhno sliko na
+  začetku, če jo ima. Tako je na zaslonu največ vnosov.
+- **Kartice** začnejo s sliko, čez vso širino kartice. Vnos brez slike
+  dobi namesto nje preprost okvir, tako da so vse kartice enake oblike.
+
+Oba pokažeta isto in v obeh lahko storite isto: oznake, zbirke,
+urejanje in brisanje delujejo v obeh enako.
+
+Hrček si zapomni, kar ste izbrali nazadnje, in to v vašem računu, ne v
+brskalniku, zato telefon in računalnik pokažeta isti pogled. Zbirke
+imajo svoj pogled: glejte
+[kako je zbirka prikazana](collections.md#kako-je-prikazana).
 
 ## Polja
 

@@ -20,6 +20,7 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import gettext as _
 from django.utils.translation import ngettext
+from django.views.decorators.http import require_http_methods
 
 from hrcek.accounts.models import User
 from hrcek.collections.models import Collection, CollectionEntry
@@ -30,6 +31,7 @@ from hrcek.collections.services import (
     label_wish_lists_holding,
     remove_entry,
 )
+from hrcek.core import listing
 from hrcek.core.htmx import htmx_redirect, is_htmx, vary_on_htmx
 from hrcek.core.navigation import safe_next
 from hrcek.entries import imaging
@@ -267,8 +269,30 @@ def entry_list(request: HttpRequest) -> HttpResponse:
     return render(
         request,
         "entries/list.html",
-        {"page": page, "tag": tag, "tags": in_use},
+        {
+            "page": page,
+            "tag": tag,
+            "tags": in_use,
+            "view": listing.chosen(owner.entry_view, listing.LIST),
+        },
     )
+
+
+@require_http_methods(["POST"])
+@login_required
+def entry_view(request: HttpRequest) -> HttpResponse:
+    """Remember how the entries page shows entries, then go back to it.
+
+    Saved on the account rather than in the browser, so the choice
+    follows its owner to another device. A value that names no view
+    changes nothing: only a hand-made request can send one.
+    """
+    owner = cast("User", request.user)
+    view = request.POST.get("view", "")
+    if view in listing.NAMES and view != owner.entry_view:
+        owner.entry_view = view
+        owner.save(update_fields=["entry_view"])
+    return redirect(safe_next(request, reverse("entries:list")))
 
 
 @login_required

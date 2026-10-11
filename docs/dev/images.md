@@ -163,14 +163,18 @@ two pictures per row to render a tag would undo the reason the blobs
 live in their own table. `test_the_list_query_leaves_the_blobs_in_the_table`
 holds that line.
 
-A picture shows as a 6rem square thumbnail beside the entry's text,
-cropped to fit with `object-fit: cover`, so the `<img>` carries fixed
-dimensions and the list does not jump about as pictures arrive. The
+In the list view a picture shows as a 4rem square beside the entry's
+text; in cards it fills the top of the card at 4:3. Either way it is
+cropped to fit with `object-fit: cover`, and its box has a fixed size
+or shape, so the list does not jump about as pictures arrive. See
+[entries](entries.md#two-views-of-a-list-of-entries). The
 browser still downloads the display copy and scales it down; at family
 scale a separate thumbnail rendition is not worth its storage. The
 thumbnail's link repeats the title's, so it is `tabindex="-1"` and
 `aria-hidden`: one stop per entry for the keyboard and screen reader.
-A shared collection page shows pictures the same way.
+A collection's own page and its shared page show pictures the same
+way, joining the image table and deferring the blobs just like the
+list does.
 
 ## On the form
 

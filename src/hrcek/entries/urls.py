@@ -7,6 +7,7 @@ app_name = "entries"
 urlpatterns = [
     path("", views.entry_list, name="list"),
     path("new/", views.entry_create, name="create"),
+    path("view/", views.entry_view, name="view"),
     path("<int:pk>/edit/", views.entry_edit, name="edit"),
     path("<int:pk>/delete/", views.entry_delete, name="delete"),
     path("<int:pk>/labels/add/", labels.label_add, name="label_add"),
