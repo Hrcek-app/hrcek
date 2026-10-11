@@ -61,6 +61,12 @@ is impossible — long URLs, wide table rows.
 New or changed error codes must be reflected in
 `docs/dev/error-codes.md`; a test enforces this.
 
+**The user manual is kept in every language.** English in
+`docs/manual/en/` is authoritative; `docs/manual/sl/` translates it page
+for page. Change both in the same change, then update the fingerprint
+on the translation's first line — a test fails until you do. See
+`docs/dev/i18n.md`.
+
 **Changes over 100 lines need a review guide.** Write `REVIEW_GUIDE.md`
 at the repository root: the order to read the change in, and what
 deserves a close look. It is gitignored and never committed.
@@ -74,7 +80,7 @@ src/hrcek/api.py       root NinjaAPI and exception handlers
 src/hrcek/core/        cross-cutting app: errors, logging, telemetry
 locale/                translations; .po is committed, .mo is built
 tests/                 mirrors src/hrcek
-docs/manual/           user manual
+docs/manual/<lang>/    user manual, English (en) authoritative
 docs/dev/              developer documentation
 ```
 

@@ -14,3 +14,5 @@ This manual describes what Hrček does today. It is still early: you can
 have an account, save things to it, record your own fields against
 them, give each one a picture, gather them into collections, share
 those, and turn one into a wish list.
+
+This manual is also available in [Slovenian](../sl/index.md).

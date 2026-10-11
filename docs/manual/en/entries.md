@@ -267,6 +267,6 @@ bottom, in red, so it is not hit on the way to saving.
 
 ## Entries and scripts
 
-If you use Hrček from a script, see [the API guide](../dev/api.md). A
+If you use Hrček from a script, see [the API guide](../../dev/api.md). A
 script can save one entry or a batch of them, and saving works the same
 way: an address you already hold is updated.
