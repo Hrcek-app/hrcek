@@ -18,7 +18,8 @@ A change is finished when all of these hold:
 - Every new error has a registered code and a row in
   [error-codes.md](error-codes.md).
 - The affected pages in `docs/manual/` and `docs/dev/` are updated in
-  the same change.
+  the same change — the user manual in every language it is kept in
+  (see [i18n.md](i18n.md#the-user-manual)).
 - If the diff exceeds 100 lines, `REVIEW_GUIDE.md` exists at the
   repository root, giving a reading order and pointing at what deserves
   scrutiny. It is gitignored and never committed.

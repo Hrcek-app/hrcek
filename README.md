@@ -25,7 +25,8 @@ still to come.
 
 ## Documentation
 
-- [User manual](docs/manual/index.md)
+- User manual: [English](docs/manual/en/index.md),
+  [slovenščina](docs/manual/sl/index.md)
 - [Developer documentation](docs/dev/index.md)
 - [API guide](docs/dev/api.md) — for building a client
 - [Working agreement](CLAUDE.md)
