@@ -5,6 +5,7 @@ from playwright.sync_api import expect
 
 from hrcek.accounts.models import User
 from hrcek.collections.models import Collection, CollectionEntry, GotIt
+from hrcek.core.listing import CARDS
 from hrcek.entries.services import save_entry
 
 pytestmark = pytest.mark.browser
@@ -305,8 +306,12 @@ def test_without_javascript_taking_it_out_still_works(
 
 
 def test_without_javascript_an_entry_in_nothing_has_no_blank_row(
-    signed_in_page_without_js, live_server, first, watches
+    signed_in_page_without_js, live_server, person, first, watches
 ):
+    # Cards stack head, body and labels in one column, which is where a
+    # blank row would show; a wide list puts the labels beside the head.
+    person.entry_view = CARDS
+    person.save()
     page = signed_in_page_without_js
     page.goto(f"{live_server.url}/entries/")
 

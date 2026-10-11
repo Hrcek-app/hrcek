@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth.views import redirect_to_login
+from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -25,6 +26,7 @@ from hrcek.collections.services import (
     shared_entries,
     undo_got_it,
 )
+from hrcek.core import listing
 from hrcek.core.errors import HrcekError
 from hrcek.core.htmx import is_htmx, vary_on_htmx
 from hrcek.entries.models import Entry
@@ -60,6 +62,23 @@ def collection_create(request: HttpRequest) -> HttpResponse:
     return redirect("collections:detail", pk=collection.pk)
 
 
+def _with_pictures(entries: QuerySet[Entry]) -> QuerySet[Entry]:
+    """`entries` with their picture rows joined but the blobs left out.
+
+    Both views ask only whether an entry has a picture; the bytes come
+    from the picture's own address. Same as the entries list.
+    """
+    return entries.select_related("image").defer("image__original", "image__display")
+
+
+def _view(request: HttpRequest, collection: Collection, *, pictures: bool) -> str:
+    """The view to show: the visitor's pick for this visit, if any, else
+    the collection's. Without pictures to show there are no cards."""
+    if not pictures:
+        return listing.LIST
+    return listing.chosen(request.GET.get("view"), collection.view)
+
+
 def _feed_url(collection: Collection) -> str:
     """The feed address to offer on the collection's own page.
 
@@ -89,13 +108,17 @@ def collection_detail(request: HttpRequest, pk: int) -> HttpResponse:
     got = got_entry_ids(collection)
     reveal = collection.is_wish_list and request.GET.get("got") == "show"
     back = request.GET.get("back", "")
+    # The owner always sees their own pictures, shared or not.
+    view = _view(request, collection, pictures=True)
     return render(
         request,
         "collections/detail.html",
         {
             "collection": collection,
             "feed_url": _feed_url(collection),
-            "entries": collection.entries().prefetch_related("tags"),
+            "entries": _with_pictures(collection.entries()).prefetch_related("tags"),
+            "view": view,
+            "view_links": listing.switch_links(request, view),
             "reveal": reveal,
             # Only handed to the template when asked for, so a slip
             # there cannot spoil the surprise.
@@ -221,8 +244,14 @@ def _shared_context(collection: Collection, request: HttpRequest) -> dict[str, o
     is_owner = viewer.pk == collection.owner_id  # ty: ignore[unresolved-attribute]
     entries = shared_entries(collection, viewer)
     wish_list = collection.is_wish_list
+    view = _view(request, collection, pictures=collection.show_images)
     return {
         "collection": collection,
+        "view": view,
+        # No switch where there is only the list to offer.
+        "view_links": (
+            listing.switch_links(request, view) if collection.show_images else []
+        ),
         "feed_url": (
             reverse(
                 "shared:public_feed",
@@ -234,7 +263,9 @@ def _shared_context(collection: Collection, request: HttpRequest) -> dict[str, o
             if collection.visibility == Collection.PUBLIC
             else reverse("shared:unlisted_feed", kwargs={"secret": collection.secret})
         ),
-        "entries": entries.prefetch_related("tags", "field_values__definition"),
+        "entries": _with_pictures(entries).prefetch_related(
+            "tags", "field_values__definition"
+        ),
         "visible_field_ids": set(
             collection.visible_fields.values_list("pk", flat=True)
         ),

@@ -201,6 +201,22 @@ field to its help text; the sentence describing the group as a whole
 checkbox and is tied to the `<fieldset>` itself the same way, since no
 single checkbox owns it.
 
+### The collection's view
+
+`Collection.view` is the view everybody who opens the collection sees
+first, list or cards; see [Two views of a list of
+entries](entries.md#two-views-of-a-list-of-entries) for what each
+looks like and how a visitor switches for a visit. It sits on the form
+in its own `<fieldset class="view">` above "Show", as radio buttons
+laid out like the checkboxes.
+
+`CollectionForm.clean` refuses cards on a shared collection that does
+not show pictures: every card would be a placeholder, and the picture
+behind each one is not the visitor's to see. A private collection may
+be cards without ticking Pictures, since only its owner sees it. A
+collection that reaches that combination anyway (through the admin,
+say) is still shown to visitors as a list, with no switch.
+
 The form's way back — "Back to your collections" on create, "Back to
 the collection" on edit — opens in a new tab (`target="_blank"
 rel="noopener"`), so following it never costs what has been typed.

@@ -57,11 +57,17 @@
     The heading is where focus lands when "Take it out" removes the last
     row, leaving nothing else to focus: see js/delete-focus.js.
   {% endcomment %}
-  <h2 tabindex="-1" data-focus-after-delete-fallback>{% trans "In this collection" %}</h2>
+  <div class="list-toolbar">
+    <h2 tabindex="-1" data-focus-after-delete-fallback>{% trans "In this collection" %}</h2>
+    {% if entries %}{% include "_view_switch.html" with links=view_links %}{% endif %}
+  </div>
+  {% if entries and view != collection.view %}
+    <p class="meta">{% blocktrans with shown=collection.get_view_display|lower %}This collection opens as {{ shown }}. To change that, edit the collection.{% endblocktrans %}</p>
+  {% endif %}
   {% if entries %}
-    <ul class="entries" id="collection-entries">
+    <ul class="entries view-{{ view }}" id="collection-entries">
       {% for entry in entries %}
-        <li>
+        <li{% if entry.pk in got %} class="is-got"{% endif %}>
           <article>
             <div class="entry-text">
               <h2><a href="{{ entry.url }}" data-focus-after-delete>{{ entry.display_title }}</a></h2>
@@ -98,6 +104,7 @@
                 </form>
               {% endif %}
             </div>
+            {% include "_entry_picture.html" with show=True %}
           </article>
         </li>
       {% endfor %}

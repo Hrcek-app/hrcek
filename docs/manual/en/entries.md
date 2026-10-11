@@ -152,11 +152,12 @@ the web — one or the other, not both. Paste the address of the picture
 itself, not of the page it appears on. Hrček keeps its own copy, so
 the picture stays even if the original page takes it down.
 
-The picture appears as a small square beside the entry in your list.
-When you edit an entry that has one, the form shows it under
-**Picture**. To swap it, add another below it; to get rid of it, tick
-**Remove the picture**, right under the picture, and save. Changing an
-entry's title or notes never disturbs its picture.
+In the list view the picture appears as a small square beside the entry;
+in cards it fills the top of the card. When you edit an entry that has
+one, the form shows it under **Picture**. To swap it, add another below
+it; to get rid of it, tick **Remove the picture**, right under the
+picture, and save. Changing an entry's title or notes never disturbs its
+picture.
 
 Pictures are private, like everything else here: they are shown to you
 and to nobody else, and the address of one is no use to anyone who is
@@ -167,6 +168,25 @@ not really a picture, or an address will not load, Hrček says so on
 the form and saves nothing. Some addresses are refused on purpose —
 ones pointing back at the machine Hrček runs on, or into your home
 network — because a bookmark tool has no business fetching from there.
+
+## Two ways to see your entries
+
+Your entries can be shown as a **List** or as **Cards**. The switch
+sits above the entries, on the right.
+
+- **List** puts each entry on one wide row, with its picture small at
+  the start when it has one. It fits the most entries on the screen.
+- **Cards** lead with the picture, across the whole width of the card.
+  An entry without a picture gets a plain frame in its place, so every
+  card keeps the same shape.
+
+Both show the same things and let you do the same things: labels,
+collections, editing and deleting all work the same way in either.
+
+Hrček remembers the one you chose last, on your account rather than in
+your browser, so your phone and your computer show the same view.
+Collections have a view of their own: see
+[how a collection is shown](collections.md#how-it-is-shown).
 
 ## Fields
 

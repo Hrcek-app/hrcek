@@ -19,6 +19,7 @@ from hrcek.accounts.validators import (
     validate_domain,
     validate_namespace,
 )
+from hrcek.core.listing import LIST, VIEWS
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -74,6 +75,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     email_verified_at = models.DateTimeField(
         _("email confirmed at"), null=True, blank=True
+    )
+    # How the entries page shows entries: whichever was picked last.
+    entry_view = models.CharField(
+        _("entry view"), max_length=10, choices=VIEWS, default=LIST
     )
     is_active = models.BooleanField(_("active"), default=True)
     is_staff = models.BooleanField(_("staff status"), default=False)

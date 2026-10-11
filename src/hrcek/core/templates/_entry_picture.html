@@ -1,0 +1,13 @@
+{% comment %}
+  An entry's picture in a list of entries, in either view.
+
+  `show` says whether pictures may appear at all (a shared page that
+  does not show them passes False). With a picture, it is the picture,
+  linked to the entry's address. Without one, the cards view stands in
+  a drawn frame so every card keeps the same shape; the list view
+  shows nothing. Either way the link repeats the title's, so it is
+  out of the tab order and hidden from screen readers.
+{% endcomment %}{% if show %}{% if entry.image %}<a class="entry-thumb" href="{{ entry.url }}" tabindex="-1" aria-hidden="true">
+  <img class="thumb" src="{% url 'entries:image' entry.pk %}"
+       alt="" width="96" height="96" loading="lazy" decoding="async">
+</a>{% elif view == "cards" %}<span class="entry-thumb placeholder" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" focusable="false"><rect x="5" y="9" width="38" height="30" rx="3"/><circle cx="17" cy="20" r="4"/><path d="M5 34l11-10 9 8 6-5 12 10"/></svg></span>{% endif %}{% endif %}

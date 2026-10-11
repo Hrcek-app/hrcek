@@ -1,0 +1,17 @@
+{% load i18n %}{% comment %}
+  The switch between the two views of a list of entries: List and
+  Cards, side by side in one outline, the one shown marked.
+
+  With `links` (collections/views.py: listing.switch_links) it is a
+  pair of links that change only the address, so the switch lasts for
+  this visit and nothing is saved: a collection's own view stays what
+  everybody sees first. Without them it is the entries page's form,
+  which saves the choice on the account (entries.views.entry_view) and
+  comes back to the same page, label and page number included.
+  See docs/dev/entries.md.
+{% endcomment %}{% if links %}<div class="view-switch" role="group" aria-label="{% trans "Show entries as" %}">
+  {% for link in links %}<a href="{{ link.url }}"{% if link.current %} aria-current="true"{% endif %}>{% include "_view_icon.html" with name=link.name %}{{ link.label }}</a>{% endfor %}
+</div>{% else %}<form class="view-switch" method="post" action="{% url 'entries:view' %}" aria-label="{% trans "Show entries as" %}">
+  {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+  <button type="submit" name="view" value="list" aria-pressed="{% if view == 'list' %}true{% else %}false{% endif %}">{% include "_view_icon.html" with name="list" %}{% trans "List" %}</button><button type="submit" name="view" value="cards" aria-pressed="{% if view == 'cards' %}true{% else %}false{% endif %}">{% include "_view_icon.html" with name="cards" %}{% trans "Cards" %}</button>
+</form>{% endif %}

@@ -100,14 +100,18 @@ list](entries.md#the-entries-list) — a flex column of four named
 rows (head, body, labels, actions), spaced the same way but with the
 actions row pushed to the card's bottom instead.
 
-`ul.entries` is a grid that fits as many columns of at least 22rem as
-the window allows, so one column on a phone and three or four on a
-desktop. Every entry opens with its own hairline, because which entry
-starts a row depends on the window. Cards sharing a visual row are
-stretched to equal height by the grid's own default alignment; that
-used to also be shared across each card's internal rows with
-`grid-template-rows: subgrid`, which made one entry's long notes push
-every other card's labels and actions down to match. It no longer is.
+`ul.entries` is a grid. Its class picks the view: `view-list` is a
+single column of wide rows, `view-cards` fits as many columns of at
+least 16rem as the window allows, so one column on a phone and four or
+five on a desktop. See
+[entries](entries.md#two-views-of-a-list-of-entries). Without either
+class it fits columns of at least 22rem. Every entry opens with its own
+hairline, because which entry starts a row depends on the window. Cards
+sharing a visual row are stretched to equal height by the grid's own
+default alignment; that used to also be shared across each card's
+internal rows with `grid-template-rows: subgrid`, which made one entry's
+long notes push every other card's labels and actions down to match. It
+no longer is.
 
 ## Flash messages
 

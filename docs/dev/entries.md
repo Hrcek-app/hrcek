@@ -325,9 +325,11 @@ list](#labels-on-the-list) for why it always carries at least the
 "+ Label" control and an `id`.
 
 An entry's optional picture, `a.entry-thumb`, is taken out of the
-flex column with `position: absolute` and pinned to the top end,
-beside the title and date rather than spanning rows, so a picture
-never forces the card taller than its own text would.
+flex column with `position: absolute` and pinned beside the title and
+date rather than spanning rows, so a picture never forces the card
+taller than its own text would. Which side it is pinned to, and how
+the four rows sit, depends on the view: see [Two views of a list of
+entries](#two-views-of-a-list-of-entries).
 
 **The date added.** `<time datetime="…">` carries the exact instant,
 machine-readable; what a person sees is `MONTH_DAY_FORMAT` ("7 Oct")
@@ -426,6 +428,77 @@ the notice is left queued exactly as it is without JavaScript.
 not just this one — is a job for
 `hrcek.core.middleware.HtmxSignInRedirectMiddleware`, documented in
 [JavaScript](javascript.md) alongside `htmx_redirect` itself.
+
+## Two views of a list of entries
+
+Every page that lists entries (`entries/list.html`,
+`collections/detail.html`, `collections/shared.html`) shows them one of
+two ways. `hrcek.core.listing` names them, `LIST` and `CARDS`, and
+holds the choices both model fields use.
+
+- **List**: one entry per row across the page's full width. A picture,
+  when there is one, is a 4rem square at the start of the row. From
+  48rem the entries page's card moves its labels and its Edit and
+  Delete links to a column at the end, so a row uses the width rather
+  than growing tall.
+- **Cards**: a grid of cards at least 16rem wide, each led by the
+  entry's picture across the card's whole width at 4:3. An entry with
+  no picture gets `span.entry-thumb.placeholder`, a drawn frame, so
+  every card in a row keeps the same shape.
+
+The markup of an entry is the same in both. The view is one class on
+`ul.entries`, `view-list` or `view-cards`, and `static_src/hrcek.css`
+does the rest. That keeps every htmx fragment that replaces part of an
+entry (labels, collections, a delete) the same in either view, with
+nothing to re-render when the view changes. The only difference in the
+markup is the placeholder, which `core/templates/_entry_picture.html`
+renders in cards alone; the list shows no picture rather than an empty
+frame. The list keeps its column for pictures only when some entry on
+the page has one (`ul.entries.view-list:has(.entry-thumb)`), so titles
+line up across rows, and a page with no pictures at all loses no
+width.
+
+**Which view a page shows.**
+
+| Page | View | Switching |
+|---|---|---|
+| Your entries | `User.entry_view` | Saved on the account |
+| A collection, to its owner | `?view=`, else `Collection.view` | That visit only |
+| A shared collection | `?view=`, else `Collection.view` | That visit only |
+| A shared collection that hides pictures | Always the list | No switch |
+
+`listing.chosen(asked, default)` returns `asked` only when it names a
+view, so an unknown `?view=` falls back to the default rather than
+failing. The owner's own collection page always shows their pictures,
+shared or not, so both views are open to it.
+
+**The switch.** `core/templates/_view_switch.html` draws List and Cards
+side by side in one outline, the shown one marked. On the entries page
+it is a form: two submit buttons with `aria-pressed`, posting to
+`entries:view` (`entries.views.entry_view`), which saves
+`User.entry_view` and redirects to the hidden `next`, the page's own
+address, checked by [`safe_next`](#safe_next-returning-somewhere-without-being-an-open-redirect).
+A label filter and page number therefore survive the switch. A value
+that names no view changes nothing. Saving on the account rather than
+in `localStorage` is what makes the choice follow its owner from one
+device to another.
+
+On a collection's pages the switch is a pair of links instead,
+`listing.switch_links(request, shown)`, that add or replace `view` in
+the address and keep everything else in it (a wish list's
+`?got=show`). Nothing is saved: the collection's own view stays what
+everybody sees first, and the owner's `entry_view` never overrides it.
+When the owner is looking at the other view, a line under the heading
+says which view the collection opens as.
+
+**Wish lists.** Nothing a wish list does depends on the view. The
+"Got"/"Put it back on the list" and "Got it"/"Undo" controls sit in
+the entry's text in both. An entry that has been got carries
+`li.is-got` (on the owner's page only with `?got=show`, on a shared
+page only for the visitor who got it), which greys its picture or
+placeholder in either view. The words beside it say the same thing
+for anybody who cannot see the picture. In cards, those controls sit
+at the foot of the card, level across a row.
 
 ## Labels on the list
 

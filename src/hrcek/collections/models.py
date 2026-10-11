@@ -11,6 +11,7 @@ from django.urls import reverse
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
+from hrcek.core.listing import LIST, VIEWS
 from hrcek.entries.models import Entry
 
 
@@ -85,6 +86,9 @@ class Collection(models.Model):
     # Not fixed like `kind`: switching it off only stops marks applying,
     # so switching it back on finds them where they were.
     is_wish_list = models.BooleanField(_("wish list"), default=False)
+    # What everybody who opens the collection sees first. Anyone may
+    # switch for the visit they are on; only the owner changes this.
+    view = models.CharField(_("view"), max_length=10, choices=VIEWS, default=LIST)
     created_at = models.DateTimeField(_("created at"), auto_now_add=True)
     updated_at = models.DateTimeField(_("changed at"), auto_now=True)
 

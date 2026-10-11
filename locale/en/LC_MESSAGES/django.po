@@ -231,6 +231,10 @@ msgid "email confirmed at"
 msgstr ""
 
 #: src/hrcek/accounts/models.py
+msgid "entry view"
+msgstr ""
+
+#: src/hrcek/accounts/models.py
 msgid "active"
 msgstr ""
 
@@ -807,6 +811,10 @@ msgstr ""
 msgid "Wish list"
 msgstr ""
 
+#: src/hrcek/collections/forms.py src/hrcek/core/templates/_view_switch.html
+msgid "Show entries as"
+msgstr ""
+
 #: src/hrcek/collections/forms.py
 msgid "Notes"
 msgstr ""
@@ -853,6 +861,13 @@ msgstr ""
 
 #: src/hrcek/collections/forms.py
 msgid ""
+"A list puts each entry on one wide row, with a small picture if it has one. "
+"Cards lead with a large picture. This is what everybody who opens the "
+"collection sees first; anyone can switch while they look."
+msgstr ""
+
+#: src/hrcek/collections/forms.py
+msgid ""
 "A picture you show here can be opened by anyone who can see this page, even "
 "outside it."
 msgstr ""
@@ -860,6 +875,11 @@ msgstr ""
 #: src/hrcek/collections/forms.py
 msgid ""
 "Choose a public name on your account page before making a collection public."
+msgstr ""
+
+#: src/hrcek/collections/forms.py
+msgid ""
+"Cards show each entry's picture. Tick Pictures under Show, or choose List."
 msgstr ""
 
 #: src/hrcek/collections/forms.py
@@ -932,6 +952,10 @@ msgstr ""
 
 #: src/hrcek/collections/models.py
 msgid "wish list"
+msgstr ""
+
+#: src/hrcek/collections/models.py
+msgid "view"
 msgstr ""
 
 #: src/hrcek/collections/models.py src/hrcek/entries/models.py
@@ -1068,6 +1092,12 @@ msgstr ""
 
 #: src/hrcek/collections/templates/collections/detail.html
 msgid "In this collection"
+msgstr ""
+
+#: src/hrcek/collections/templates/collections/detail.html
+#, python-format
+msgid ""
+"This collection opens as %(shown)s. To change that, edit the collection."
 msgstr ""
 
 #: src/hrcek/collections/templates/collections/detail.html
@@ -1209,6 +1239,14 @@ msgstr ""
 
 #: src/hrcek/core/errors.py
 msgid "The requested resource does not exist."
+msgstr ""
+
+#: src/hrcek/core/listing.py src/hrcek/core/templates/_view_switch.html
+msgid "List"
+msgstr ""
+
+#: src/hrcek/core/listing.py src/hrcek/core/templates/_view_switch.html
+msgid "Cards"
 msgstr ""
 
 #: src/hrcek/core/management/commands/compile_translations.py

@@ -155,6 +155,29 @@ its own address, outside the page.** That is what publishing a picture
 means. Turn the picture off, or make the collection private, and it
 goes back to being yours alone straight away.
 
+## How it is shown
+
+A collection is shown either as a **List** or as **Cards**, just like
+[your entries](entries.md#two-ways-to-see-your-entries). Choose which
+under **Show entries as** on the collection's form. A new collection
+is a list.
+
+That choice is what everybody who opens the collection sees first: you,
+and anyone you share it with. Anyone can switch between the two with
+the switch above the entries, but only for as long as they stay on the
+page. Next time it opens the way you chose again, and your own choice
+on the entries page never changes it.
+
+Cards are built around pictures, so a shared collection can only be
+shown as cards if you also tick **Pictures** under **Show**. Hrček
+says so on the form if you forget. A shared collection that hides
+pictures is always shown as a list, with no switch.
+
+Wish lists work the same way in both views. Somebody who said "Got
+it" sees the same note and **Undo** button either way, and on your
+own page, when you choose to see what has been got, its picture is
+greyed out.
+
 ## Feeds
 
 Every collection page has a feed, at the same address with `feed/` on

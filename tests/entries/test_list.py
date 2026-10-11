@@ -194,7 +194,7 @@ def test_the_tag_filter_is_an_aside_that_follows_the_entries(client, nina):
     for href, ancestors in filters:
         assert "aside" in ancestors, f"{href} is not inside the aside"
     body = response.content.decode()
-    assert body.index('<ul class="entries"') < body.index("<aside")
+    assert body.index('<ul class="entries ') < body.index("<aside")
 
 
 def test_the_tag_being_shown_is_marked_in_the_aside(client, nina):

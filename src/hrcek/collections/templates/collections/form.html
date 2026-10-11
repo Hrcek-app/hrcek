@@ -57,6 +57,22 @@
     </p>
 
     {% comment %}
+      The collection's view, as a pair of radio buttons laid out like
+      the checkboxes below. The help says what the choice does for
+      visitors; the error, when there is one, names the box to tick.
+    {% endcomment %}
+    <fieldset class="view" aria-describedby="{{ form.view.auto_id }}_helptext{% if form.view.errors %} {{ form.view.auto_id }}_error{% endif %}">
+      <legend>{{ form.view.label }}</legend>
+      {% if form.view.errors %}<ul class="errorlist" id="{{ form.view.auto_id }}_error">{% for error in form.view.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+      <ul class="checks">
+        {% for choice in form.view %}
+          <li>{{ choice.tag }} <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label></li>
+        {% endfor %}
+      </ul>
+      <p class="helptext" id="{{ form.view.auto_id }}_helptext">{{ form.view.help_text }}</p>
+    </fieldset>
+
+    {% comment %}
       One fieldset for everything a visitor to the collection might
       see. Each checkbox keeps its own label and, where it has one, its
       own help directly under it; the sentence about what is private by

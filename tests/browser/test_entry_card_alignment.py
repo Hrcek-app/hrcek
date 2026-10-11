@@ -11,6 +11,7 @@ import io
 import pytest
 from PIL import Image
 
+from hrcek.core.listing import CARDS
 from hrcek.entries.models import EntryImage
 from hrcek.entries.services import save_entry
 
@@ -27,6 +28,9 @@ def _png() -> bytes:
 
 
 def _make_row(person, *, picture):
+    # Lining up across a row only means something for cards.
+    person.entry_view = CARDS
+    person.save()
     long_entry, _ = save_entry(
         person, url="https://example.com/long", title=LONG_TITLE, notes="Long notes."
     )
