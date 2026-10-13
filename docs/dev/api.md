@@ -481,7 +481,17 @@ or says `null`:
 
 The bytes never appear in JSON. `url` is an address to fetch, and it
 answers only to the account that owns the entry, so send your
-credentials with it as you would anywhere else.
+credentials with it as you would anywhere else — a bearer token or a
+session. It sits outside `/api/`, but a bad token there is still
+**401** with `HRC-AUTH-0004`, and somebody else's entry is **404**.
+
+```bash
+curl https://hrcek.example.com/entries/1/image/ \
+  -H "Authorization: Bearer $HRCEK_TOKEN" -o picture.webp
+```
+
+An `Accept` header naming `image/avif` gets AVIF; anything else gets
+WebP. A picture in a collection that shares pictures answers to anybody.
 
 ### Giving an address
 

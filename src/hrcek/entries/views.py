@@ -14,6 +14,7 @@ from django.http import (
     HttpRequest,
     HttpResponse,
     HttpResponseNotModified,
+    JsonResponse,
 )
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -22,7 +23,9 @@ from django.utils.translation import gettext as _
 from django.utils.translation import ngettext
 from django.views.decorators.http import require_http_methods
 
+from hrcek.accounts.auth import bearer_user
 from hrcek.accounts.models import User
+from hrcek.api import error_payload
 from hrcek.collections.models import Collection, CollectionEntry
 from hrcek.collections.services import (
     add_entry,
@@ -32,6 +35,7 @@ from hrcek.collections.services import (
     remove_entry,
 )
 from hrcek.core import listing
+from hrcek.core.errors import HrcekError
 from hrcek.core.htmx import htmx_redirect, is_htmx, vary_on_htmx
 from hrcek.core.navigation import safe_next
 from hrcek.entries import imaging
@@ -519,13 +523,26 @@ def entry_image(request: HttpRequest, pk: int) -> HttpResponse:
     Served by Django rather than off the web server's disk, because an
     unguessable filename is not access control. Somebody else's private
     entry is a 404, never a 403, which would confirm that it exists.
+
+    The API hands this address out as an entry's `image.url`, so it
+    takes an API token as well as a session. The token is asked about
+    first, and a bad one is refused in the API's error envelope, as the
+    API itself would. A good one lasts this request only: nobody is
+    signed in by it.
     """
+    try:
+        user = bearer_user(request) or request.user
+    except HrcekError as error:
+        return JsonResponse(
+            error_payload(error.error_code), status=error.error_code.http_status
+        )
+
     image = get_object_or_404(EntryImage, entry__pk=pk)
     public = image.entry.is_publicly_visible()
     if not public:
-        if not request.user.is_authenticated:
+        if not user.is_authenticated:
             return redirect_to_login(request.get_full_path())
-        if image.entry.owner_id != request.user.pk:
+        if image.entry.owner_id != user.pk:
             raise Http404
 
     # AVIF is small but not universal; anything that does not ask for it

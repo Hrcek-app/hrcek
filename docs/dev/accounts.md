@@ -72,6 +72,13 @@ Ninja's own errors are mapped onto our contract: `AuthenticationError`
 becomes `HRC-AUTH-0003`, and the bare `HttpError(403, "CSRF check
 Failed")` becomes `HRC-AUTH-0005`.
 
+One plain Django view takes a token too: the entry picture, whose
+address the API hands out as `image.url`. It has no ninja auth chain,
+so it calls `accounts.auth.bearer_user`, which shares `token_user` with
+`ApiTokenAuth`: the same lookup, the same `HRC-AUTH-0004` for a bad
+token, the same `last_used_at` bookkeeping. See
+[images](images.md#who-may-see-a-picture).
+
 **Accepted risk: login is not CSRF-protected.** `POST /api/auth/login`
 uses `auth=None`, so ninja performs no CSRF check on it. A cross-site
 form could log somebody into an account the attacker controls; it

@@ -131,6 +131,13 @@ Two consequences, both deliberate:
   asked on every request, so turning `show_images` off, or making the
   collection private, refuses the very next one.
 
+"The requester" is whoever a session or an API token says it is: the
+API hands this address out as `image.url`, so an API client must be
+able to fetch it. A bearer token is asked about first, through
+`accounts.auth.bearer_user`; a bad one is a **401** in the API's error
+envelope (`HRC-AUTH-0004`), even for a public picture, as the API
+itself would answer. A good one lasts the request and signs nobody in.
+
 A request for a private picture from somebody signed out is redirected
 to sign in; from another account it is a **404, never a 403** — a 403
 would confirm that the entry exists.
