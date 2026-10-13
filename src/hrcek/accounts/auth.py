@@ -27,31 +27,51 @@ from hrcek.accounts.models import ApiToken, User
 from hrcek.core.errors import HrcekError
 
 
+def token_user(request: HttpRequest, token: str) -> User | None:
+    """The account behind *token*, or None if the token is not ours.
+
+    A token of ours that is unknown, revoked or expired, or whose
+    account is inactive, raises rather than returning None: a client
+    that sent one should hear that it is bad, not that it sent nothing.
+    """
+    if not token.startswith(ApiToken.TOKEN_PREFIX):
+        # Not ours; let the next authenticator have a look.
+        return None
+
+    api_token = (
+        ApiToken.objects.select_related("user")
+        .filter(token_hash=ApiToken.hash_token(token))
+        .first()
+    )
+    if api_token is None or not api_token.is_usable or not api_token.user.is_active:
+        raise HrcekError(INVALID_API_TOKEN)
+
+    api_token.touch()
+    request.user = api_token.user
+    # Remembered so an endpoint can refuse to act on a token's word
+    # alone: minting tokens is the one thing a token may not do.
+    # HttpRequest carries no such field, hence the silenced check.
+    request.authenticated_by_token = True  # ty: ignore[unresolved-attribute]
+    return api_token.user
+
+
+def bearer_user(request: HttpRequest) -> User | None:
+    """`token_user` for a plain Django view, which has no ninja auth.
+
+    None when the request carries no bearer token of ours, so the view
+    falls back to the session.
+    """
+    scheme, _, token = request.headers.get("authorization", "").partition(" ")
+    if scheme.lower() != "bearer":
+        return None
+    return token_user(request, token.strip())
+
+
 class ApiTokenAuth(HttpBearer):
     """Authenticate `Authorization: Bearer hrcek_...`."""
 
     def authenticate(self, request: HttpRequest, token: str) -> User | None:
-        if not token.startswith(ApiToken.TOKEN_PREFIX):
-            # Not ours; let the next authenticator have a look.
-            return None
-
-        api_token = (
-            ApiToken.objects.select_related("user")
-            .filter(token_hash=ApiToken.hash_token(token))
-            .first()
-        )
-        if api_token is None or not api_token.is_usable or not api_token.user.is_active:
-            # A token was presented and it is bad. Say so, rather than
-            # falling through to "authentication required".
-            raise HrcekError(INVALID_API_TOKEN)
-
-        api_token.touch()
-        request.user = api_token.user
-        # Remembered so an endpoint can refuse to act on a token's word
-        # alone: minting tokens is the one thing a token may not do.
-        # HttpRequest carries no such field, hence the silenced check.
-        request.authenticated_by_token = True  # ty: ignore[unresolved-attribute]
-        return api_token.user
+        return token_user(request, token)
 
 
 class SessionAuth(NinjaSessionAuth):

@@ -12,7 +12,7 @@ from django.urls import reverse
 from django.utils import timezone
 from PIL import Image
 
-from hrcek.accounts.models import User
+from hrcek.accounts.models import ApiToken, User
 from hrcek.entries.models import Entry, EntryImage
 
 pytestmark = pytest.mark.django_db
@@ -78,6 +78,48 @@ def test_an_entry_without_an_image_is_a_404(client, nina):
     bare = Entry.objects.create(owner=nina, url="https://example.com/nothing")
     client.force_login(nina)
     assert client.get(_url(bare)).status_code == 404
+
+
+def _bearer(user):
+    _, raw = ApiToken.issue(user, name="phone")
+    return {"authorization": f"Bearer {raw}"}
+
+
+def test_the_owner_gets_the_image_with_an_api_token(client, nina, entry):
+    # The address is what the API hands out as `image.url`, so an API
+    # client must be able to fetch it with the same credentials.
+    response = client.get(_url(entry), headers={"accept": AVIF, **_bearer(nina)})
+    assert response.status_code == 200
+    assert response["content-type"] == "image/avif"
+    assert "private" in response["cache-control"]
+
+
+def test_somebody_elses_token_gets_a_404(client, entry):
+    marko = _person("marko@example.com")
+    assert client.get(_url(entry), headers=_bearer(marko)).status_code == 404
+
+
+def test_a_bad_token_is_refused_in_the_error_envelope(client, entry):
+    response = client.get(_url(entry), headers={"authorization": "Bearer hrcek_nope"})
+    assert response.status_code == 401
+    assert response.json()["error"]["code"] == "HRC-AUTH-0004"
+
+
+def test_a_revoked_token_is_refused(client, nina, entry):
+    headers = _bearer(nina)
+    ApiToken.objects.update(revoked_at=timezone.now())
+    assert client.get(_url(entry), headers=headers).status_code == 401
+
+
+def test_using_a_token_here_counts_as_using_it(client, nina, entry):
+    headers = _bearer(nina)
+    client.get(_url(entry), headers=headers)
+    assert ApiToken.objects.get().last_used_at is not None
+
+
+def test_a_token_does_not_sign_anybody_in(client, nina, entry):
+    client.get(_url(entry), headers=_bearer(nina))
+    assert client.get(_url(entry)).status_code == 302
 
 
 def test_an_older_browser_gets_webp(client, nina, entry):
