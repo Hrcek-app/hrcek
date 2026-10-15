@@ -650,7 +650,7 @@ last entry using one lets it go.
 up. Useful for monitoring.
 
 ```json
-{"status": "ok", "service": "hrcek", "version": "0.1.0",
+{"status": "ok", "service": "hrcek", "version": "0.2.0",
  "message": "Service is running."}
 ```
 

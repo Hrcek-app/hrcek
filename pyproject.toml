@@ -1,6 +1,6 @@
 [project]
 name = "hrcek"
-version = "0.1.0"
+version = "0.2.0"
 description = "Save references to interesting content found on the web"
 readme = "README.md"
 requires-python = ">=3.13"

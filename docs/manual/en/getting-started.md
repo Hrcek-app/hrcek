@@ -16,7 +16,7 @@ If you want to check the service itself rather than sign in, open
 {
   "status": "ok",
   "service": "hrcek",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "message": "Service is running."
 }
 ```

@@ -18,7 +18,7 @@ def test_health_endpoint_reports_ok(client):
     body = response.json()
     assert body["status"] == "ok"
     assert body["service"] == "hrcek"
-    assert body["version"] == "0.1.0"
+    assert body["version"] == "0.2.0"
     assert body["message"]
 
 

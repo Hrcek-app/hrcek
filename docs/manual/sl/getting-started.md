@@ -1,4 +1,4 @@
-<!-- translated from en/getting-started.md at d806cf230d8a -->
+<!-- translated from en/getting-started.md at 3c9b6bdc893b -->
 # Prvi koraki
 
 Hrček teče kot majhna spletna storitev na računalniku, ki ga nadzorujete
@@ -18,7 +18,7 @@ za prijavo, nad njim pa Hrčkovega hrčka.
 {
   "status": "ok",
   "service": "hrcek",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "message": "Storitev deluje."
 }
 ```
