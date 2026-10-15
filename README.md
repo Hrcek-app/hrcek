@@ -4,11 +4,13 @@
   <img src="src/hrcek/core/static/img/hrcek.png" alt="" width="160">
 </p>
 
-Hrček — a tool for saving interesting online content.
+Hrček — a simple bookmark manager with wish lists.
 
-A small, self-hosted service for storing references to things you find
-on the web. Built for family-scale use: SQLite, one process, no moving
-parts you have to babysit.
+A small, self-hosted service for saving links to things you find on the
+web. Gather them into collections, share those by link or publicly, and
+turn any of them into a wish list your family can mark gifts off
+without spoiling the surprise. Built for family-scale use: SQLite, one
+process, no moving parts you have to babysit.
 
 **NOTE: This is intended to be a usable experiment. Its author plans
 to use it, but it is also a learning project for tools and processes
@@ -16,12 +18,16 @@ with corresponding lack of any guarantees.**
 
 ## Status
 
-Early. Accounts work — invitations, gated self-signup, email
-confirmation, password reset, and API authentication by session or
-bearer token. People can manage their own display name, email address,
-password and API tokens, and save entries with tags, their own custom
-fields and a picture from the web or the API. Shared collections are
-still to come.
+Early, but usable. Accounts work — invitations, gated self-signup,
+email confirmation, password reset, and API authentication by session
+or bearer token. People save entries with labels, their own custom
+fields and a picture, from the web, the API, the
+[browser extension](https://github.com/Hrcek-app/hrcek-extension) or
+the [iOS app](https://github.com/Hrcek-app/hrcek-ios). They gather
+entries into collections — by hand or by label — and keep each one
+private, share it by link or make it public, with a feed. Any of them
+can become a wish list. The interface is in English and
+Slovenian.
 
 ## Documentation
 
