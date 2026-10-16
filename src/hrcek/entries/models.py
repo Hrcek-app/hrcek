@@ -291,9 +291,7 @@ class FieldDefinition(models.Model):
         (CHOICE, _("choice")),
     ]
 
-    # A choice field needs options, and there is no interface for editing
-    # them. It exists for the seeded priority and nothing else.
-    CREATABLE_KINDS = (TEXT, NUMBER)
+    CREATABLE_KINDS = (TEXT, NUMBER, CHOICE)
 
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,

@@ -1,0 +1,30 @@
+{% extends "base.html" %}{% load i18n %}
+{% block heading %}{% trans "Remove options that are in use?" %}{% endblock %}
+{% block content %}
+  <p>{{ definition.name }}</p>
+  <ul class="stacked">
+    {% for option, count in affected.items %}
+      <li>{% blocktrans count counter=count %}“{{ option }}”: {{ counter }} entry{% plural %}“{{ option }}”: {{ counter }} entries{% endblocktrans %}</li>
+    {% endfor %}
+  </ul>
+  <p>{% blocktrans count counter=total %}This will clear the field on {{ counter }} entry.{% plural %}This will clear the field on {{ counter }} entries.{% endblocktrans %}</p>
+  <p>{% trans "This cannot be undone." %}</p>
+  {% comment %}
+    Everything the editor held rides along, so confirming saves exactly
+    that, and going back draws it again as it was left.
+  {% endcomment %}
+  <form method="post" action="{% url 'entries:field_options' definition.pk %}">
+    {% csrf_token %}
+    <input type="hidden" name="known" value="{{ known_json }}">
+    <input type="hidden" name="confirmed" value="1">
+    <input type="hidden" name="name" value="{{ name }}">
+    {% for row in rows %}
+      <input type="hidden" name="option" value="{{ row.text }}">
+      <input type="hidden" name="original" value="{{ row.original }}">
+    {% endfor %}
+    <div class="actions">
+      <button type="submit" name="op" value="save" class="danger">{% trans "Yes, remove them" %}</button>
+      <button type="submit" name="op" value="back" class="secondary">{% trans "Go back" %}</button>
+    </div>
+  </form>
+{% endblock %}

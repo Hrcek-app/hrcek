@@ -1,10 +1,23 @@
-{% extends "base.html" %}{% load i18n %}
-{% block heading %}{% trans "Rename this field" %}{% endblock %}
+{% extends "base.html" %}{% load i18n static %}
+{% block head %}{% if definition.kind == "choice" %}
+  <script src="{% static 'js/unsaved.js' %}" defer></script>
+  <script src="{% static 'js/options-editor.js' %}" defer></script>
+{% endif %}{% endblock %}
+{% block heading %}{% trans "Edit this field" %}{% endblock %}
 {% block content %}
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">{% trans "Save the name" %}</button>
-  </form>
+  {% if definition.kind == "choice" %}
+    {% comment %}
+      One form for the name and the options, so that neither is lost
+      while the other is being changed or saved.
+    {% endcomment %}
+    {% include "entries/_options_editor.html" %}
+  {% else %}
+    <form method="post" action="{% url 'entries:field_edit' definition.pk %}">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">{% trans "Save the name" %}</button>
+    </form>
+  {% endif %}
+
   <p><a href="{% url 'entries:fields' %}">{% trans "Back to your fields" %}</a></p>
 {% endblock %}

@@ -1,0 +1,50 @@
+{% load i18n %}
+{% comment %}
+  A choice field's name and options, in one form. Every button submits
+  the whole form to field_options, so a round trip without JavaScript
+  carries everything typed; only "save" writes. js/options-editor.js runs the other buttons
+  in place instead, using the data-say-* and data-label-* strings, in
+  which {option}, {position} and {total} are filled in. See
+  docs/dev/entries.md and docs/dev/javascript.md.
+{% endcomment %}
+<form method="post" action="{% url 'entries:field_options' definition.pk %}"
+        data-options-editor data-guard-unsaved{% if dirty %} data-unsaved="true"{% endif %}
+        data-label-option="{% trans "Option {position}" %}"
+        data-label-up="{% trans "Move “{option}” up" %}"
+        data-label-down="{% trans "Move “{option}” down" %}"
+        data-label-remove="{% trans "Remove “{option}”" %}"
+        data-say-added="{% trans "“{option}” added." %}"
+        data-say-removed="{% trans "“{option}” removed." %}"
+        data-say-moved="{% trans "“{option}” moved to position {position} of {total}." %}">
+    {% csrf_token %}
+    <input type="hidden" name="known" value="{{ known_json }}">
+    {% comment %}
+      Enter in a text box presses the form's first submit button. Without
+      this one, that would be the first row's "move up".
+    {% endcomment %}
+    <button type="submit" name="op" value="save" class="sr-only" tabindex="-1" aria-hidden="true">{% trans "Save" %}</button>
+    {{ form.as_p }}
+    <section aria-labelledby="options-heading">
+      <h2 id="options-heading">{% trans "Options" %}</h2>
+      <p class="text-sm text-muted">{% trans "The entry form lists them in this order. Changing an option's text changes it on every entry that has it." %}</p>
+      {% if option_errors %}
+        <ul class="errorlist">
+          {% for error in option_errors %}<li>{{ error }}</li>{% endfor %}
+        </ul>
+      {% endif %}
+      <ol class="options-list">
+        {% for row in rows %}
+          {% include "entries/_option_row.html" with first=forloop.first last=forloop.last %}
+        {% endfor %}
+      </ol>
+      <template data-option-template>{% include "entries/_option_row.html" with row=None %}</template>
+      <p class="option-add">
+        <label for="new-option">{% trans "New option" %}</label>
+        <input type="text" id="new-option" name="new_option" value="{{ new_option }}" maxlength="100">
+        <button type="submit" name="op" value="add" class="secondary">{% trans "Add" %}</button>
+      </p>
+    </section>
+    <div class="actions">
+      <button type="submit" name="op" value="save">{% trans "Save" %}</button>
+    </div>
+  </form>

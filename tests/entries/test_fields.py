@@ -134,9 +134,9 @@ def test_deleting_an_entry_removes_its_values(nina):
     assert FieldValue.objects.count() == 0
 
 
-def test_only_text_and_number_are_offered_for_new_fields():
+def test_every_kind_is_offered_for_new_fields():
     assert FieldDefinition.CREATABLE_KINDS == (
         FieldDefinition.TEXT,
         FieldDefinition.NUMBER,
+        FieldDefinition.CHOICE,
     )
-    assert FieldDefinition.CHOICE not in FieldDefinition.CREATABLE_KINDS

@@ -213,19 +213,51 @@ currency in its name — "Price in EUR" — so it says what it means.
 
 ### Adding one
 
-A field has a name and a kind. The kind is either **text**, which takes
-anything, or **number**, which takes only a number — so that a price of
-"about fifty" is caught when you type it, rather than found later.
+A field has a name and a kind. The kind is one of:
+
+- **text**, which takes anything;
+- **number**, which takes only a number — so that a price of "about
+  fifty" is caught when you type it, rather than found later;
+- **choice**, which takes one of a list of options you set, offered as
+  a drop-down on the entry form.
 
 **The kind cannot be changed afterwards.** A number field full of
 numbers cannot become a text field without deciding what happens to
 every value, so Hrček does not offer it. If you picked the wrong kind,
 delete the field and add it again.
 
-Priority is the one field you cannot recreate: its list of three
-choices is set when your account is made, and the form for adding a
-field does not offer lists. Delete it and it is gone for good. Renaming
-it is safe — it keeps its choices.
+### A choice field's options
+
+Adding a choice field takes you straight to its page, to give it some
+options. Until it has at least one, it does not appear on the entry
+form. You reach the same page later with **Edit** on "Your fields".
+
+Each option is a line with its own buttons:
+
+- **↑** and **↓** move it up and down. The entry form lists the
+  options in this order. With JavaScript you can also drag an option
+  by the handle at its left.
+- **×** removes it.
+- Changing its text renames it, and every entry that had the old text
+  gets the new one.
+
+Type a new option in the box below the list and press **Add**. The
+field's name is on the same page, and nothing — name or options — is
+kept until you press **Save**.
+
+Beside each option you see how many entries use it. Removing one that
+no entry uses happens quietly when you save. Removing one that entries
+do use asks first, and says how many entries it is: confirm, and those
+entries no longer have a value for this field. **Go back** returns you
+to the list as you left it.
+
+Two options cannot differ only in capital letters, an option is at most
+100 characters long, and a choice field keeps at least one option.
+
+If the options were changed somewhere else while you were editing them —
+in another tab, say — saving stops and tells you so. Your changes are
+still there, with the other ones added; look the list over and save
+again.
 
 ### Filling one in
 

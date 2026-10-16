@@ -1,6 +1,6 @@
 from django.urls import path
 
-from hrcek.entries import in_collections, labels, views
+from hrcek.entries import field_options, in_collections, labels, views
 
 app_name = "entries"
 
@@ -25,5 +25,10 @@ urlpatterns = [
     path("<int:pk>/image/", views.entry_image, name="image"),
     path("fields/", views.field_list, name="fields"),
     path("fields/<int:pk>/edit/", views.field_edit, name="field_edit"),
+    path(
+        "fields/<int:pk>/options/",
+        field_options.field_options,
+        name="field_options",
+    ),
     path("fields/<int:pk>/delete/", views.field_delete, name="field_delete"),
 ]
