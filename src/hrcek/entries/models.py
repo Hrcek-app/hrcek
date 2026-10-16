@@ -277,8 +277,8 @@ class EntryImage(models.Model):
 class FieldDefinition(models.Model):
     """A field somebody has decided their entries should carry.
 
-    Every account starts with Price and Priority, but nothing marks them
-    as special: they can be renamed or deleted like any other.
+    Every account starts with Priority, but nothing marks it as special:
+    it can be renamed, deleted or given other options like any other.
     """
 
     TEXT = "text"

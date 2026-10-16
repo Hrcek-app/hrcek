@@ -95,16 +95,24 @@ to an integer. There is a test for each case.
 
 ### Seeding
 
-Every account starts with **Price** (number) and **Priority** (choice:
-high, medium, low). A `post_save` receiver seeds new accounts and a data
-migration covered the ones that already existed. Both are idempotent, so
-running either again changes nothing.
+Every account starts with **Priority** (choice: high, medium, low). A
+`post_save` receiver seeds new accounts and a data migration covered the
+ones that already existed. Both are idempotent, so running either again
+changes nothing.
 
-They are **ordinary rows**: no flag marks them as built in, and they can
-be renamed or deleted like any other. This is deliberate — a special
+**Price** (number) was seeded too, at first. It was withdrawn because a
+price means little without a currency, and carrying a currency needs a
+field type Hrček does not have. Migration 0005 deleted the seeded Price
+from accounts where it was untouched: still named Price, still a
+number, and holding no values. A Price somebody had renamed, retyped or
+filled in was theirs by then, and was kept.
+
+Seeded fields are **ordinary rows**: no flag marks them as built in.
+They can be renamed or deleted like any other, and Priority's options
+can be edited like any choice field's. This is deliberate — a special
 case would have to be defended everywhere a field is read.
 
-Their names are **data, not interface**, and are therefore not
+Seeded names are **data, not interface**, and are therefore not
 translated. A name that changed with the interface language would be two
 different fields to the API, and there would be no sensible answer to
 what happens when somebody renames one and then switches language.
