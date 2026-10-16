@@ -563,8 +563,9 @@ All of them are 422, in the usual envelope. Full text in
 ## What this account has defined
 
 Two read-only calls, so a client can fit its own interface to whoever
-is using it. Both are created and renamed through the web pages; there
-is no way to change them here.
+is using it. Both are created, renamed and deleted through the web
+pages, where a choice field's options are edited too; there is no way
+to change them here.
 
 ### GET /api/fields/
 
@@ -588,7 +589,9 @@ a choice field, where it is the only way to know what the choices are.
 **`name` is the key**: it is what an entry's `fields` object uses, so
 what you read here is what you write back. Do not hard-code these —
 they are renamed and deleted by their owner, and every account starts
-with its own copy.
+with its own copy. Nor the `options`: their owner adds, removes,
+renames and reorders them, and a renamed option is renamed on every
+entry that had it.
 
 ### GET /api/labels/
 
