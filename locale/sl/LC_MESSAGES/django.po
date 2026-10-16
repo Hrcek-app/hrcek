@@ -1071,6 +1071,7 @@ msgstr ""
 #: src/hrcek/collections/templates/collections/confirm_delete.html
 #: src/hrcek/entries/templates/entries/confirm_delete.html
 #: src/hrcek/entries/templates/entries/field_confirm_delete.html
+#: src/hrcek/entries/templates/entries/field_confirm_options.html
 msgid "This cannot be undone."
 msgstr "Tega ni mogoče razveljaviti."
 
@@ -1089,6 +1090,7 @@ msgid "Keep it"
 msgstr "Obdrži"
 
 #: src/hrcek/collections/templates/collections/detail.html
+#: src/hrcek/entries/templates/entries/fields.html
 #: src/hrcek/entries/templates/entries/list.html
 msgid "Edit"
 msgstr "Uredi"
@@ -1201,6 +1203,7 @@ msgstr ""
 "vedno prikazana."
 
 #: src/hrcek/collections/templates/collections/form.html
+#: src/hrcek/entries/templates/entries/_options_editor.html
 #: src/hrcek/entries/templates/entries/form.html
 msgid "Save"
 msgstr "Shrani"
@@ -1469,6 +1472,20 @@ msgstr "Odjava"
 msgid "Dark theme"
 msgstr "Temna tema"
 
+#: src/hrcek/entries/choice_options.py
+#, python-format
+msgid "“%(option)s” is longer than %(limit)d characters."
+msgstr "»%(option)s« je daljša od %(limit)d znakov."
+
+#: src/hrcek/entries/choice_options.py
+#, python-format
+msgid "“%(option)s” is in the list twice."
+msgstr "»%(option)s« je na seznamu dvakrat."
+
+#: src/hrcek/entries/choice_options.py
+msgid "A choice field needs at least one option."
+msgstr "Polje z izbiro potrebuje vsaj eno možnost."
+
 #: src/hrcek/entries/errors.py
 msgid "Too many entries in one request."
 msgstr "Preveč vnosov v enem zahtevku."
@@ -1500,6 +1517,19 @@ msgstr "Ta naslov kaže nekam, kamor Hrček ne gre."
 #: src/hrcek/entries/errors.py
 msgid "That image could not be fetched."
 msgstr "Te slike ni bilo mogoče prenesti."
+
+#: src/hrcek/entries/field_options.py
+msgid ""
+"These options were changed somewhere else, perhaps in another tab. Your "
+"changes are kept and the others added; please check the list and save again."
+msgstr ""
+"Te možnosti so bile medtem spremenjene drugje, morda v drugem zavihku. Vaše "
+"spremembe ostanejo, druge so dodane zraven; preglejte seznam in ga shranite "
+"znova."
+
+#: src/hrcek/entries/field_options.py
+msgid "Field saved."
+msgstr "Polje shranjeno."
 
 #: src/hrcek/entries/forms.py
 msgid "Separated by commas."
@@ -1735,8 +1765,93 @@ msgid "New label"
 msgstr "Nova oznaka"
 
 #: src/hrcek/entries/templates/entries/_entry_labels.html
+#: src/hrcek/entries/templates/entries/_options_editor.html
 msgid "Add"
 msgstr "Dodaj"
+
+#: src/hrcek/entries/templates/entries/_option_row.html
+#, python-format
+msgid "Option %(position)s"
+msgstr "Možnost %(position)s"
+
+#: src/hrcek/entries/templates/entries/_option_row.html
+#, python-format
+msgid "Move “%(option)s” up"
+msgstr "Premakni »%(option)s« gor"
+
+#: src/hrcek/entries/templates/entries/_option_row.html
+#, python-format
+msgid "Move “%(option)s” down"
+msgstr "Premakni »%(option)s« dol"
+
+#: src/hrcek/entries/templates/entries/_option_row.html
+#, python-format
+msgid "Remove “%(option)s”"
+msgstr "Odstrani »%(option)s«"
+
+#: src/hrcek/entries/templates/entries/_option_row.html
+#, python-format
+msgid "used by %(counter)s entry"
+msgid_plural "used by %(counter)s entries"
+msgstr[0] "uporabljena v %(counter)s vnosu"
+msgstr[1] "uporabljena v %(counter)s vnosih"
+msgstr[2] "uporabljena v %(counter)s vnosih"
+msgstr[3] "uporabljena v %(counter)s vnosih"
+
+#: src/hrcek/entries/templates/entries/_option_row.html
+msgid "not used"
+msgstr "ni uporabljena"
+
+#: src/hrcek/entries/templates/entries/_options_editor.html
+#, python-brace-format
+msgid "Option {position}"
+msgstr "Možnost {position}"
+
+#: src/hrcek/entries/templates/entries/_options_editor.html
+#, python-brace-format
+msgid "Move “{option}” up"
+msgstr "Premakni »{option}« gor"
+
+#: src/hrcek/entries/templates/entries/_options_editor.html
+#, python-brace-format
+msgid "Move “{option}” down"
+msgstr "Premakni »{option}« dol"
+
+#: src/hrcek/entries/templates/entries/_options_editor.html
+#, python-brace-format
+msgid "Remove “{option}”"
+msgstr "Odstrani »{option}«"
+
+#: src/hrcek/entries/templates/entries/_options_editor.html
+#, python-brace-format
+msgid "“{option}” added."
+msgstr "»{option}« dodana."
+
+#: src/hrcek/entries/templates/entries/_options_editor.html
+#, python-brace-format
+msgid "“{option}” removed."
+msgstr "»{option}« odstranjena."
+
+#: src/hrcek/entries/templates/entries/_options_editor.html
+#, python-brace-format
+msgid "“{option}” moved to position {position} of {total}."
+msgstr "»{option}« premaknjena na mesto {position} od {total}."
+
+#: src/hrcek/entries/templates/entries/_options_editor.html
+msgid "Options"
+msgstr "Možnosti"
+
+#: src/hrcek/entries/templates/entries/_options_editor.html
+msgid ""
+"The entry form lists them in this order. Changing an option's text changes "
+"it on every entry that has it."
+msgstr ""
+"Obrazec vnosa jih ponudi v tem vrstnem redu. Če spremenite besedilo "
+"možnosti, se spremeni v vseh vnosih, ki jo imajo."
+
+#: src/hrcek/entries/templates/entries/_options_editor.html
+msgid "New option"
+msgstr "Nova možnost"
 
 #: src/hrcek/entries/templates/entries/_tags_sidebar.html
 msgid "All entries"
@@ -1771,9 +1886,39 @@ msgstr[3] ""
 msgid "No entry has a value for this field."
 msgstr "Noben vnos nima vrednosti za to polje."
 
+#: src/hrcek/entries/templates/entries/field_confirm_options.html
+msgid "Remove options that are in use?"
+msgstr "Odstranim možnosti, ki so v rabi?"
+
+#: src/hrcek/entries/templates/entries/field_confirm_options.html
+#, python-format
+msgid "“%(option)s”: %(counter)s entry"
+msgid_plural "“%(option)s”: %(counter)s entries"
+msgstr[0] "»%(option)s«: %(counter)s vnos"
+msgstr[1] "»%(option)s«: %(counter)s vnosa"
+msgstr[2] "»%(option)s«: %(counter)s vnosi"
+msgstr[3] "»%(option)s«: %(counter)s vnosov"
+
+#: src/hrcek/entries/templates/entries/field_confirm_options.html
+#, python-format
+msgid "This will clear the field on %(counter)s entry."
+msgid_plural "This will clear the field on %(counter)s entries."
+msgstr[0] "S tem bo polje izpraznjeno v %(counter)s vnosu."
+msgstr[1] "S tem bo polje izpraznjeno v %(counter)s vnosih."
+msgstr[2] "S tem bo polje izpraznjeno v %(counter)s vnosih."
+msgstr[3] "S tem bo polje izpraznjeno v %(counter)s vnosih."
+
+#: src/hrcek/entries/templates/entries/field_confirm_options.html
+msgid "Yes, remove them"
+msgstr "Da, odstrani jih"
+
+#: src/hrcek/entries/templates/entries/field_confirm_options.html
+msgid "Go back"
+msgstr "Nazaj"
+
 #: src/hrcek/entries/templates/entries/field_form.html
-msgid "Rename this field"
-msgstr "Preimenovanje polja"
+msgid "Edit this field"
+msgstr "Urejanje polja"
 
 #: src/hrcek/entries/templates/entries/field_form.html
 msgid "Save the name"
@@ -1790,10 +1935,6 @@ msgid ""
 msgstr ""
 "Polja so dodatne stvari, ki jih želite zabeležiti o vnosu, poleg naslova, "
 "naziva in zapiskov."
-
-#: src/hrcek/entries/templates/entries/fields.html
-msgid "Rename"
-msgstr "Preimenuj"
 
 #: src/hrcek/entries/templates/entries/fields.html
 msgid "You have no fields."
@@ -1921,6 +2062,10 @@ msgstr[3] "%(count)d zbirk je zdaj praznih."
 #: src/hrcek/entries/views.py
 msgid "Deleted."
 msgstr "Izbrisano."
+
+#: src/hrcek/entries/views.py
+msgid "Field added. Now give it some options."
+msgstr "Polje dodano. Zdaj mu dodajte možnosti."
 
 #: src/hrcek/entries/views.py
 msgid "Field added."

@@ -609,6 +609,58 @@ collection" heading (`tabindex="-1"`,
 `data-focus-after-delete-fallback`), which sits right above the empty
 state.
 
+## Editing a list in place: `js/options-editor.js`
+
+A choice field's options (`entries/_options_editor.html`) are a list to
+add to, remove from and reorder. They are kept in one form, and every
+↑, ↓, × and Add is a submit button named `op` (`up:2`, `remove:0`,
+`add`). Without JavaScript each button posts the whole form, and
+`field_options` draws the changed list again without saving. Because
+everything typed rides along on every round trip, nothing is lost.
+Only `op=save` writes. The field's name is in the same form, so it
+travels with the options and neither can lose the other. This keeps one design for both, rather than a
+no-JavaScript version that a script would replace. Details are in
+[Entries](entries.md#editing-a-choice-fields-options).
+
+The script is not htmx. It handles a click on any of those buttons
+except `save` and `back`:
+
+- It calls `preventDefault` and changes the DOM: it moves the row,
+  removes it, or copies the row in `<template data-option-template>`.
+- It then works out every row's id, label, button `value` and
+  `aria-label` again from the row's position and text, and which of
+  ↑ and ↓ are disabled. Nothing is tracked separately, so nothing can
+  drift.
+
+Only Save reaches the server, and it is an ordinary form post.
+
+- **Focus.**
+  - A moved row keeps focus on the arrow just pressed. If that arrow
+    is now disabled, focus goes to the row's other arrow, because a
+    disabled button cannot hold focus.
+  - A removed row passes focus to the next row's ×, else to the
+    previous row's ×, else to the new-option box.
+  - Add leaves focus in the box, so the next option can be typed
+    straight away.
+- **Enter.**
+  - In the new-option box, Enter adds the option.
+  - In an option's own box, Enter saves. A visually hidden Save button
+    placed first in the form is what the browser presses on Enter;
+    without it, Enter would press the first row's ↑.
+  - Without JavaScript, Enter in the new-option box saves, and the
+    server keeps the typed option.
+- **Dragging** uses pointer events on `.option-handle` (`.js-only`,
+  `touch-action: none`). The row moves among its siblings as the
+  pointer passes their middles. ↑ and ↓ remain the keyboard's way to
+  reorder.
+- **Wording.** The form carries every string the script needs, already
+  translated, in its `data-label-*` and `data-say-*` attributes. The
+  script fills in `{option}`, `{position}` and `{total}`. What changed
+  is announced through `#status`.
+- **Unsaved changes.** The form is `data-guard-unsaved`. A list drawn
+  again after a round trip carries `data-unsaved="true"`, because it
+  differs from what is stored.
+
 ## Adding an enhancement
 
 1. Build and test the plain version: a link or a form, a view that

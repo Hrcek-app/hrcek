@@ -8,7 +8,7 @@
       {% for each in fields %}
         <li>
           {{ each.name }} <span class="kind">({{ each.get_kind_display }})</span>
-          <a href="{% url 'entries:field_edit' each.pk %}">{% trans "Rename" %}</a>
+          <a href="{% url 'entries:field_edit' each.pk %}">{% trans "Edit" %}</a>
           <a href="{% url 'entries:field_delete' each.pk %}">{% trans "Delete" %}</a>
         </li>
       {% endfor %}

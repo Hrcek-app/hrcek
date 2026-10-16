@@ -1,0 +1,19 @@
+{% load i18n %}
+{% comment %}
+  One option in the editor. Rendered with row=None inside a <template>
+  for js/options-editor.js to copy; the script then fills in the ids,
+  values and labels.
+{% endcomment %}
+<li class="option-row">
+  <span class="option-handle js-only" aria-hidden="true">⠿</span>
+  <label class="sr-only" for="option-{{ row.index }}">{% blocktrans with position=row.index|add:1 %}Option {{ position }}{% endblocktrans %}</label>
+  <input type="text" id="option-{{ row.index }}" name="option" value="{{ row.text }}" maxlength="100">
+  <input type="hidden" name="original" value="{{ row.original }}">
+  <button type="submit" name="op" value="up:{{ row.index }}" class="option-move"
+          aria-label="{% blocktrans with option=row.text %}Move “{{ option }}” up{% endblocktrans %}"{% if first %} disabled{% endif %}><span aria-hidden="true">↑</span></button>
+  <button type="submit" name="op" value="down:{{ row.index }}" class="option-move"
+          aria-label="{% blocktrans with option=row.text %}Move “{{ option }}” down{% endblocktrans %}"{% if last %} disabled{% endif %}><span aria-hidden="true">↓</span></button>
+  <button type="submit" name="op" value="remove:{{ row.index }}" class="option-remove"
+          aria-label="{% blocktrans with option=row.text %}Remove “{{ option }}”{% endblocktrans %}"><span aria-hidden="true">×</span></button>
+  <span class="option-used text-sm text-muted">{% if row.used is not None %}{% if row.used %}{% blocktrans count counter=row.used %}used by {{ counter }} entry{% plural %}used by {{ counter }} entries{% endblocktrans %}{% else %}{% trans "not used" %}{% endif %}{% endif %}</span>
+</li>

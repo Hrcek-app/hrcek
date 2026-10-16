@@ -417,6 +417,113 @@
     background-color: color-mix(in oklab, var(--color-edge) 50%, transparent);
   }
 
+  /* A choice field's options (entries/_options_editor.html): each row
+     its handle, its text box, then its buttons. How many entries use
+     it sits under the text box on a narrow screen, so it plainly
+     belongs to that row rather than floating between two, and at the
+     end of the row on a wider one. Columns are placed explicitly: the
+     handle is not there without JavaScript, and nothing else may move
+     into its place. */
+  ol.options-list,
+  form p.option-add {
+    max-inline-size: var(--container-2xl);
+  }
+  ol.options-list {
+    list-style: none;
+    padding: 0;
+    margin-block: calc(var(--spacing) * 4);
+  }
+  li.option-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) repeat(3, auto);
+    align-items: center;
+    column-gap: calc(var(--spacing) * 2);
+    padding-block: calc(var(--spacing) * 1);
+    border-radius: var(--radius-md);
+  }
+  li.option-row > .option-handle {
+    grid-column: 1;
+  }
+  form li.option-row > input[name="option"] {
+    grid-column: 2;
+    min-inline-size: 0;
+  }
+  li.option-row > .option-used {
+    grid-column: 2 / -1;
+  }
+  li.option-row > .option-used:empty {
+    display: none;
+  }
+  @media (width >= 40rem) {
+    li.option-row {
+      grid-template-columns: auto minmax(0, 1fr) repeat(3, auto) 9rem;
+    }
+    li.option-row > .option-used {
+      grid-column: 6;
+    }
+    li.option-row > .option-used:empty {
+      display: block;
+    }
+  }
+  button.option-move,
+  button.option-remove {
+    min-inline-size: 2.75rem;
+    min-block-size: 2.75rem;
+    padding: 0;
+    color: var(--color-ink);
+    background-color: transparent;
+    border: 1px solid var(--color-edge);
+  }
+  button.option-move:hover,
+  button.option-remove:hover {
+    background-color: color-mix(in oklab, var(--color-edge) 50%, transparent);
+  }
+  button.option-remove:hover {
+    color: var(--color-danger);
+  }
+  button.option-move:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+  button.option-move:disabled:hover {
+    background-color: transparent;
+  }
+  button.option-move:focus-visible,
+  button.option-remove:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 1px;
+  }
+  /* The drag handle (js/options-editor.js). touch-action: none, so a
+     finger on it drags the row rather than scrolling the page. */
+  .option-handle {
+    padding-inline: calc(var(--spacing) * 1);
+    color: var(--color-muted);
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+  }
+  li.option-row.dragging {
+    background-color: color-mix(in oklab, var(--color-edge) 40%, transparent);
+  }
+  li.option-row.dragging .option-handle {
+    cursor: grabbing;
+  }
+  form p.option-add {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(var(--spacing) * 2);
+  }
+  form p.option-add label {
+    flex-basis: 100%;
+    margin: 0;
+  }
+  form p.option-add input {
+    flex: 1 1 10rem;
+    inline-size: auto;
+    min-inline-size: 0;
+  }
+
   /* A question asked in place (confirm-dialog.js): the confirmation
      page's form, raised over the page it was asked from. */
   dialog {

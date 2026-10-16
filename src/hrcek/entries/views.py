@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from typing import cast
+from typing import Any, cast
 from urllib.parse import parse_qs, urlsplit
 
 from django.conf import settings
@@ -39,6 +39,7 @@ from hrcek.core.errors import HrcekError
 from hrcek.core.htmx import htmx_redirect, is_htmx, vary_on_htmx
 from hrcek.core.navigation import safe_next
 from hrcek.entries import imaging
+from hrcek.entries.field_options import editor_context
 from hrcek.entries.forms import EntryForm, FieldDefinitionForm
 from hrcek.entries.models import Entry, EntryImage, FieldDefinition, FieldValue, Tag
 from hrcek.entries.navigation import still_there
@@ -442,6 +443,11 @@ def field_list(request: HttpRequest) -> HttpResponse:
             definition = form.save(commit=False)
             definition.owner = owner
             definition.save()
+            if definition.kind == FieldDefinition.CHOICE:
+                # A choice field holds nothing until it has options, so
+                # the next thing to do is give it some.
+                messages.success(request, _("Field added. Now give it some options."))
+                return redirect("entries:field_edit", pk=definition.pk)
             messages.success(request, _("Field added."))
             return redirect("entries:fields")
     else:
@@ -468,11 +474,10 @@ def field_edit(request: HttpRequest, pk: int) -> HttpResponse:
     else:
         form = FieldDefinitionForm(owner, instance=definition)
 
-    return render(
-        request,
-        "entries/field_form.html",
-        {"form": form, "definition": definition},
-    )
+    context: dict[str, Any] = {"form": form, "definition": definition}
+    if definition.kind == FieldDefinition.CHOICE:
+        context |= editor_context(definition)
+    return render(request, "entries/field_form.html", context)
 
 
 @login_required

@@ -109,14 +109,69 @@ translated. A name that changed with the interface language would be two
 different fields to the API, and there would be no sensible answer to
 what happens when somebody renames one and then switches language.
 
-### Why `choice` cannot be created
+### Editing a choice field's options
 
-The kind exists in the model for the seeded priority and is not offered
-by the form. A choice field needs options, and there is no interface for
-editing them; offering the kind without that would produce a field that
-can hold nothing.
+`FieldDefinition.options` is a JSON list of strings. Its order is the
+order of the drop-down, and the order to sort by once anything sorts by
+a field. A choice value is stored as the option's own text in
+`value_text`, with no ids.
 
-Delete priority and it is gone for good. The manual says so plainly.
+A new choice field starts with no options. `field_list` sends you
+straight to its edit page to add some. Until it has at least one,
+`EntryForm` leaves it out, rather than showing an empty drop-down.
+
+A choice field's edit page is one form (`entries/_options_editor.html`)
+holding both the name and the options. It posts to `field_options`
+(`entries/field_options.py`). With two forms, saving or changing one
+would lose what was typed in the other. The name rides along on every
+round trip, and Save stores both in one transaction. The editor's state
+is a list of rows, and the pure parts live in `entries/choice_options.py`.
+
+- **Each row carries its original text** in a hidden `original` input
+  next to the editable `option`. The two are paired by position, and a
+  row added since the editor opened has an empty original. The
+  original is what makes changed text a rename, which carries the
+  stored values along. Without it, a change would look like an unrelated
+  removal and addition.
+- **Every button is a command.** `op` is `up:<i>`, `down:<i>`,
+  `remove:<i>`, `add`, `back` or `save`. Everything except `save`
+  answers with the edit page drawn again around the changed rows, and
+  saves nothing. `apply_op` returns the rows unchanged for an op that
+  makes no sense, such as an index out of range, because only a stale or
+  hand-made request sends one.
+- **Save** first adds whatever is still in the new-option box, so Enter
+  there without JavaScript keeps it. `plan_options` then:
+  1. refuses if the hidden `known` list differs from the stored options:
+     another tab changed them, and saving would silently undo that
+     change. Nothing typed is dropped. `merge_stale` keeps the
+     submitted rows and makes any row whose original has gone a new
+     row. It adds at the end the options that arrived elsewhere, and
+     leaves out the ones this editor removed. `known` becomes the
+     current list, so the next Save goes through;
+  2. strips each row and drops blank ones, so a blanked row that had an
+     original is a removal;
+  3. refuses duplicates in any case, text over 100 characters and an
+     empty list;
+  4. returns the new list, the renames, the removals and the removals
+     some entry still uses (`affected`).
+- **Removing a used option asks first.** If `affected` is not empty and
+  the post lacks `confirmed=1`, nothing is saved. The confirmation page
+  carries every row in hidden inputs. Confirming posts them again with
+  `confirmed=1`, and Go back (`op=back`) draws the editor as it was left.
+- **`save_options` is one transaction**, in this order:
+  1. It deletes the values of removed options. A rename may take over a
+     removed option's text, and the entries that held the removed option
+     must not end up holding it.
+  2. It renames the remaining values with a single `UPDATE … CASE`, so
+     swapping two names cannot collide halfway through.
+  3. It saves the list.
+
+A malformed post is handled without an error page, because Hrček has
+no translated 400 page. If there are fewer originals than rows, the
+extra rows are new. An unreadable `known` counts as stale.
+
+How the page acts in place with JavaScript is in
+[JavaScript](javascript.md#editing-a-list-in-place-jsoptions-editorjs).
 
 ### Why the kind is fixed after creation
 

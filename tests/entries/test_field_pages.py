@@ -84,16 +84,6 @@ def test_a_duplicate_name_is_refused_in_any_casing(client, nina):
     assert FieldDefinition.objects.filter(owner=nina).count() == 2
 
 
-def test_choice_cannot_be_created_through_the_form(client, nina):
-    # It exists in the model for the seeded priority, and nowhere else.
-    client.force_login(nina)
-    response = client.post(
-        reverse("entries:fields"), {"name": "Mood", "kind": "choice"}
-    )
-    assert response.status_code == 200
-    assert not FieldDefinition.objects.filter(owner=nina, name="Mood").exists()
-
-
 def test_a_field_can_be_renamed(client, nina):
     priority = FieldDefinition.objects.get(owner=nina, name="Priority")
     client.force_login(nina)

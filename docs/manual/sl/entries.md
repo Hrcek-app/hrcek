@@ -1,4 +1,4 @@
-<!-- translated from en/entries.md at 89b0a04fb720 -->
+<!-- translated from en/entries.md at 9d17fab4a5e6 -->
 # Shranjevanje
 
 Vnos je ena stvar, ki jo želite obdržati: stran, ki jo nameravate
@@ -203,19 +203,52 @@ bo jasno, kaj pomeni.
 
 ### Dodajanje polja
 
-Polje ima ime in vrsto. Vrsta je bodisi **besedilo**, ki sprejme karkoli,
-bodisi **število**, ki sprejme samo število — tako se cena »okoli
-petdeset« ujame že ob vpisu, ne šele pozneje.
+Polje ima ime in vrsto. Vrsta je ena od:
+
+- **besedilo**, ki sprejme karkoli;
+- **število**, ki sprejme samo število — tako se cena »okoli petdeset«
+  ujame že ob vpisu, ne šele pozneje;
+- **izbira**, ki sprejme eno od možnosti s seznama, ki ga določite sami;
+  na obrazcu vnosa je ponujena v spustnem seznamu.
 
 **Vrste pozneje ni mogoče spremeniti.** Številsko polje, polno števil,
 ne more postati besedilno, ne da bi se odločili, kaj se zgodi z vsako
 vrednostjo, zato Hrček tega ne ponuja. Če ste izbrali napačno vrsto,
 polje izbrišite in ga dodajte znova.
 
-Priority je edino polje, ki ga ne morete ustvariti znova: njegov seznam
-treh izbir se nastavi ob ustvarjanju računa, obrazec za dodajanje polja
-pa seznamov ne ponuja. Izbrišite ga in ga ni več. Preimenovanje je
-varno — izbire ostanejo.
+### Možnosti polja z izbiro
+
+Ko dodate polje z izbiro, vas Hrček odpelje naravnost na njegovo stran,
+da mu dodate možnosti. Dokler nima vsaj ene, se na obrazcu vnosa ne
+pokaže. Na isto stran pridete pozneje z **Uredi** na strani »Vaša
+polja«.
+
+Vsaka možnost je vrstica s svojimi gumbi:
+
+- **↑** in **↓** jo premakneta gor in dol. Obrazec vnosa ponudi možnosti
+  v tem vrstnem redu. Z JavaScriptom lahko možnost tudi povlečete za
+  ročico na njeni levi.
+- **×** jo odstrani.
+- Če spremenite njeno besedilo, jo preimenujete, in vsak vnos, ki je
+  imel staro besedilo, dobi novo.
+
+Novo možnost vpišite v polje pod seznamom in pritisnite **Dodaj**. Ime
+polja je na isti strani, in nič — ne ime ne možnosti — se ne shrani,
+dokler ne pritisnete **Shrani**.
+
+Ob vsaki možnosti piše, koliko vnosov jo uporablja. Možnost, ki je ne
+uporablja noben vnos, se ob shranjevanju odstrani brez vprašanj. Če jo
+vnosi uporabljajo, Hrček najprej vpraša in pove, koliko vnosov je to:
+potrdite, in ti vnosi za to polje nimajo več vrednosti. **Nazaj** vas
+vrne k seznamu, kakršnega ste pustili.
+
+Dve možnosti se ne smeta razlikovati le po velikih črkah, možnost je
+dolga največ 100 znakov, polje z izbiro pa obdrži vsaj eno možnost.
+
+Če je možnosti medtem, ko ste jih urejali, spremenil kdo drug — denimo
+v drugem zavihku — se shranjevanje ustavi in vam to pove. Vaše
+spremembe ostanejo, druge pa so dodane zraven; preglejte seznam in ga
+shranite znova.
 
 ### Izpolnjevanje polja
 

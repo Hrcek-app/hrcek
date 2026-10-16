@@ -1015,6 +1015,7 @@ msgstr ""
 #: src/hrcek/collections/templates/collections/confirm_delete.html
 #: src/hrcek/entries/templates/entries/confirm_delete.html
 #: src/hrcek/entries/templates/entries/field_confirm_delete.html
+#: src/hrcek/entries/templates/entries/field_confirm_options.html
 msgid "This cannot be undone."
 msgstr ""
 
@@ -1033,6 +1034,7 @@ msgid "Keep it"
 msgstr ""
 
 #: src/hrcek/collections/templates/collections/detail.html
+#: src/hrcek/entries/templates/entries/fields.html
 #: src/hrcek/entries/templates/entries/list.html
 msgid "Edit"
 msgstr ""
@@ -1135,6 +1137,7 @@ msgid ""
 msgstr ""
 
 #: src/hrcek/collections/templates/collections/form.html
+#: src/hrcek/entries/templates/entries/_options_editor.html
 #: src/hrcek/entries/templates/entries/form.html
 msgid "Save"
 msgstr ""
@@ -1387,6 +1390,20 @@ msgstr ""
 msgid "Dark theme"
 msgstr ""
 
+#: src/hrcek/entries/choice_options.py
+#, python-format
+msgid "“%(option)s” is longer than %(limit)d characters."
+msgstr ""
+
+#: src/hrcek/entries/choice_options.py
+#, python-format
+msgid "“%(option)s” is in the list twice."
+msgstr ""
+
+#: src/hrcek/entries/choice_options.py
+msgid "A choice field needs at least one option."
+msgstr ""
+
 #: src/hrcek/entries/errors.py
 msgid "Too many entries in one request."
 msgstr ""
@@ -1417,6 +1434,16 @@ msgstr ""
 
 #: src/hrcek/entries/errors.py
 msgid "That image could not be fetched."
+msgstr ""
+
+#: src/hrcek/entries/field_options.py
+msgid ""
+"These options were changed somewhere else, perhaps in another tab. Your "
+"changes are kept and the others added; please check the list and save again."
+msgstr ""
+
+#: src/hrcek/entries/field_options.py
+msgid "Field saved."
 msgstr ""
 
 #: src/hrcek/entries/forms.py
@@ -1649,7 +1676,88 @@ msgid "New label"
 msgstr ""
 
 #: src/hrcek/entries/templates/entries/_entry_labels.html
+#: src/hrcek/entries/templates/entries/_options_editor.html
 msgid "Add"
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/_option_row.html
+#, python-format
+msgid "Option %(position)s"
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/_option_row.html
+#, python-format
+msgid "Move “%(option)s” up"
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/_option_row.html
+#, python-format
+msgid "Move “%(option)s” down"
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/_option_row.html
+#, python-format
+msgid "Remove “%(option)s”"
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/_option_row.html
+#, python-format
+msgid "used by %(counter)s entry"
+msgid_plural "used by %(counter)s entries"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/hrcek/entries/templates/entries/_option_row.html
+msgid "not used"
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/_options_editor.html
+#, python-brace-format
+msgid "Option {position}"
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/_options_editor.html
+#, python-brace-format
+msgid "Move “{option}” up"
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/_options_editor.html
+#, python-brace-format
+msgid "Move “{option}” down"
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/_options_editor.html
+#, python-brace-format
+msgid "Remove “{option}”"
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/_options_editor.html
+#, python-brace-format
+msgid "“{option}” added."
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/_options_editor.html
+#, python-brace-format
+msgid "“{option}” removed."
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/_options_editor.html
+#, python-brace-format
+msgid "“{option}” moved to position {position} of {total}."
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/_options_editor.html
+msgid "Options"
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/_options_editor.html
+msgid ""
+"The entry form lists them in this order. Changing an option's text changes "
+"it on every entry that has it."
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/_options_editor.html
+msgid "New option"
 msgstr ""
 
 #: src/hrcek/entries/templates/entries/_tags_sidebar.html
@@ -1679,8 +1787,34 @@ msgstr[1] ""
 msgid "No entry has a value for this field."
 msgstr ""
 
+#: src/hrcek/entries/templates/entries/field_confirm_options.html
+msgid "Remove options that are in use?"
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/field_confirm_options.html
+#, python-format
+msgid "“%(option)s”: %(counter)s entry"
+msgid_plural "“%(option)s”: %(counter)s entries"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/hrcek/entries/templates/entries/field_confirm_options.html
+#, python-format
+msgid "This will clear the field on %(counter)s entry."
+msgid_plural "This will clear the field on %(counter)s entries."
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/hrcek/entries/templates/entries/field_confirm_options.html
+msgid "Yes, remove them"
+msgstr ""
+
+#: src/hrcek/entries/templates/entries/field_confirm_options.html
+msgid "Go back"
+msgstr ""
+
 #: src/hrcek/entries/templates/entries/field_form.html
-msgid "Rename this field"
+msgid "Edit this field"
 msgstr ""
 
 #: src/hrcek/entries/templates/entries/field_form.html
@@ -1695,10 +1829,6 @@ msgstr ""
 msgid ""
 "Fields are the extra things you want to record about an entry, beyond its "
 "address, title and notes."
-msgstr ""
-
-#: src/hrcek/entries/templates/entries/fields.html
-msgid "Rename"
 msgstr ""
 
 #: src/hrcek/entries/templates/entries/fields.html
@@ -1816,6 +1946,10 @@ msgstr[1] ""
 
 #: src/hrcek/entries/views.py
 msgid "Deleted."
+msgstr ""
+
+#: src/hrcek/entries/views.py
+msgid "Field added. Now give it some options."
 msgstr ""
 
 #: src/hrcek/entries/views.py

@@ -70,7 +70,13 @@ class EntryForm(forms.ModelForm):
 
         # One input per field this person has defined. The form is built
         # from their rows, so a name they do not own cannot be submitted.
-        self.definitions = list(FieldDefinition.objects.filter(owner=owner))
+        # A choice field without options could hold nothing, so it stays
+        # off the form until it has some.
+        self.definitions = [
+            definition
+            for definition in FieldDefinition.objects.filter(owner=owner)
+            if definition.kind != FieldDefinition.CHOICE or definition.options
+        ]
         existing = (
             {
                 value.definition.pk: value.value
@@ -182,8 +188,7 @@ class FieldDefinitionForm(forms.ModelForm):
     def __init__(self, owner: User, *args: Any, **kwargs: Any) -> None:
         self.owner = owner
         super().__init__(*args, **kwargs)
-        # Only the creatable kinds are offered. A choice field needs
-        # options, and there is no interface for editing those.
+        # Only the creatable kinds are offered.
         self.fields["kind"].choices = [  # ty: ignore[unresolved-attribute]
             (value, label)
             for value, label in FieldDefinition.KINDS
