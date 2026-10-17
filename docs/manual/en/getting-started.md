@@ -16,10 +16,12 @@ If you want to check the service itself rather than sign in, open
 {
   "status": "ok",
   "service": "hrcek",
-  "version": "0.2.0",
+  "version": "1.4.0",
   "message": "Service is running."
 }
 ```
+
+`version` is the release you are running, so yours will differ.
 
 If the page does not load at all, Hrček is not running. Ask whoever
 looks after it to start the service.

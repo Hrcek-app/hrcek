@@ -245,9 +245,17 @@ job uses `pull_request_target`. Actions are pinned to commit SHAs.
 
 ### Cutting a release
 
-1. Bump `version` in `pyproject.toml` on `main`.
+1. Bump `version` in `pyproject.toml` on `main`, run `uv lock`, and
+   commit both. The lockfile records the project's own version, and
+   CI's `uv sync --locked` fails while it lags. Nothing else carries the
+   version: tests and docs do not name it.
 2. Tag that commit `v` + the version and push the tag. `image` refuses
    a tag that does not match.
+
+   ```bash
+   git tag -a v1.4.0 -m "Hrček 1.4.0"
+   git push origin main v1.4.0
+   ```
 
 The image, Sentry's release and `releases.json` then all use that tag.
 

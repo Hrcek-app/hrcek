@@ -12,13 +12,13 @@ def test_api_docs_are_served(client):
     assert client.get("/api/docs").status_code == 200
 
 
-def test_health_endpoint_reports_ok(client):
+def test_health_endpoint_reports_ok(client, declared_version):
     response = client.get("/api/health")
     assert response.status_code == 200
     body = response.json()
     assert body["status"] == "ok"
     assert body["service"] == "hrcek"
-    assert body["version"] == "0.2.5"
+    assert body["version"] == declared_version
     assert body["message"]
 
 

@@ -1,6 +1,11 @@
+import tomllib
+from pathlib import Path
+
 import pytest
 from django.conf import settings
 from django.utils import translation
+
+PYPROJECT = Path(__file__).resolve().parent.parent / "pyproject.toml"
 
 
 @pytest.fixture(autouse=True)
@@ -16,3 +21,14 @@ def _reset_active_language():
     translation.activate(settings.LANGUAGE_CODE)
     yield
     translation.activate(settings.LANGUAGE_CODE)
+
+
+@pytest.fixture
+def declared_version():
+    """The version pyproject.toml declares, which a release bumps.
+
+    Tests compare against this rather than a literal, so bumping the
+    version does not mean editing them.
+    """
+    with PYPROJECT.open("rb") as f:
+        return tomllib.load(f)["project"]["version"]

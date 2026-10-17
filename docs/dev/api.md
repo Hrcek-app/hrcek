@@ -653,9 +653,11 @@ last entry using one lets it go.
 up. Useful for monitoring.
 
 ```json
-{"status": "ok", "service": "hrcek", "version": "0.2.0",
+{"status": "ok", "service": "hrcek", "version": "1.4.0",
  "message": "Service is running."}
 ```
+
+`version` is the running release, from `pyproject.toml`.
 
 `POST /api/auth/login` takes `{"identifier": "...", "password": "..."}`
 and starts a **session**. `identifier` is an email address or a display

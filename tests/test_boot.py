@@ -14,8 +14,8 @@ def test_django_system_checks_pass():
     assert stderr.getvalue() == ""
 
 
-def test_version_is_exposed():
-    assert settings.HRCEK_VERSION == "0.2.5"
+def test_version_is_exposed(declared_version):
+    assert declared_version == settings.HRCEK_VERSION
 
 
 def test_timezone_support_is_on():
