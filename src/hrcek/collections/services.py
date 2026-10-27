@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from django.contrib.auth.models import AnonymousUser
-from django.db.models import QuerySet
+from django.db.models import Q, QuerySet
 
 from hrcek.accounts.models import User
 from hrcek.collections.errors import (
@@ -13,9 +13,15 @@ from hrcek.collections.errors import (
     NOT_ON_THE_LIST,
     NOT_YOURS,
     NOT_YOURS_TO_UNDO,
+    OWN_COLLECTION,
     OWN_WISH_LIST,
 )
-from hrcek.collections.models import Collection, CollectionEntry, GotIt
+from hrcek.collections.models import (
+    Collection,
+    CollectionEntry,
+    GotIt,
+    SavedCollection,
+)
 from hrcek.core.errors import HrcekError
 from hrcek.entries.models import Entry
 
@@ -172,3 +178,56 @@ def label_wish_lists_holding(entry: Entry) -> set[int]:
 def already_got_on(entry: Entry, collection_ids: set[int]) -> list[Collection]:
     """Those of `collection_ids` where `entry` is already got."""
     return list(Collection.objects.filter(pk__in=collection_ids, got_its__entry=entry))
+
+
+def save_collection(
+    collection: Collection, user: User, *, via_secret: bool
+) -> SavedCollection:
+    """Keep somebody else's collection in `user`'s saved list.
+
+    Saving twice is harmless. A save made with the secret link upgrades
+    one made at the public address, and nothing downgrades it: the link
+    was given to them once, and that does not change.
+    """
+    if user.pk == collection.owner_id:  # ty: ignore[unresolved-attribute]
+        raise HrcekError(OWN_COLLECTION)
+    saved, created = SavedCollection.objects.get_or_create(
+        user=user, collection=collection, defaults={"via_secret": via_secret}
+    )
+    if not created and via_secret and not saved.via_secret:
+        saved.via_secret = True
+        saved.save(update_fields=["via_secret"])
+    return saved
+
+
+def unfollow(collection_id: int, user: User) -> None:
+    """Drop the collection from `user`'s saved list. Dropping nothing is
+    not an error, and the answer is the same either way."""
+    SavedCollection.objects.filter(user=user, collection_id=collection_id).delete()
+
+
+def saved_collections(user: User) -> QuerySet[SavedCollection]:
+    """The saves `user` may still follow, newest first.
+
+    A public collection is open to anyone. A link-only one is listed
+    only for those who saved it with the link: having found it while it
+    was public is no claim on its secret address. A private one is
+    nobody's but the owner's. Saves are kept through all of this, so
+    sharing again brings them back.
+    """
+    return (
+        SavedCollection.objects.filter(user=user)
+        .filter(
+            Q(collection__visibility=Collection.PUBLIC)
+            | Q(collection__visibility=Collection.UNLISTED, via_secret=True)
+        )
+        .select_related("collection__owner")
+        .order_by("-saved_at", "-pk")
+    )
+
+
+def is_saved(collection: Collection, user: User | AnonymousUser) -> bool:
+    """Whether the collection is in `user`'s saved list right now."""
+    if not user.is_authenticated:
+        return False
+    return saved_collections(user).filter(collection=collection).exists()

@@ -31,6 +31,13 @@ urlpatterns = [
         {"undo": True},
         name="unlisted_undo",
     ),
+    path("c/<str:secret>/save/", views.unlisted_save, name="unlisted_save"),
+    path(
+        "c/<str:secret>/unfollow/",
+        views.unlisted_save,
+        {"unfollowing": True},
+        name="unlisted_unfollow",
+    ),
     path(
         "u/<str:namespace>/<slug:slug>/",
         views.public_collection,
@@ -51,5 +58,16 @@ urlpatterns = [
         views.public_got_it,
         {"undo": True},
         name="public_undo",
+    ),
+    path(
+        "u/<str:namespace>/<slug:slug>/save/",
+        views.public_save,
+        name="public_save",
+    ),
+    path(
+        "u/<str:namespace>/<slug:slug>/unfollow/",
+        views.public_save,
+        {"unfollowing": True},
+        name="public_unfollow",
     ),
 ]

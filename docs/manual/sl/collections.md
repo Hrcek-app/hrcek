@@ -1,4 +1,4 @@
-<!-- translated from en/collections.md at 9b3029fec15a -->
+<!-- translated from en/collections.md at c1111060e03a -->
 # Zbirke
 
 Zbirka je poimenovan nabor vaših vnosov. Z njo zberete ure, o katerih
@@ -77,7 +77,9 @@ vsaka nova zbirka.
 ki ga nihče ne more uganiti. Kdor koli, ki mu ga pošljete, jo lahko
 odpre — in ga posreduje naprej. Povezava ni geslo: imejte jo za »kdor
 koli jo dobi v roke, lahko to bere«. Iskalnike prosimo, naj teh strani
-ne indeksirajo.
+ne indeksirajo. Kdor je prijavljen in jo je odprl s povezavo, jo lahko
+tudi shrani med svoje shranjene zbirke (glejte
+[spodaj](#shranjevanje-tuje-zbirke)).
 
 **Javno.** Odpre jo lahko kdor koli, iskalniki pa jo smejo navesti.
 Naslov je sestavljen iz vašega javnega imena in imena zbirke, na primer
@@ -139,6 +141,42 @@ je bila priskrbljena; a vrniti ste jo hoteli vi.
 
 Ko *Seznam želja* izklopite, se gumbi skrijejo in vsem se spet pokažejo
 vse stvari. Ko ga znova vklopite, se oznake vrnejo, kot so bile.
+
+## Shranjevanje tuje zbirke
+
+Nekdo vam pred rojstnim dnem pošlje povezavo do svojega seznama želja,
+čez nekaj tednov pa ga spet potrebujete. Namesto da iščete povezavo,
+zbirko shranite: potem vas čaka na strani *Zbirke*.
+
+**Shranjevanje.** Ko ste prijavljeni, odprite zbirko, ki vam jo je kdo
+delil s povezavo ali javno. Na dnu strani, pod vsem, kar je na njej,
+piše *Bi to želeli spet najti? Shrani med svoje zbirke*. Sledite ji in
+vrstica se spremeni v *Shranjeno med vaše zbirke*. Svojih zbirk ne
+morete shraniti; te so na strani že tako ali tako.
+
+**Ponovno iskanje.** Stran *Zbirke* najprej našteje vaše zbirke, nato pa
+**Shranjene zbirke**. Pri vsaki je njeno ime, javno ime lastnika, če ga
+ima, in *Seznam želja*, če je to seznam želja. Shranjena zbirka se
+vedno odpre na trenutnem naslovu, tudi če jo je lastnik medtem
+preimenoval ali spremenil svoje javno ime.
+
+**Opuščanje.** Izberite *Ne spremljaj več* ob njej na strani *Zbirke*
+ali na dnu strani same zbirke. Zbirka sama ostane nedotaknjena; le
+odstrani se z vašega seznama.
+
+**Ko si lastnik premisli.** Shranjena zbirka je na seznamu le, dokler
+jo še lahko odprete:
+
+- Če postane zasebna, izgine z vašega seznama. Če jo lastnik pozneje
+  spet deli, se vrne, ne da bi jo morali znova shraniti.
+- Če se iz javne spremeni v *Kdor koli s povezavo*, ostane na vašem
+  seznamu, če ste jo shranili prek povezave, in izgine, če ste jo
+  shranili z javnega naslova: to, da ste jo našli, ko je bila javna,
+  vam povezave ne da. Če vam povezavo pošljejo, jo shranite prek nje,
+  pa jo boste obdržali.
+- Če jo izbriše, je ni več.
+
+Lastnik nikoli ne izve, kdo je shranil njegove zbirke.
 
 ## Kaj vidijo obiskovalci
 

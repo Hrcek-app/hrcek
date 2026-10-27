@@ -21,3 +21,6 @@ ALREADY_GOT = register("HRC-COLL-0006", 409, _("Somebody else has already got th
 NOT_YOURS_TO_UNDO = register(
     "HRC-COLL-0007", 403, _("Only whoever got this can undo it.")
 )
+OWN_COLLECTION = register(
+    "HRC-COLL-0008", 403, _("You cannot save your own collection.")
+)

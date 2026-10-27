@@ -66,4 +66,6 @@
   {% else %}
     <p>{% trans "Nothing here yet." %}</p>
   {% endif %}
+
+  {% if can_save %}{% include "collections/_saving.html" %}{% endif %}
 {% endblock %}

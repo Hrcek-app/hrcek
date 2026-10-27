@@ -246,7 +246,7 @@ msgstr ""
 msgid "date joined"
 msgstr ""
 
-#: src/hrcek/accounts/models.py
+#: src/hrcek/accounts/models.py src/hrcek/collections/models.py
 msgid "user"
 msgstr ""
 
@@ -806,8 +806,13 @@ msgstr ""
 msgid "Only whoever got this can undo it."
 msgstr ""
 
+#: src/hrcek/collections/errors.py
+msgid "You cannot save your own collection."
+msgstr ""
+
 #: src/hrcek/collections/forms.py
 #: src/hrcek/collections/templates/collections/detail.html
+#: src/hrcek/collections/templates/collections/list.html
 msgid "Wish list"
 msgstr ""
 
@@ -998,8 +1003,46 @@ msgstr ""
 msgid "got its"
 msgstr ""
 
+#: src/hrcek/collections/models.py
+msgid "saved from the link"
+msgstr ""
+
+#: src/hrcek/collections/models.py src/hrcek/entries/models.py
+msgid "saved at"
+msgstr ""
+
+#: src/hrcek/collections/models.py
+msgid "saved collection"
+msgstr ""
+
+#: src/hrcek/collections/models.py
+msgid "saved collections"
+msgstr ""
+
 #: src/hrcek/collections/templates/collections/_empty.html
 msgid "Nothing in this collection yet."
+msgstr ""
+
+#: src/hrcek/collections/templates/collections/_saved_empty.html
+msgid "You have not saved anyone else's collections yet."
+msgstr ""
+
+#: src/hrcek/collections/templates/collections/_saving.html
+#: src/hrcek/collections/views.py
+msgid "Saved to your collections."
+msgstr ""
+
+#: src/hrcek/collections/templates/collections/_saving.html
+#: src/hrcek/collections/templates/collections/list.html
+msgid "Unfollow"
+msgstr ""
+
+#: src/hrcek/collections/templates/collections/_saving.html
+msgid "Want to find this again?"
+msgstr ""
+
+#: src/hrcek/collections/templates/collections/_saving.html
+msgid "Save to your collections"
 msgstr ""
 
 #: src/hrcek/collections/templates/collections/confirm_delete.html
@@ -1168,6 +1211,14 @@ msgstr ""
 msgid "You have no collections yet."
 msgstr ""
 
+#: src/hrcek/collections/templates/collections/list.html
+msgid "Saved collections"
+msgstr ""
+
+#: src/hrcek/collections/templates/collections/list.html
+msgid "Collections other people shared with you that you chose to keep."
+msgstr ""
+
 #: src/hrcek/collections/templates/collections/shared.html
 #, python-format
 msgid ""
@@ -1193,6 +1244,11 @@ msgstr ""
 
 #: src/hrcek/collections/templates/collections/shared.html
 msgid "Nothing here yet."
+msgstr ""
+
+#: src/hrcek/collections/views.py
+#, python-format
+msgid "“%(collection)s” is no longer in your saved collections."
 msgstr ""
 
 #: src/hrcek/collections/views.py
@@ -1222,6 +1278,10 @@ msgstr ""
 
 #: src/hrcek/collections/views.py
 msgid "Got it. Nobody else will see it on the list now."
+msgstr ""
+
+#: src/hrcek/collections/views.py
+msgid "Unfollowed. It is no longer in your saved collections."
 msgstr ""
 
 #: src/hrcek/core/api.py
@@ -1532,10 +1592,6 @@ msgstr ""
 
 #: src/hrcek/entries/models.py
 msgid "notes"
-msgstr ""
-
-#: src/hrcek/entries/models.py
-msgid "saved at"
 msgstr ""
 
 #: src/hrcek/entries/models.py

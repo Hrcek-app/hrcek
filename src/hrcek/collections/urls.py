@@ -7,6 +7,11 @@ app_name = "collections"
 urlpatterns = [
     path("", views.collection_list, name="list"),
     path("new/", views.collection_create, name="create"),
+    path(
+        "saved/<int:pk>/unfollow/",
+        views.collection_unfollow,
+        name="unfollow",
+    ),
     path("<int:pk>/", views.collection_detail, name="detail"),
     path(
         "<int:pk>/feed/",

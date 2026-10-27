@@ -1,0 +1,7 @@
+{% comment %}
+  What "Save to your collections" and "Unfollow" answer htmx with on a
+  shared page: the line itself, swapped in place of #saving, its new
+  button focused (swapped puts autofocus on it, which htmx honours
+  after a swap); #status out of band; and the message list, emptied of
+  anything an earlier request left.
+{% endcomment %}{% include "collections/_saving.html" %}{% include "_status.html" with status=status oob=True %}{% include "_messages.html" with oob=True %}
