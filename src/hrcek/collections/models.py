@@ -254,3 +254,41 @@ class GotIt(models.Model):
 
     def __str__(self) -> str:
         return f"{self.entry} got for {self.collection}"
+
+
+class SavedCollection(models.Model):
+    """Somebody keeps a collection somebody else shared with them.
+
+    `via_secret` records which door they came in by. A save made at the
+    public address must not hand over the secret link once the owner
+    narrows the collection to link only; a save made with the link was
+    clearly meant to have it. See `services.saved_collections`.
+    """
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="saved_collections",
+        verbose_name=_("user"),
+    )
+    collection = models.ForeignKey(
+        Collection,
+        on_delete=models.CASCADE,
+        related_name="saves",
+        verbose_name=_("collection"),
+    )
+    via_secret = models.BooleanField(_("saved from the link"), default=False)
+    saved_at = models.DateTimeField(_("saved at"), auto_now_add=True)
+
+    class Meta:
+        verbose_name = _("saved collection")
+        verbose_name_plural = _("saved collections")
+        constraints: ClassVar[list[models.BaseConstraint]] = [
+            models.UniqueConstraint(
+                fields=["user", "collection"],
+                name="one_save_per_user_and_collection",
+            )
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.collection} saved by {self.user_id}"  # ty: ignore[unresolved-attribute]

@@ -256,7 +256,7 @@ msgstr "status osebja"
 msgid "date joined"
 msgstr "datum vpisa"
 
-#: src/hrcek/accounts/models.py
+#: src/hrcek/accounts/models.py src/hrcek/collections/models.py
 msgid "user"
 msgstr "uporabnik"
 
@@ -845,8 +845,13 @@ msgstr "Nekdo drug je ta vnos že priskrbel."
 msgid "Only whoever got this can undo it."
 msgstr "Razveljaviti je mogoče le z računom, s katerim je bilo označeno."
 
+#: src/hrcek/collections/errors.py
+msgid "You cannot save your own collection."
+msgstr "Svoje zbirke ne morete shraniti."
+
 #: src/hrcek/collections/forms.py
 #: src/hrcek/collections/templates/collections/detail.html
+#: src/hrcek/collections/templates/collections/list.html
 msgid "Wish list"
 msgstr "Seznam želja"
 
@@ -1053,9 +1058,47 @@ msgstr "oznaka »Imam«"
 msgid "got its"
 msgstr "oznake »Imam«"
 
+#: src/hrcek/collections/models.py
+msgid "saved from the link"
+msgstr "shranjeno prek povezave"
+
+#: src/hrcek/collections/models.py src/hrcek/entries/models.py
+msgid "saved at"
+msgstr "shranjeno ob"
+
+#: src/hrcek/collections/models.py
+msgid "saved collection"
+msgstr "shranjena zbirka"
+
+#: src/hrcek/collections/models.py
+msgid "saved collections"
+msgstr "shranjene zbirke"
+
 #: src/hrcek/collections/templates/collections/_empty.html
 msgid "Nothing in this collection yet."
 msgstr "V tej zbirki še ni ničesar."
+
+#: src/hrcek/collections/templates/collections/_saved_empty.html
+msgid "You have not saved anyone else's collections yet."
+msgstr "Tujih zbirk še niste shranili."
+
+#: src/hrcek/collections/templates/collections/_saving.html
+#: src/hrcek/collections/views.py
+msgid "Saved to your collections."
+msgstr "Shranjeno med vaše zbirke."
+
+#: src/hrcek/collections/templates/collections/_saving.html
+#: src/hrcek/collections/templates/collections/list.html
+msgid "Unfollow"
+msgstr "Ne spremljaj več"
+
+#: src/hrcek/collections/templates/collections/_saving.html
+msgid "Want to find this again?"
+msgstr "Bi to želeli spet najti?"
+
+#: src/hrcek/collections/templates/collections/_saving.html
+msgid "Save to your collections"
+msgstr "Shrani med svoje zbirke"
 
 #: src/hrcek/collections/templates/collections/confirm_delete.html
 msgid "Delete this collection?"
@@ -1236,6 +1279,14 @@ msgstr ""
 msgid "You have no collections yet."
 msgstr "Še nimate zbirk."
 
+#: src/hrcek/collections/templates/collections/list.html
+msgid "Saved collections"
+msgstr "Shranjene zbirke"
+
+#: src/hrcek/collections/templates/collections/list.html
+msgid "Collections other people shared with you that you chose to keep."
+msgstr "Zbirke, ki so vam jih delili drugi in ste jih želeli obdržati."
+
 #: src/hrcek/collections/templates/collections/shared.html
 #, python-format
 msgid ""
@@ -1266,6 +1317,11 @@ msgid "Nothing here yet."
 msgstr "Tu še ni ničesar."
 
 #: src/hrcek/collections/views.py
+#, python-format
+msgid "“%(collection)s” is no longer in your saved collections."
+msgstr "»%(collection)s« ni več med vašimi shranjenimi zbirkami."
+
+#: src/hrcek/collections/views.py
 msgid "Collection made."
 msgstr "Zbirka je ustvarjena."
 
@@ -1293,6 +1349,10 @@ msgstr "Razveljavljeno. Spet je na seznamu."
 #: src/hrcek/collections/views.py
 msgid "Got it. Nobody else will see it on the list now."
 msgstr "Zabeleženo. Drugi tega zdaj ne bodo več videli na seznamu."
+
+#: src/hrcek/collections/views.py
+msgid "Unfollowed. It is no longer in your saved collections."
+msgstr "Ne spremljate je več. Ni več med vašimi shranjenimi zbirkami."
 
 #: src/hrcek/core/api.py
 msgid "Service is running."
@@ -1622,10 +1682,6 @@ msgstr "naslov vnosa"
 #: src/hrcek/entries/models.py
 msgid "notes"
 msgstr "zapiski"
-
-#: src/hrcek/entries/models.py
-msgid "saved at"
-msgstr "shranjeno ob"
 
 #: src/hrcek/entries/models.py
 msgid "entries"

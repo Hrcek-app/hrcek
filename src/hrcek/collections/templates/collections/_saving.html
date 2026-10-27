@@ -1,0 +1,30 @@
+{% load i18n %}{% comment %}
+  The line at the foot of a shared page that keeps it in the visitor's
+  saved collections. Only a signed-in visitor who is not the owner gets
+  it. Kept apart from each item's "Got it": it is about the whole
+  collection. A div, not a p: a form may not sit inside a paragraph.
+
+  hx-post enhances the same action: the answer is this line again,
+  replacing it (collections/_save_result.html). `swapped` is set only
+  then, putting autofocus on the new button so focus is not lost with
+  the old one; on a whole page it would steal focus on load. A failed
+  request swaps nothing, and js/htmx-errors.js says so.
+{% endcomment %}<div id="saving" class="saving">
+  {% if saved %}
+    {% trans "Saved to your collections." %}
+    <form class="inline" method="post" action="{{ unfollow_url }}"
+          hx-post="{{ unfollow_url }}" hx-target="#saving" hx-swap="outerHTML"
+          hx-status:4xx="swap:none" hx-status:5xx="swap:none"
+          hx-disable="find button">
+      {% csrf_token %}<button type="submit" class="link-button"{% if swapped %} autofocus{% endif %}>{% trans "Unfollow" %}</button>
+    </form>
+  {% else %}
+    {% trans "Want to find this again?" %}
+    <form class="inline" method="post" action="{{ save_url }}"
+          hx-post="{{ save_url }}" hx-target="#saving" hx-swap="outerHTML"
+          hx-status:4xx="swap:none" hx-status:5xx="swap:none"
+          hx-disable="find button">
+      {% csrf_token %}<button type="submit" class="link-button"{% if swapped %} autofocus{% endif %}>{% trans "Save to your collections" %}</button>
+    </form>
+  {% endif %}
+</div>

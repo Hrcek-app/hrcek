@@ -21,14 +21,18 @@ from hrcek.collections.services import (
     get_it,
     got_by_viewer,
     got_entry_ids,
+    is_saved,
     put_back,
     remove_entry,
+    save_collection,
+    saved_collections,
     shared_entries,
     undo_got_it,
+    unfollow,
 )
 from hrcek.core import listing
 from hrcek.core.errors import HrcekError
-from hrcek.core.htmx import is_htmx, vary_on_htmx
+from hrcek.core.htmx import htmx_redirect, is_htmx, vary_on_htmx
 from hrcek.entries.models import Entry
 
 
@@ -38,8 +42,46 @@ def collection_list(request: HttpRequest) -> HttpResponse:
     return render(
         request,
         "collections/list.html",
-        {"collections": Collection.objects.filter(owner=owner)},
+        {
+            "collections": Collection.objects.filter(owner=owner),
+            "saved": saved_collections(owner),
+        },
     )
+
+
+@require_http_methods(["POST"])
+@login_required
+def collection_unfollow(request: HttpRequest, pk: int) -> HttpResponse:
+    """Drop a saved collection from the Collections page.
+
+    Addressed by id, not by the shared address: all it can do is remove
+    the signed-in user's own save, which reveals nothing.
+    """
+    user = cast("User", request.user)
+    # The name comes only from the requester's own save, and only while
+    # it is listed for them: any id can be posted here, and the answer
+    # must not name a collection they cannot open.
+    saved = saved_collections(user).filter(collection_id=pk).first()
+    unfollow(pk, user)
+    status = (
+        _("“%(collection)s” is no longer in your saved collections.")
+        % {"collection": saved.collection.name}
+        if saved is not None
+        else ""
+    )
+    if not is_htmx(request):
+        if status:
+            messages.success(request, status)
+        return vary_on_htmx(redirect("collections:list"))
+
+    # The row itself goes by the form's own hx-swap="delete"; everything
+    # this answer says lands out of band, as "Take it out" does.
+    response = render(
+        request,
+        "collections/_unfollow_result.html",
+        {"status": status, "empty": not saved_collections(user).exists()},
+    )
+    return vary_on_htmx(response)
 
 
 @login_required
@@ -279,6 +321,31 @@ def _shared_context(collection: Collection, request: HttpRequest) -> dict[str, o
             and collection.entries().exists()
             and not entries.exists()
         ),
+        # As with "Got it": nothing for the owner, nor for a visitor
+        # nobody could save it for.
+        "can_save": viewer.is_authenticated and not is_owner,
+        **_saving_context(collection, viewer),
+    }
+
+
+def _saving_context(
+    collection: Collection, viewer: User | AnonymousUser
+) -> dict[str, object]:
+    """What collections/_saving.html needs, at the address the page is at.
+
+    The actions sit under the shared address, as "Got it" does, so the
+    secret stays the only key to a collection shared by link.
+    """
+    if collection.visibility == Collection.PUBLIC:
+        kwargs = {"namespace": collection.owner.namespace, "slug": collection.slug}
+        prefix = "shared:public"
+    else:
+        kwargs = {"secret": collection.secret}
+        prefix = "shared:unlisted"
+    return {
+        "saved": is_saved(collection, viewer),
+        "save_url": reverse(f"{prefix}_save", kwargs=kwargs),
+        "unfollow_url": reverse(f"{prefix}_unfollow", kwargs=kwargs),
     }
 
 
@@ -352,3 +419,59 @@ def public_got_it(
     undo: bool = False,
 ) -> HttpResponse:
     return _got_it(request, _public(namespace, slug), entry_pk, undo=undo)
+
+
+def _save(
+    request: HttpRequest, collection: Collection, *, via_secret: bool, unfollowing: bool
+) -> HttpResponse:
+    """Keep, or stop keeping, a shared collection — then back to its page.
+
+    Shaped like `_got_it`: a visitor signed out since the page loaded
+    is sent to sign in and back to the *page*, since this address only
+    answers POST. htmx gets the line again, in its new state.
+    """
+    page = collection.shared_url()
+    if not request.user.is_authenticated:
+        return redirect_to_login(page)
+    user = cast("User", request.user)
+    try:
+        if unfollowing:
+            unfollow(collection.pk, user)
+            status = _("Unfollowed. It is no longer in your saved collections.")
+        else:
+            save_collection(collection, user, via_secret=via_secret)
+            status = _("Saved to your collections.")
+    except HrcekError as error:
+        messages.error(request, str(error.error_code.message))
+        # Only a crafted request is refused — the owner has no button —
+        # and any 403 to htmx reads as "sign in again" (core.middleware),
+        # so htmx navigates back to the page, where the message waits.
+        return vary_on_htmx(htmx_redirect(page) if is_htmx(request) else redirect(page))
+    if not is_htmx(request):
+        messages.success(request, status)
+        return vary_on_htmx(redirect(page))
+    response = render(
+        request,
+        "collections/_save_result.html",
+        {**_saving_context(collection, user), "status": status, "swapped": True},
+    )
+    return vary_on_htmx(response)
+
+
+@require_http_methods(["POST"])
+def unlisted_save(
+    request: HttpRequest, secret: str, *, unfollowing: bool = False
+) -> HttpResponse:
+    return _save(request, _unlisted(secret), via_secret=True, unfollowing=unfollowing)
+
+
+@require_http_methods(["POST"])
+def public_save(
+    request: HttpRequest, namespace: str, slug: str, *, unfollowing: bool = False
+) -> HttpResponse:
+    return _save(
+        request,
+        _public(namespace, slug),
+        via_secret=False,
+        unfollowing=unfollowing,
+    )

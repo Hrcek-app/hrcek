@@ -379,11 +379,14 @@ never the URL the request was sent to, which is usually POST-only:
 signing in and landing on it with a GET would be a blank 405. A
 missing or foreign `HX-Current-URL` falls back to the entries list.
 
-A view that needs the same thing for some other redirect —
-`entries.views.entry_delete` does, for a pruned label — calls
-`htmx_redirect` itself, and queues with `messages.success` what its
-`#status` would have said, since the navigation replaces the page that
-text would have been written to.
+A view that needs the same thing for some other redirect calls
+`htmx_redirect` itself, and queues as a message what its `#status`
+would have said, since the navigation replaces the page that text
+would have been written to. `entries.views.entry_delete` does, for a
+pruned label. So does `collections.views._save`, when a save is
+refused: only a crafted request gets there (the owner has no button),
+and a 403 to htmx would read as an expired session, so it navigates
+back to the shared page with the error waiting there.
 
 ## Tabs: `js/tabs.js`
 
@@ -608,6 +611,23 @@ row's title link, else the previous one's, else the "In this
 collection" heading (`tabindex="-1"`,
 `data-focus-after-delete-fallback`), which sits right above the empty
 state.
+
+## Saved collections in place
+
+*Unfollow* on the Collections page is the same pattern again:
+`hx-swap="delete"` on its row, `collections/_unfollow_result.html`
+out of band, `collections/_saved_empty.html` swapped over the list
+(both carry `id="saved-list"`) when that was the last one, and the
+"Saved collections" heading as the focus fallback.
+
+The line at the foot of a shared page, `collections/_saving.html`,
+is not removed but replaced: its forms swap `#saving` itself
+(`hx-target="#saving"`, `hx-swap="outerHTML"`) with the line in its
+new state, from `collections/_save_result.html`, plus `#status` and
+`#messages` out of band. The button that was pressed goes with the old
+line, so the new one carries `autofocus`, which htmx honours after a
+swap. It is set only in that answer (`swapped` in the context): on a
+whole page it would steal focus on load.
 
 ## Editing a list in place: `js/options-editor.js`
 

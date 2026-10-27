@@ -1,7 +1,8 @@
 # Collections
 
 A collection is a named set of one person's entries. This page covers
-the model; sharing and feeds arrive with those layers.
+the model, sharing, wish lists, saving other people's collections, and
+feeds.
 
 ## Two kinds, one immutable choice
 
@@ -282,6 +283,74 @@ that entry, and only if it is got on this list. Adding an entry by hand
 redirects there when the entry is already got; saving an entry form
 compares `label_wish_lists_holding` before and after and links there
 for each label wish list the entry arrived on.
+
+## Saved collections
+
+A signed-in visitor can keep somebody else's shared collection on
+their Collections page. A save is a `SavedCollection` row: `user`,
+`collection`, `via_secret`, `saved_at`, unique on `(user, collection)`,
+both keys `CASCADE`, so deleting either takes the save with it.
+
+**Saving never widens access.** `via_secret` records which address the
+save was made from, and `saved_collections(user)` lists a save only
+while that address, or a wider one, still answers:
+
+| Saved from | Listed while the collection is |
+|---|---|
+| `/c/<secret>/` (`via_secret=True`) | unlisted or public |
+| `/u/<namespace>/<slug>/` (`via_secret=False`) | public only |
+
+Somebody who found a collection while it was public has no claim on
+its secret address once the owner narrows it to link only. Rows are
+never deleted on a change of visibility, so making a collection
+private and sharing it again brings its saves back. Saving from the
+secret link upgrades a public save; nothing downgrades one.
+
+The rules live in `collections/services.py`:
+
+| Function | Purpose |
+|---|---|
+| `save_collection(collection, user, *, via_secret)` | keep it; raises `HRC-COLL-0008` for the owner |
+| `unfollow(collection_id, user)` | drop the user's own save; dropping nothing is not an error |
+| `saved_collections(user)` | what the Collections page lists, newest first |
+| `is_saved(collection, viewer)` | whether the shared page shows *Saved* or *Save* |
+
+`is_saved` goes through `saved_collections`, so a public save looked at
+through the secret link reads as unsaved and offers *Save* — which,
+from there, upgrades it.
+
+Save and unfollow on a shared page sit under its address, as "Got it"
+does, so the secret stays the only key to a link-shared collection.
+Unfollowing from the Collections page is addressed by id instead: all
+it can do is delete the requester's own row, which reveals nothing.
+
+| Action | Address | Route |
+|---|---|---|
+| Save | `/c/<secret>/save/` | `shared:unlisted_save` |
+| Unfollow | `/c/<secret>/unfollow/` | `shared:unlisted_unfollow` |
+| Save | `/u/<namespace>/<slug>/save/` | `shared:public_save` |
+| Unfollow | `/u/<namespace>/<slug>/unfollow/` | `shared:public_unfollow` |
+| Unfollow | `/collections/saved/<id>/unfollow/` | `collections:unfollow` |
+
+All POST only. A signed-out POST goes to sign in with `next` set to the
+shared *page*, as `_got_it` does.
+
+**In place.** `collections/_saving.html` is the line at the foot of a
+shared page, after the list and well away from the items' buttons.
+With htmx its forms swap the line itself (`hx-swap="outerHTML"`); the
+answer, `_save_result.html`, is the line again with `autofocus` on its
+new button, plus `#status` and the messages out of band. A refused save
+can only be a crafted request — the owner gets no line — and answers
+htmx with `HX-Redirect` back to the page and the error as a message,
+because `core.middleware` reads any 403 to htmx as an expired session.
+On the Collections page, *Unfollow* removes its row with
+`hx-swap="delete"`; `_unfollow_result.html` carries `#status` and, when
+the last row went, `_saved_empty.html`, which shares the list's
+`saved-list` id so the out-of-band swap replaces it.
+
+**Whose it is.** A saved row names the owner only by their public name
+(`namespace`). The display name can be used to sign in and `str(user)`
+falls back to the email; a visitor must see neither.
 
 ## Pictures
 

@@ -68,6 +68,7 @@ over HTTP, so they have no status.
 | `HRC-COLL-0005` | 404 | The item named is not on the list now. Unknown ids and other people's entries get the same answer, so nothing is revealed. |
 | `HRC-COLL-0006` | 409 | Somebody else already got this item on this list. |
 | `HRC-COLL-0007` | 403 | Only the person who said "Got it" can undo it. The owner uses "Put it back on the list" instead. |
+| `HRC-COLL-0008` | 403 | A signed-in user tried to save a collection they own. The page never offers it; only a crafted request gets here. |
 | `HRC-IMAGE-0001` | 422 | The bytes are not a raster image Pillow can decode, or are in a format we do not accept. SVG is refused on purpose. |
 | `HRC-IMAGE-0002` | 422 | The image is larger than the byte limit. `details.limit_bytes` carries the limit. |
 | `HRC-IMAGE-0003` | 422 | The image decoded as a known format but could not be read — truncated, damaged, or too many pixels. `details.limit_pixels` appears in the last case. |

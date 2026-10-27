@@ -18,4 +18,45 @@
   {% else %}
     <p>{% trans "You have no collections yet." %}</p>
   {% endif %}
+
+  {% comment %}
+    Other people's collections this person chose to keep. Only the
+    owner's public name is shown: the display name can be used to sign
+    in, and str(user) falls back to the email.
+  {% endcomment %}
+  <section class="saved-collections" aria-labelledby="saved-heading">
+    <h2 id="saved-heading" tabindex="-1" data-focus-after-delete-fallback>{% trans "Saved collections" %}</h2>
+    <p>{% trans "Collections other people shared with you that you chose to keep." %}</p>
+    {% if saved %}
+      <ul class="stacked" id="saved-list">
+        {% for each in saved %}
+          {% with collection=each.collection %}
+            <li class="collection-item" id="saved-{{ collection.pk }}">
+              <h3><a href="{{ collection.shared_url }}" data-focus-after-delete>{{ collection.name }}</a></h3>
+              {% if collection.owner.namespace or collection.is_wish_list %}
+                <p class="meta">{{ collection.owner.namespace|default:"" }}{% if collection.owner.namespace and collection.is_wish_list %} · {% endif %}{% if collection.is_wish_list %}{% trans "Wish list" %}{% endif %}</p>
+              {% endif %}
+              {% comment %}
+                hx-post enhances the same action, as "Take it out" does on
+                a collection's page: the "delete" swap removes this row,
+                the answer lands out of band
+                (collections/_unfollow_result.html), and js/delete-focus.js
+                moves focus to the next row, the previous one, or the
+                heading above.
+              {% endcomment %}
+              <form method="post" action="{% url 'collections:unfollow' collection.pk %}"
+                    hx-post="{% url 'collections:unfollow' collection.pk %}"
+                    hx-target="closest li" hx-swap="delete"
+                    hx-status:4xx="swap:none" hx-status:5xx="swap:none"
+                    hx-disable="find button">
+                {% csrf_token %}<button type="submit" class="link-button">{% trans "Unfollow" %}</button>
+              </form>
+            </li>
+          {% endwith %}
+        {% endfor %}
+      </ul>
+    {% else %}
+      {% include "collections/_saved_empty.html" %}
+    {% endif %}
+  </section>
 {% endblock %}

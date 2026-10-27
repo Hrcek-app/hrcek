@@ -1,0 +1,5 @@
+{% load i18n %}{% comment %}
+  The saved section with nothing in it: on the Collections page, and
+  out of band when "Unfollow" removes the last row in place, replacing
+  the emptied list, which carries the same id.
+{% endcomment %}<p id="saved-list"{% if oob %} hx-swap-oob="true"{% endif %}>{% trans "You have not saved anyone else's collections yet." %}</p>

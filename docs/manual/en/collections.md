@@ -81,7 +81,9 @@ what every new collection starts as.
 random part in it, which nobody can guess. Anyone you send it to can
 open it — and can pass it on. The link is not a password: treat it as
 "anyone who ends up with this may read it". Search engines are asked
-not to index these pages.
+not to index these pages. Anyone signed in who opened it with the link
+can also keep it among their saved collections (see
+[below](#saving-someone-elses-collection)).
 
 **Public.** Anyone can open it, and search engines may list it. The
 address is made from your public name and the collection's name, like
@@ -141,6 +143,42 @@ does give away that it was got; you chose to bring it back.
 
 Turning *Wish list* off hides the buttons and shows every item to
 everybody again. Turning it back on brings the marks back as they were.
+
+## Saving someone else's collection
+
+Somebody sends you the link to their wish list before a birthday, and
+weeks later you want it again. Instead of hunting for the link, save
+the collection: it then waits for you on your Collections page.
+
+**Saving.** Open a collection somebody shared with you, by link or
+publicly, while you are signed in. At the foot of the page, below
+everything on it, is *Want to find this again? Save to your
+collections*. Follow it, and the line changes to *Saved to your
+collections*. You cannot save your own collections; they are on the
+page already.
+
+**Finding it again.** Your Collections page lists your own collections
+first, then **Saved collections**. Each shows its name, its owner's
+public name if they have one, and *Wish list* if it is one. A saved
+collection always opens at its current address, even if its owner has
+renamed it or changed their public name since.
+
+**Unfollowing.** Choose *Unfollow* beside it on your Collections page,
+or at the foot of the collection's own page. The collection itself is
+not touched; it only leaves your list.
+
+**When the owner changes their mind.** A saved collection is only ever
+listed while you could still open it:
+
+- Made private, it disappears from your list. If the owner shares it
+  again later, it comes back without you saving it again.
+- Changed from public to *Anyone with the link*, it stays on your list
+  if you saved it from the link, and disappears if you saved it from
+  its public address: finding it while it was public does not give you
+  the link. Save it from the link, if you are sent one, to keep it.
+- Deleted, it is gone for good.
+
+Owners are never told who saved their collections.
 
 ## What visitors see
 
